@@ -2,7 +2,7 @@
 
 
 
-Dashboard for Emergency Management Information System.
+Dashboard for Emergency Management Information System Alerts.
 
 ## Development
 
@@ -11,7 +11,7 @@ We are using git flow workflow for our source code management. Please start by
 - Clone this repo by
 
 ```sh
-git clone git@github.com:CodeTanzania/emis-dashboard.git
+git clone https://github.com/CodeTanzania/emis-web-alert.git
 ```
 
 - Then check checkout to master branch by
