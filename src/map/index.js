@@ -2,6 +2,17 @@ import React, { Component } from 'react';
 import { Map, TileLayer, Polygon } from 'react-leaflet';
 import API from '../common/API';
 
+
+/**
+ * Alerts Map  component
+ * This component will provide Map visulization for Alerts
+ *
+ * @function
+ * @name AlertMap
+ *
+ * @version 0.1.0
+ * @since 0.1.0
+ */
 class AlertMap extends Component {
 
   constructor(props) {
