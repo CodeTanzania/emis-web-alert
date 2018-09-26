@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
-import { Map, TileLayer, Polygon } from 'react-leaflet';
+import React from 'react';
+import L from 'leaflet';
 import API from '../common/API';
-
-
 /**
  * Alerts Map  component
  * This component will provide Map visulization for Alerts
@@ -13,21 +11,18 @@ import API from '../common/API';
  * @version 0.1.0
  * @since 0.1.0
  */
-class AlertMap extends Component {
+
+class AlertMap extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      lat: -6.817523270254579,
-      lng: 39.25610303878784,
-      zoom: 6,
       alerts: [],
-      geoJsonData: []
+      polygons: []
     }
   }
 
-
-  // converts a string containig whitespace-delimited list of  coordinate pairs
+// converts a string containig whitespace-delimited list of  coordinate pairs
   // to an array of coordinates
   stringToArrayCoordinates = (stringCoordinates) => {
     const splitCoordinates = stringCoordinates.trim().split(' ');
@@ -35,23 +30,40 @@ class AlertMap extends Component {
       splitCoordinate.split(',').map(value => parseFloat(value)))
   }
 
+
   componentDidMount() {
     API.getAlerts()
-      .then(alerts => this.setState({ alerts }));
+    .then(alerts => {
+      const polygons = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon));
+      return this.setState({ alerts, polygons })
+    });
+    // create map
+    this.map = L.map('map', {
+      center: [-6.179, 35.754],
+      zoom: 7,
+      layers: [
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }),
+      ]
+    });
+
+    
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.polygons !== prevState.polygons) {
+       // create a red polygon from an array of LatLng points
+    var latlngs = this.state.polygons;
+    this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
+    }
+  }
+
+
+
+
   render() {
-    const { alerts } = this.state;
-    const data = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon))
-    const position = [this.state.lat, this.state.lng]
-    return (
-      <Map center={position} zoom={this.state.zoom}>
-        <TileLayer
-          attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Polygon positions={data} />
-      </Map>
-    );
+    return <div id="map"></div>
   }
 }
 
