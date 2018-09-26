@@ -1,5 +1,8 @@
 import React from 'react';
 import L from 'leaflet';
+import 'leaflet-draw';
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css';
 import API from '../common/API';
 /**
  * Alerts Map  component
@@ -22,14 +25,14 @@ class AlertMap extends React.Component {
     }
   }
 
+
 // converts a string containig whitespace-delimited list of  coordinate pairs
-  // to an array of coordinates
+  // to an array of coordinate arrays
   stringToArrayCoordinates = (stringCoordinates) => {
     const splitCoordinates = stringCoordinates.trim().split(' ');
     return splitCoordinates.map(splitCoordinate => 
       splitCoordinate.split(',').map(value => parseFloat(value)))
   }
-
 
   componentDidMount() {
     API.getAlerts()
@@ -37,16 +40,27 @@ class AlertMap extends React.Component {
       const polygons = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon));
       return this.setState({ alerts, polygons })
     });
-    // create map
-    this.map = L.map('map', {
-      center: [-6.179, 35.754],
-      zoom: 7,
-      layers: [
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }),
-      ]
+
+    this.map = L.map('map').setView([-6.179, 35.754], 7);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(this.map);
+    
+    // FeatureGroup is to store editable layers
+    this.drawnItems = new L.FeatureGroup();
+    this.map.addLayer(this.drawnItems);
+    this.drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: this.drawnItems
+        }
     });
+    this.map.addControl(this.drawControl);
+    this.map.on('draw:created', (e) => {
+      let layer = e.layer;
+      this.drawnItems.addLayer(layer);
+      console.log(e.layer._latlngs)
+    });
+
 
     
   }
@@ -63,6 +77,7 @@ class AlertMap extends React.Component {
 
 
   render() {
+   
     return <div id="map"></div>
   }
 }
