@@ -45,11 +45,18 @@ class AlertMap extends React.Component {
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map);
+
+    
     
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
     this.drawControl = new L.Control.Draw({
+      position: 'topright',
+      polyline: false,
+      circle: false, // Turns off this drawing tool
+      rectangle: false,
+      marker: false,
         edit: {
             featureGroup: this.drawnItems
         }
@@ -58,11 +65,12 @@ class AlertMap extends React.Component {
     this.map.on('draw:created', (e) => {
       let layer = e.layer;
       this.drawnItems.addLayer(layer);
-      console.log(e.layer._latlngs)
+      L.popup()
+      .setLatLng(layer.getBounds().getCenter())
+      .setContent('Add form for new Alert here')
+      .openOn(this.map);
     });
 
-
-    
   }
 
   componentDidUpdate(prevProps, prevState) {
