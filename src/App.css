@@ -1,6 +1,24 @@
+
+@import '~antd/dist/antd.css';
+@import '~leaflet/dist/leaflet.css';
+@import '~leaflet-draw/dist/leaflet.draw.css';
+
 .App {
   text-align: center;
 }
+
+
+ #sidebar {
+  position: absolute;
+  z-index: 1000;
+  height: auto;
+  overflow: hidden;
+  float: left;
+  width: 20vw;
+  background: #fff;
+  font-size: 12px;
+}
+
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
