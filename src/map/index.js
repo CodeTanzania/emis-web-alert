@@ -81,20 +81,20 @@ class AlertMap extends React.Component {
             <br />
             Urgency: <br />
             <select id="urgency">
-                <option value="imediate">Imediate</option>
-                <option value="expected">Expected</option>
+                <option value="Immediate">Imediate</option>
+                <option value="Expected">Expected</option>
             </select>
             <br />
             Certainity: <br />
             <select id="certainity">
-                <option value="observed">Observed</option>
-                <option value="likely">Likely</option>
+                <option value="Observed">Observed</option>
+                <option value="Likely">Likely</option>
             </select>
             <br />
             Severity: <br />
             <select id="severity">
-                <option value="extreme">Extreme</option>
-                <option value="minor">Minor</option>
+                <option value="Extreme">Extreme</option>
+                <option value="Minor">Minor</option>
             </select>
             <br />
             Instructions:<br />
@@ -126,15 +126,91 @@ class AlertMap extends React.Component {
         let certainity = document.getElementById("certainity").value;
         let severity = document.getElementById("severity").value;
         let instructions = document.getElementById("instructions").value;
-        const area = [layer.toGeoJSON()];
-        let alert = { event, urgency, certainity, severity, instructions, area };
-        console.log('this is our alert');
-        console.log(alert);
+        const area = layer.toGeoJSON();
         this.map.removeControl(this.drawControl);
         this.map.removeLayer(this.drawnItems);
         this.map.closePopup();
         this.setState({ hideAlerts: false });
         this.map.addLayer(this.alertsGeoJsonLayer);
+
+        let alert =  {
+          "source": {
+            "name": "Parker - Rice",
+            "phone": "544.252.1361 x8021",
+            "email": "isac.simonis@gmail.com",
+            "website": "http://waldo.com"
+          },
+          "event": {
+            "code": "c75541c3-5e00-4896-9a20-ad2f2750ac9a",
+            "name": event,
+            "category": "Geo",
+            "description": "Quos quam molestias sed assumenda. Ullam minima repudiandae quia enim. Doloribus eum ea quasi deleniti non inventore a sapiente. Officia consequatur maiores aut. Hic et perferendis quos. Perferendis qui vitae atque repellendus eaque quia hic voluptatem.",
+            "urgency": urgency,
+            "severity": severity,
+            "certainty": certainity,
+            "response": "Prepare"
+          },
+          "message": {
+            "status": "Actual",
+            "type": "Update",
+            "scope": "Private",
+            "restriction": "Non tempore occaecati autem.",
+            "addresses": [
+              "alta_lindgren@yahoo.com"
+            ],
+            "code": "turquoise",
+            "note": "Consequatur tenetur beatae qui.",
+            "headline": "Qui porro fuga necessitatibus tempora.",
+            "instruction": instructions,
+            "website": "https://magali.com"
+          },
+          "area": {
+            "description": "Avon",
+            "geometry": area.geometry,
+            "altitude": 4716265329393664,
+            "ceiling": 2912052882440192
+          },
+          "resources": [
+            {
+              "description": "Expedita perspiciatis beatae laudantium sit atque.",
+              "mime": "application/cms",
+              "uri": "https://s3.amazonaws.com/uifaces/faces/twitter/weavermedia/128.jpg"
+            }
+          ],
+          "reportedAt": "2018-08-19T18:47:03.379Z",
+          "expectedAt": "2018-07-20T10:23:09.375Z",
+          "expiredAt": "2018-08-23T20:34:57.716Z",
+          "occuredAt": "2018-09-10T05:25:48.213Z",
+          "endedAt": "2018-07-16T16:48:49.568Z",
+          "direction": "Inbound",
+          "_id": "5bb31edb82319900042e970e",
+          "updatedAt": "2018-10-02T07:31:41.891Z",
+          "createdAt": "2018-10-02T07:31:41.891Z"
+        };
+
+        const payload = {
+          ...alert,
+          "event": {
+            "name": event,
+            "urgency": urgency,
+            "severity": severity,
+            "certainty": certainity
+          },
+          "message": {
+            "instruction": instructions
+          },
+          "area": {
+            "geometry": area,
+          }
+
+        };
+
+        API.createAlert({ payload })
+          .then(res => {
+            console.log('looking at the response object');
+            console.log(res);
+          });
+
       });
 
 
@@ -149,28 +225,16 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    let geojsonFeature = {
-      "type": "Feature",
-      "properties": {
-          "name": "Coors Field",
-          "amenity": "Baseball Stadium",
-          "popupContent": "This is where the Rockies play!"
-      },
-      "geometry": {
-          "type": "Point",
-          "coordinates": [-104.99404, 39.75621]
-      }
-  };
 
-  let customGeometry = {"type": "", "coordinates": []}
     const { alerts } = this.state;
     if (alerts !== prevState.alerts) {
       alerts.map(({ area }) => {
-        let { geometry } = area;
-        customGeometry.type =  geometry.type;
-        customGeometry.coordinates =  geometry.coordinates;
-        geojsonFeature.geometry = customGeometry;
-        this.alertsGeoJsonLayer.addData(geojsonFeature);
+        const { createdAt, updatedAt } = area.geometry;
+        if (createdAt || updatedAt) {
+          delete area.geometry.createdAt;
+          delete area.geometry.updatedAt;
+        }
+        this.alertsGeoJsonLayer.addData({ ...area, "type": "Feature" });
       })
     }
   }
