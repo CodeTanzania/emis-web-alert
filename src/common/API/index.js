@@ -9,8 +9,8 @@ const API = {
       .then(res => res.data),
 
   /**
-* Create new stakeholder
-* @param {Object} data stakeholder data to create
+* Create new Alert
+* @param {Object} data alert data to create
 */
   createAlert: data => {
     const url = 'https://emis-alert.herokuapp.com/v1/alerts';
