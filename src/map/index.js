@@ -21,7 +21,6 @@ class AlertMap extends React.Component {
     this.state = {
       alerts: [],
       hideAlerts: false,
-      polygons: [],
       map: {}
     }
   }
@@ -36,10 +35,8 @@ class AlertMap extends React.Component {
       .setLatLng([-6.179, 35.754])
       .setContent('<h2>Select a Control to Draw on Map </h2>')
       .openOn(this.map);
-    this.map.removeLayer(this.polygon);
+    this.map.removeLayer(this.alertsGeoJsonLayer);
     this.setState({ hideAlerts: true });
-
-
 
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
@@ -60,21 +57,11 @@ class AlertMap extends React.Component {
 
   }
 
-  // converts a string containig whitespace-delimited list of  coordinate pairs
-  // to an array of coordinate arrays
-  stringToArrayCoordinates = (stringCoordinates) => {
-    const splitCoordinates = stringCoordinates.trim().split(' ');
-    return splitCoordinates.map(splitCoordinate =>
-      splitCoordinate.split(',').map(value => parseFloat(value)))
-  }
 
 
   componentDidMount() {
     API.getAlerts()
-      .then(alerts => {
-        const polygons = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon));
-        return this.setState({ alerts, polygons })
-      });
+      .then(alerts => this.setState({ alerts }));
 
     this.map = L.map('map', { zoomControl: false }).setView([-6.179, 35.754], 7);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -84,6 +71,7 @@ class AlertMap extends React.Component {
     L.control.zoom({
       position: 'topright'
     }).addTo(this.map);
+    this.alertsGeoJsonLayer = L.geoJSON().addTo(this.map);
 
 
     let form = `
@@ -146,7 +134,7 @@ class AlertMap extends React.Component {
         this.map.removeLayer(this.drawnItems);
         this.map.closePopup();
         this.setState({ hideAlerts: false });
-        this.map.addLayer(this.polygon);
+        this.map.addLayer(this.alertsGeoJsonLayer);
       });
 
 
@@ -161,11 +149,29 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { polygons, hideAlerts } = this.state;
-    if (this.state.polygons !== prevState.polygons) {
-      // create a red polygon from an array of LatLng points
-      var latlngs = this.state.polygons;
-      this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
+    let geojsonFeature = {
+      "type": "Feature",
+      "properties": {
+          "name": "Coors Field",
+          "amenity": "Baseball Stadium",
+          "popupContent": "This is where the Rockies play!"
+      },
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-104.99404, 39.75621]
+      }
+  };
+
+  let customGeometry = {"type": "", "coordinates": []}
+    const { alerts } = this.state;
+    if (alerts !== prevState.alerts) {
+      alerts.map(({ area }) => {
+        let { geometry } = area;
+        customGeometry.type =  geometry.type;
+        customGeometry.coordinates =  geometry.coordinates;
+        geojsonFeature.geometry = customGeometry;
+        this.alertsGeoJsonLayer.addData(geojsonFeature);
+      })
     }
   }
 

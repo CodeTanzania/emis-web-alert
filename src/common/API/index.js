@@ -4,7 +4,7 @@ const API = {
    * Get Alerts
    */
   getAlerts: () =>
-    fetch('https://emis-web-alerts.herokuapp.com/test-data/alerts.json')
+    fetch('https://emis-alert.herokuapp.com/v1/alerts')
     .then(res => res.json())
     .then(res => res.data),
 };
