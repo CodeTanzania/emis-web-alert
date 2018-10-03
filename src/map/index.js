@@ -3,6 +3,7 @@ import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
 import API from '../common/API';
+import AlertForm from './components/form';
 
 /**
  * Alerts Map  component
@@ -31,14 +32,30 @@ class AlertMap extends React.Component {
   // shows interface for new alert
   onclickNewAlertButton = () => {
     console.log('new alert buton clicked');
+    const popupContent = `<div>
+    <div class="ant-modal-body">
+        <h2>To create new Alert, Draw the area that is involved  in the Alert</h2>
+    </div>
+    <div class="ant-modal-footer">
+        <div>
+            <button type="button" id="info-button" class="ant-btn ant-btn-primary"><span>OK</span></button>
+        </div>
+    </div>
+</div>`
+
+
 
     L.popup({ minWidth: 450 })
       .setLatLng([-6.179, 35.754])
-      .setContent('<h2>Select a Control to Draw on Map </h2>')
+      .setContent(popupContent)
       .openOn(this.map);
     this.map.removeLayer(this.polygon);
     this.setState({ hideAlerts: true });
 
+    document.querySelector("#info-button").addEventListener("click", (e) => {
+      e.preventDefault();
+      this.map.closePopup();
+    });
 
 
     // FeatureGroup is to store editable layers
