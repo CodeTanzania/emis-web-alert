@@ -15,18 +15,15 @@ import API from '../common/API';
  * @since 0.1.0
  */
 class AlertMap extends React.Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       alerts: [],
       hideAlerts: false,
       polygons: [],
-      map: {}
-    }
+      map: {},
+    };
   }
-
-
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
@@ -38,8 +35,6 @@ class AlertMap extends React.Component {
       .openOn(this.map);
     this.map.removeLayer(this.polygon);
     this.setState({ hideAlerts: true });
-
-
 
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
@@ -53,40 +48,45 @@ class AlertMap extends React.Component {
         marker: false,
       },
       edit: {
-        featureGroup: this.drawnItems
-      }
+        featureGroup: this.drawnItems,
+      },
     });
     this.map.addControl(this.drawControl);
-
-  }
+  };
 
   // converts a string containig whitespace-delimited list of  coordinate pairs
   // to an array of coordinate arrays
-  stringToArrayCoordinates = (stringCoordinates) => {
+  stringToArrayCoordinates = stringCoordinates => {
     const splitCoordinates = stringCoordinates.trim().split(' ');
     return splitCoordinates.map(splitCoordinate =>
-      splitCoordinate.split(',').map(value => parseFloat(value)))
-  }
-
+      splitCoordinate.split(',').map(value => parseFloat(value))
+    );
+  };
 
   componentDidMount() {
-    API.getAlerts()
-      .then(alerts => {
-        const polygons = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon));
-        return this.setState({ alerts, polygons })
-      });
+    API.getAlerts().then(alerts => {
+      const polygons = alerts.map(alert =>
+        this.stringToArrayCoordinates(alert.area.polygon)
+      );
+      return this.setState({ alerts, polygons });
+    });
 
-    this.map = L.map('map', { zoomControl: false }).setView([-6.179, 35.754], 7);
+    this.map = L.map('map', { zoomControl: false }).setView(
+      [-6.179, 35.754],
+      7
+    );
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      attribution:
+        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.map);
 
-    L.control.zoom({
-      position: 'topright'
-    }).addTo(this.map);
+    L.control
+      .zoom({
+        position: 'topright',
+      })
+      .addTo(this.map);
 
-
-    let form = `
+    const form = `
     <form id="alert-form">
             Event:<br />
             <input type="text" id="event" />
@@ -119,27 +119,31 @@ class AlertMap extends React.Component {
 
     // shows popup when polygon is drawn
     // on map
-    this.map.on('draw:created', (e) => {
-
-      let layer = e.layer;
+    this.map.on('draw:created', e => {
+      const layer = e.layer;
       this.drawnItems.addLayer(layer);
       this.popup = L.popup({ minWidth: 450 })
         .setLatLng(layer.getBounds().getCenter())
         .setContent(form)
         .openOn(this.map);
 
-
-
-      document.querySelector("#alert-form").addEventListener("submit", (e) => {
+      document.querySelector('#alert-form').addEventListener('submit', e => {
         e.preventDefault();
         console.log('click just occured');
-        let event = document.getElementById("event").value;
-        let urgency = document.getElementById("urgency").value;
-        let certainity = document.getElementById("certainity").value;
-        let severity = document.getElementById("severity").value;
-        let instructions = document.getElementById("instructions").value;
+        const event = document.getElementById('event').value;
+        const urgency = document.getElementById('urgency').value;
+        const certainity = document.getElementById('certainity').value;
+        const severity = document.getElementById('severity').value;
+        const instructions = document.getElementById('instructions').value;
         const area = [layer.toGeoJSON()];
-        let alert = { event, urgency, certainity, severity, instructions, area };
+        const alert = {
+          event,
+          urgency,
+          certainity,
+          severity,
+          instructions,
+          area,
+        };
         console.log('this is our alert');
         console.log(alert);
         this.map.removeControl(this.drawControl);
@@ -148,60 +152,56 @@ class AlertMap extends React.Component {
         this.setState({ hideAlerts: false });
         this.map.addLayer(this.polygon);
       });
-
-
-
-
-
     });
 
-    this.setState({ map: this.map })
-
-
+    this.setState({ map: this.map });
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { polygons, hideAlerts } = this.state;
     if (this.state.polygons !== prevState.polygons) {
       // create a red polygon from an array of LatLng points
-      var latlngs = this.state.polygons;
+      const latlngs = this.state.polygons;
       this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
     }
   }
-
-
-
 
   render() {
     const { hideAlerts } = this.state;
     return (
       <div>
-
-
         <div id="sidebar">
-          <Row style={{ padding: "5px", display: hideAlerts ? 'none' : 'block' }}>
+          <Row
+            style={{ padding: '5px', display: hideAlerts ? 'none' : 'block' }}
+          >
             <Col span={8}>
-              <Button type="primary" onClick={this.onclickNewAlertButton}>+ New Alert</Button>
+              <Button type="primary" onClick={this.onclickNewAlertButton}>
+                + New Alert
+              </Button>
             </Col>
             <Col span={8}>
-              <Button type="primary"><Icon type="export" theme="outlined" />Export</Button>
+              <Button type="primary">
+                <Icon type="export" theme="outlined" />
+                Export
+              </Button>
             </Col>
             <Col span={4}>
-              <Button type="default"><Icon type="table" theme="outlined" /></Button>
+              <Button type="default">
+                <Icon type="table" theme="outlined" />
+              </Button>
             </Col>
-            <Col span={4}><Button type="default"><Icon type="caret-up" theme="outlined" /></Button></Col>
+            <Col span={4}>
+              <Button type="default">
+                <Icon type="caret-up" theme="outlined" />
+              </Button>
+            </Col>
           </Row>
         </div>
 
-        <div id="map"></div>
+        <div id="map" />
       </div>
-
     );
   }
 }
 
 export default AlertMap;
-
-
-
-
