@@ -2,8 +2,11 @@ import React from 'react';
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
+import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
-import AlertForm from './components/form';
+const { Map: LeafletMap, TileLayer, Marker, Popup } = ReactLeaflet
+
+
 
 /**
  * Alerts Map  component
@@ -23,7 +26,10 @@ class AlertMap extends React.Component {
       alerts: [],
       hideAlerts: false,
       polygons: [],
-      map: {}
+      map: {},
+      lat: 51.505,
+      lng: -0.09,
+      zoom: 13
     }
   }
 
@@ -91,10 +97,7 @@ class AlertMap extends React.Component {
         return this.setState({ alerts, polygons })
       });
 
-    this.map = L.map('map', { zoomControl: false }).setView([-6.179, 35.754], 7);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
+    this.map = this.refs.map.leafletElement;
 
     L.control.zoom({
       position: 'topright'
@@ -241,6 +244,7 @@ class AlertMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
+    const position = [-6.179, 35.754];
     return (
       <div>
 
@@ -260,7 +264,17 @@ class AlertMap extends React.Component {
           </Row>
         </div>
 
-        <div id="map"></div>
+        <LeafletMap center={position} zoom={7}  zoomControl={false} ref='map'>
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+        />
+        <Marker position={position}>
+          <Popup>
+            A pretty CSS3 popup. <br/> Easily customizable.
+          </Popup>
+        </Marker>
+      </LeafletMap>
       </div>
 
     );
