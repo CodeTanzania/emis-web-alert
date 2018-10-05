@@ -2,7 +2,14 @@ import React from 'react';
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
+import { isEmpty } from 'lodash';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
+import WrappedAlertForm from './components/form';
+
+const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
 /**
  * Alerts Map  component
@@ -18,23 +25,82 @@ class AlertMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      alerts: [],
+      area: {},
       hideAlerts: false,
+      position: {},
       polygons: [],
-      map: {},
     };
+
+    this.mapRef = React.createRef();
+    this.closePopup = this.closePopup.bind(this);
+  }
+
+  componentDidMount() {
+    const DefaultIcon = L.icon({
+      iconUrl: icon,
+      shadowUrl: iconShadow,
+    });
+
+    L.Marker.prototype.options.icon = DefaultIcon;
+
+    API.getAlerts().then(alerts => {
+      const polygons = alerts.map(alert =>
+        this.stringToArrayCoordinates(alert.area.polygon)
+      );
+      return this.setState({ polygons });
+    });
+
+    this.map = this.mapRef.current.leafletElement;
+
+    L.control
+      .zoom({
+        position: 'topright',
+      })
+      .addTo(this.map);
+
+    // shows popup when polygon is drawn
+    // on map
+    this.map.on('draw:created', e => {
+      const { layer } = e;
+      this.drawnItems.addLayer(layer);
+      const area = layer.toGeoJSON().geometry;
+      this.setState({ position: layer.getBounds().getCenter(), area });
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { polygons } = this.state;
+    if (polygons !== prevState.polygons) {
+      // create a red polygon from an array of LatLng points
+      const latlngs = polygons;
+      this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
+    }
   }
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
-    console.log('new alert buton clicked');
+    const popupContent = `<div>
+    <div class="ant-modal-body">
+        <h2>To create new Alert, Draw the area that is involved  in the Alert</h2>
+    </div>
+    <div class="ant-modal-footer">
+        <div>
+            <button type="button" id="info-button" class="ant-btn ant-btn-primary"><span>OK</span></button>
+        </div>
+    </div>
+</div>`;
 
     L.popup({ minWidth: 450 })
       .setLatLng([-6.179, 35.754])
-      .setContent('<h2>Select a Control to Draw on Map </h2>')
+      .setContent(popupContent)
       .openOn(this.map);
     this.map.removeLayer(this.polygon);
     this.setState({ hideAlerts: true });
+
+    document.querySelector('#info-button').addEventListener('click', e => {
+      e.preventDefault();
+      this.map.closePopup();
+    });
 
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
@@ -54,6 +120,8 @@ class AlertMap extends React.Component {
     this.map.addControl(this.drawControl);
   };
 
+ 
+
   // converts a string containig whitespace-delimited list of  coordinate pairs
   // to an array of coordinate arrays
   stringToArrayCoordinates = stringCoordinates => {
@@ -63,111 +131,30 @@ class AlertMap extends React.Component {
     );
   };
 
-  componentDidMount() {
-    API.getAlerts().then(alerts => {
-      const polygons = alerts.map(alert =>
-        this.stringToArrayCoordinates(alert.area.polygon)
+  closePopup = () => {
+    this.map.removeControl(this.drawControl);
+    this.map.removeLayer(this.drawnItems);
+    this.map.addLayer(this.polygon);
+    this.setState({ hideAlerts: false });
+    this.map.closePopup();
+  };
+
+   // this shows popup on map
+   showPopup() {
+    const { position, area } = this.state;
+    if (!isEmpty(position)) {
+      return (
+        <Popup position={position} minWidth={400}>
+          <WrappedAlertForm area={area} closePopup={this.closePopup} />
+        </Popup>
       );
-      return this.setState({ alerts, polygons });
-    });
-
-    this.map = L.map('map', { zoomControl: false }).setView(
-      [-6.179, 35.754],
-      7
-    );
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(this.map);
-
-    L.control
-      .zoom({
-        position: 'topright',
-      })
-      .addTo(this.map);
-
-    const form = `
-    <form id="alert-form">
-            Event:<br />
-            <input type="text" id="event" />
-            <br />
-            Urgency: <br />
-            <select id="urgency">
-                <option value="imediate">Imediate</option>
-                <option value="expected">Expected</option>
-            </select>
-            <br />
-            Certainity: <br />
-            <select id="certainity">
-                <option value="observed">Observed</option>
-                <option value="likely">Likely</option>
-            </select>
-            <br />
-            Severity: <br />
-            <select id="severity">
-                <option value="extreme">Extreme</option>
-                <option value="minor">Minor</option>
-            </select>
-            <br />
-            Instructions:<br />
-            <textarea rows="4" cols="50" id="instructions"> 
-            </textarea>
-            <br />
-            <button type="submit">save</button>
-        </form> 
-    `;
-
-    // shows popup when polygon is drawn
-    // on map
-    this.map.on('draw:created', e => {
-      const layer = e.layer;
-      this.drawnItems.addLayer(layer);
-      this.popup = L.popup({ minWidth: 450 })
-        .setLatLng(layer.getBounds().getCenter())
-        .setContent(form)
-        .openOn(this.map);
-
-      document.querySelector('#alert-form').addEventListener('submit', e => {
-        e.preventDefault();
-        console.log('click just occured');
-        const event = document.getElementById('event').value;
-        const urgency = document.getElementById('urgency').value;
-        const certainity = document.getElementById('certainity').value;
-        const severity = document.getElementById('severity').value;
-        const instructions = document.getElementById('instructions').value;
-        const area = [layer.toGeoJSON()];
-        const alert = {
-          event,
-          urgency,
-          certainity,
-          severity,
-          instructions,
-          area,
-        };
-        console.log('this is our alert');
-        console.log(alert);
-        this.map.removeControl(this.drawControl);
-        this.map.removeLayer(this.drawnItems);
-        this.map.closePopup();
-        this.setState({ hideAlerts: false });
-        this.map.addLayer(this.polygon);
-      });
-    });
-
-    this.setState({ map: this.map });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { polygons, hideAlerts } = this.state;
-    if (this.state.polygons !== prevState.polygons) {
-      // create a red polygon from an array of LatLng points
-      const latlngs = this.state.polygons;
-      this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
     }
+    return null;
   }
 
   render() {
     const { hideAlerts } = this.state;
+    const position = [-6.179, 35.754];
     return (
       <div>
         <div id="sidebar">
@@ -198,7 +185,18 @@ class AlertMap extends React.Component {
           </Row>
         </div>
 
-        <div id="map" />
+        <LeafletMap
+          center={position}
+          zoom={7}
+          zoomControl={false}
+          ref={this.mapRef}
+        >
+          <TileLayer
+            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          />
+          {this.showPopup()}
+        </LeafletMap>
       </div>
     );
   }

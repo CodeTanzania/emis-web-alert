@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import AlertMap from './map';
 import './App.css';
 
-class App extends Component {
-  render() {
-    return <AlertMap />;
-  }
+function App() {
+  return <AlertMap />;
 }
 
 export default App;
