@@ -31,7 +31,7 @@ class AlertMap extends React.Component {
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
-    console.log('new alert buton clicked');
+
     const popupContent = `<div>
     <div class="ant-modal-body">
         <h2>To create new Alert, Draw the area that is involved  in the Alert</h2>
@@ -42,8 +42,6 @@ class AlertMap extends React.Component {
         </div>
     </div>
 </div>`
-
-
 
     L.popup({ minWidth: 450 })
       .setLatLng([-6.179, 35.754])
@@ -102,28 +100,31 @@ class AlertMap extends React.Component {
       position: 'topright'
     }).addTo(this.map);
 
-
-    let newForm = `<div id="container" style="padding: 24px">
-    <form class="ant-form ant-form-horizontal" id="alert-form">
-        <div class="ant-row ant-form-item">
-            <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-                <label for="event" class="ant-form-item-required" title="event">event</label>
+    const form =  `<div>
+    <div class="ant-modal-header">
+        <div class="ant-modal-title" id="rcDialogTitle0"> Create New Alert </div>
+    </div>
+    <div class="ant-modal-body">
+        <form class="ant-form ant-form-horizontal" id="alert-form">
+            <div class="ant-row ant-form-item">
+                <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
+                    <label for="event" class="ant-form-item-required" title="event">Event</label>
+                </div>
+                <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
+                    <div class="ant-form-item-control"><span class="ant-form-item-children"><input type="text" id="event" data-__meta="[object Object]" data-__field="[object Object]" class="ant-input" value=""></span></div>
+                </div>
             </div>
-            <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-                <div class="ant-form-item-control"><span class="ant-form-item-children"><input type="text" id="event" data-__meta="[object Object]" data-__field="[object Object]" class="ant-input" value=""></span></div>
-            </div>
-        </div>
-        <div class="ant-row ant-form-item">
-            <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-                <label for="urgency" class="ant-form-item-required" title="Urgency">Urgency</label>
-            </div>
-            <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-                <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="urgency" class="ant-select ant-select-enabled"><div class="ant-select-selection
+            <div class="ant-row ant-form-item">
+                <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
+                    <label for="urgency" class="ant-form-item-required" title="Urgency">Urgency</label>
+                </div>
+                <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
+                    <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="urgency" class="ant-select ant-select-enabled"><div class="ant-select-selection
             ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" data-__meta="[object Object]" data-__field="[object Object]" tabindex="0"><div class="ant-select-selection__rendered"></div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i class="anticon anticon-down ant-select-arrow-icon"><svg viewBox="64 64 896 896" class="" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg></i></span></div>
+                </div>
+                </span>
             </div>
-            </span>
-        </div>
-</div>
+    </div>
 </div>
 <div class="ant-row ant-form-item">
     <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
@@ -149,6 +150,7 @@ class AlertMap extends React.Component {
 </div>
 </div>
 </div>
+
 <div class="ant-row ant-form-item">
     <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
         <label for="category" class="ant-form-item-required" title="Category">Category</label>
@@ -159,53 +161,28 @@ class AlertMap extends React.Component {
     </div>
     </span>
 </div>
+
 </div>
 </div>
 <div class="ant-row ant-form-item">
-    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-xs-offset-0 ant-col-sm-16 ant-col-sm-offset-8">
-        <div class="ant-form-item-control"><span class="ant-form-item-children"><div class="ant-row"><div class="ant-col-2 ant-col-offset-20"><button type="button" class="ant-btn ant-btn-defaulty"><span>Cancel</span></button>
-        </div>
-        <div class="ant-col-2">
-            <button type="submit" class="ant-btn ant-btn-primary"><span>Save</span></button>
-        </div>
+    <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
+        <label for="instructions" class="ant-form-item-required" title="instructions">Instructions</label>
     </div>
-    </span>
+    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
+        <div class="ant-form-item-control"><span class="ant-form-item-children"><textarea class="ant-input" style="height: 52px; min-height: 52px; max-height: 136px; overflow-y: hidden;"></textarea></span></div>
+    </div>
 </div>
 </div>
 </div>
 </form>
-</div>`;
-
-    let form = `
-    <form id="alert-form">
-            Event:<br />
-            <input type="text" id="event" />
-            <br />
-            Urgency: <br />
-            <select id="urgency">
-                <option value="imediate">Imediate</option>
-                <option value="expected">Expected</option>
-            </select>
-            <br />
-            Certainity: <br />
-            <select id="certainity">
-                <option value="observed">Observed</option>
-                <option value="likely">Likely</option>
-            </select>
-            <br />
-            Severity: <br />
-            <select id="severity">
-                <option value="extreme">Extreme</option>
-                <option value="minor">Minor</option>
-            </select>
-            <br />
-            Instructions:<br />
-            <textarea rows="4" cols="50" id="instructions"> 
-            </textarea>
-            <br />
-            <button type="submit">save</button>
-        </form> 
-    `;
+</div>
+<div class="ant-modal-footer">
+    <div>
+        <button type="button" id="info-button" class="ant-btn"><span>Cancel</span></button>
+        <button type="button" class="ant-btn ant-btn-primary"><span>Save</span></button>
+    </div>
+</div>
+</div>`
 
     // shows popup when polygon is drawn
     // on map
@@ -215,7 +192,7 @@ class AlertMap extends React.Component {
       this.drawnItems.addLayer(layer);
       this.popup = L.popup({ minWidth: 450 })
         .setLatLng(layer.getBounds().getCenter())
-        .setContent(newForm)
+        .setContent(form)
         .openOn(this.map);
 
 
