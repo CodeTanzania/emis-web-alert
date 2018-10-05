@@ -1,4 +1,8 @@
 {
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "extends": [
     "airbnb",
     "prettier",
@@ -39,6 +43,7 @@
     "jest/valid-expect": "error"
   },
   "globals": {
-    "fetch": false
+    "fetch": false,
+    "document": false
   }
 }
