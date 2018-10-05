@@ -2,9 +2,13 @@ import React from 'react';
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
+import { isEmpty } from 'lodash';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
-const { Map: LeafletMap, TileLayer, Marker, Popup } = ReactLeaflet
+import WrappedAlertForm from './components/form';
+const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet
 
 
 
@@ -24,16 +28,29 @@ class AlertMap extends React.Component {
     super(props)
     this.state = {
       alerts: [],
+      area: {},
       hideAlerts: false,
+      position: {},
       polygons: [],
-      map: {},
-      lat: 51.505,
-      lng: -0.09,
-      zoom: 13
+      map: {}
     }
+
+    this.closePopup = this.closePopup.bind(this);
   }
 
 
+  // this shows popup on map
+  showPopup() {
+    const { position, area } = this.state;
+    if (!isEmpty(position)) {
+      return (
+        <Popup position={position} minWidth={400}>
+          <WrappedAlertForm area={area} closePopup={this.closePopup} />
+        </Popup>
+      );
+    }
+
+  }
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
@@ -90,7 +107,22 @@ class AlertMap extends React.Component {
   }
 
 
+  closePopup = () => {
+    this.map.removeControl(this.drawControl);
+    this.map.removeLayer(this.drawnItems);
+    this.map.addLayer(this.polygon);
+    this.setState({ hideAlerts: false });
+    this.map.closePopup()
+  };
+
   componentDidMount() {
+    let DefaultIcon = L.icon({
+      iconUrl: icon,
+      shadowUrl: iconShadow
+    });
+
+    L.Marker.prototype.options.icon = DefaultIcon;
+
     API.getAlerts()
       .then(alerts => {
         const polygons = alerts.map(alert => this.stringToArrayCoordinates(alert.area.polygon));
@@ -103,121 +135,18 @@ class AlertMap extends React.Component {
       position: 'topright'
     }).addTo(this.map);
 
-    const form =  `<div>
-    <div class="ant-modal-header">
-        <div class="ant-modal-title" id="rcDialogTitle0"> Create New Alert </div>
-    </div>
-    <div class="ant-modal-body">
-        <form class="ant-form ant-form-horizontal" id="alert-form">
-            <div class="ant-row ant-form-item">
-                <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-                    <label for="event" class="ant-form-item-required" title="event">Event</label>
-                </div>
-                <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-                    <div class="ant-form-item-control"><span class="ant-form-item-children"><input type="text" id="event" data-__meta="[object Object]" data-__field="[object Object]" class="ant-input" value=""></span></div>
-                </div>
-            </div>
-            <div class="ant-row ant-form-item">
-                <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-                    <label for="urgency" class="ant-form-item-required" title="Urgency">Urgency</label>
-                </div>
-                <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-                    <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="urgency" class="ant-select ant-select-enabled"><div class="ant-select-selection
-            ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" data-__meta="[object Object]" data-__field="[object Object]" tabindex="0"><div class="ant-select-selection__rendered"></div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i class="anticon anticon-down ant-select-arrow-icon"><svg viewBox="64 64 896 896" class="" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg></i></span></div>
-                </div>
-                </span>
-            </div>
-    </div>
-</div>
-<div class="ant-row ant-form-item">
-    <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-        <label for="severity" class="ant-form-item-required" title="Severity">Severity</label>
-    </div>
-    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-        <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="severity" class="ant-select ant-select-enabled"><div class="ant-select-selection
-            ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" data-__meta="[object Object]" data-__field="[object Object]" tabindex="0"><div class="ant-select-selection__rendered"></div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i class="anticon anticon-down ant-select-arrow-icon"><svg viewBox="64 64 896 896" class="" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg></i></span></div>
-    </div>
-    </span>
-</div>
-</div>
-</div>
-<div class="ant-row ant-form-item">
-    <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-        <label for="certainty" class="ant-form-item-required" title="Certainty">Certainty</label>
-    </div>
-    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-        <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="certainty" class="ant-select ant-select-enabled"><div class="ant-select-selection
-            ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" data-__meta="[object Object]" data-__field="[object Object]" tabindex="0"><div class="ant-select-selection__rendered"></div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i class="anticon anticon-down ant-select-arrow-icon"><svg viewBox="64 64 896 896" class="" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg></i></span></div>
-    </div>
-    </span>
-</div>
-</div>
-</div>
-
-<div class="ant-row ant-form-item">
-    <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-        <label for="category" class="ant-form-item-required" title="Category">Category</label>
-    </div>
-    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-        <div class="ant-form-item-control"><span class="ant-form-item-children"><div id="category" class="ant-select ant-select-enabled"><div class="ant-select-selection
-            ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" data-__meta="[object Object]" data-__field="[object Object]" tabindex="0"><div class="ant-select-selection__rendered"></div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i class="anticon anticon-down ant-select-arrow-icon"><svg viewBox="64 64 896 896" class="" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg></i></span></div>
-    </div>
-    </span>
-</div>
-
-</div>
-</div>
-<div class="ant-row ant-form-item">
-    <div class="ant-form-item-label ant-col-xs-24 ant-col-sm-8">
-        <label for="instructions" class="ant-form-item-required" title="instructions">Instructions</label>
-    </div>
-    <div class="ant-form-item-control-wrapper ant-col-xs-24 ant-col-sm-16">
-        <div class="ant-form-item-control"><span class="ant-form-item-children"><textarea class="ant-input" style="height: 52px; min-height: 52px; max-height: 136px; overflow-y: hidden;"></textarea></span></div>
-    </div>
-</div>
-</div>
-</div>
-</form>
-</div>
-<div class="ant-modal-footer">
-    <div>
-        <button type="button" id="info-button" class="ant-btn"><span>Cancel</span></button>
-        <button type="button" class="ant-btn ant-btn-primary"><span>Save</span></button>
-    </div>
-</div>
-</div>`
-
     // shows popup when polygon is drawn
     // on map
     this.map.on('draw:created', (e) => {
 
       let layer = e.layer;
       this.drawnItems.addLayer(layer);
-      this.popup = L.popup({ minWidth: 450 })
-        .setLatLng(layer.getBounds().getCenter())
-        .setContent(form)
-        .openOn(this.map);
-
-
-
-      document.querySelector("#alert-form").addEventListener("submit", (e) => {
-        e.preventDefault();
-        console.log('click just occured');
-        let event = document.getElementById("event").value;
-        let urgency = document.getElementById("urgency").value;
-        let certainity = document.getElementById("certainity").value;
-        let severity = document.getElementById("severity").value;
-        let instructions = document.getElementById("instructions").value;
-        const area = [layer.toGeoJSON()];
-        let alert = { event, urgency, certainity, severity, instructions, area };
-        console.log('this is our alert');
-        console.log(alert);
-        this.map.removeControl(this.drawControl);
-        this.map.removeLayer(this.drawnItems);
-        this.map.closePopup();
-        this.setState({ hideAlerts: false });
-        this.map.addLayer(this.polygon);
-      });
+      console.log('this is supposed to be the value of the position');
+      console.log(layer.getBounds().getCenter());
+      const area = layer.toGeoJSON().geometry;
+      console.log('this is the area');
+      console.log(area);
+      this.setState({ position: layer.getBounds().getCenter(), area });
 
 
 
@@ -264,17 +193,13 @@ class AlertMap extends React.Component {
           </Row>
         </div>
 
-        <LeafletMap center={position} zoom={7}  zoomControl={false} ref='map'>
-        <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-        />
-        <Marker position={position}>
-          <Popup>
-            A pretty CSS3 popup. <br/> Easily customizable.
-          </Popup>
-        </Marker>
-      </LeafletMap>
+        <LeafletMap center={position} zoom={7} zoomControl={false} ref='map'>
+          <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+          />
+          {this.showPopup()}
+        </LeafletMap>
       </div>
 
     );
