@@ -27,6 +27,7 @@ class AlertMap extends React.Component {
     this.state = {
       area: {},
       hideAlerts: false,
+      alerts: [],
       position: {},
       polygons: [],
     };
@@ -43,14 +44,11 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => {
-      const polygons = alerts.map(alert =>
-        this.stringToArrayCoordinates(alert.area.polygon)
-      );
-      return this.setState({ polygons });
-    });
+    API.getAlerts().then(alerts => this.setState({ alerts }) );
 
     this.map = this.mapRef.current.leafletElement;
+
+    this.alertsLayer = L.geoJSON().addTo(this.map);
 
     L.control
       .zoom({
@@ -69,11 +67,12 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { polygons } = this.state;
-    if (polygons !== prevState.polygons) {
-      // create a red polygon from an array of LatLng points
-      const latlngs = polygons;
-      this.polygon = L.polygon(latlngs, { color: 'red' }).addTo(this.map);
+    const { alerts } = this.state;
+    if (alerts !== prevState.alerts) {
+      console.log('this is these are the alerts');
+      console.log(alerts);
+      alerts.map( ({ area }) =>  this.alertsLayer.addData({ ...area, "type": "Feature" }));
+     
     }
   }
 
@@ -94,7 +93,7 @@ class AlertMap extends React.Component {
       .setLatLng([-6.179, 35.754])
       .setContent(popupContent)
       .openOn(this.map);
-    this.map.removeLayer(this.polygon);
+    this.map.removeLayer(this.alertsLayer);
     this.setState({ hideAlerts: true });
 
     document.querySelector('#info-button').addEventListener('click', e => {
@@ -120,27 +119,16 @@ class AlertMap extends React.Component {
     this.map.addControl(this.drawControl);
   };
 
- 
-
-  // converts a string containig whitespace-delimited list of  coordinate pairs
-  // to an array of coordinate arrays
-  stringToArrayCoordinates = stringCoordinates => {
-    const splitCoordinates = stringCoordinates.trim().split(' ');
-    return splitCoordinates.map(splitCoordinate =>
-      splitCoordinate.split(',').map(value => parseFloat(value))
-    );
-  };
-
   closePopup = () => {
     this.map.removeControl(this.drawControl);
     this.map.removeLayer(this.drawnItems);
-    this.map.addLayer(this.polygon);
+    this.map.addLayer(this.alertsLayer);
     this.setState({ hideAlerts: false });
     this.map.closePopup();
   };
 
-   // this shows popup on map
-   showPopup() {
+  // this shows popup on map
+  showPopup() {
     const { position, area } = this.state;
     if (!isEmpty(position)) {
       return (
