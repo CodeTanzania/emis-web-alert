@@ -3,7 +3,7 @@ const API = {
    * Get Alerts
    */
   getAlerts: () =>
-    fetch('https://emis-alert.herokuapp.com/v1/alerts')
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts`)
       .then(res => res.json())
       .then(res => res.data),
 
@@ -12,7 +12,7 @@ const API = {
    * @param {Object} data alert data to create
    */
   createAlert: data => {
-    const url = 'https://emis-alert.herokuapp.com/v1/alerts';
+    const url = `https://emis-alert.herokuapp.com/v1/alerts`;
     const config = {
       method: 'POST',
       body: JSON.stringify(data),
