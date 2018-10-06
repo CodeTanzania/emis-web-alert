@@ -2,7 +2,14 @@ import React from 'react';
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
+import { isEmpty } from 'lodash';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
+import WrappedAlertForm from './components/form';
+
+const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
 /**
  * Alerts Map  component
@@ -15,28 +22,84 @@ import API from '../common/API';
  * @since 0.1.0
  */
 class AlertMap extends React.Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      alerts: [],
+      area: {},
       hideAlerts: false,
-      map: {}
+      alerts: [],
+      position: {},
+      polygons: [],
+    };
+
+    this.mapRef = React.createRef();
+    this.closePopup = this.closePopup.bind(this);
+  }
+
+  componentDidMount() {
+    const DefaultIcon = L.icon({
+      iconUrl: icon,
+      shadowUrl: iconShadow,
+    });
+
+    L.Marker.prototype.options.icon = DefaultIcon;
+
+    API.getAlerts().then(alerts => this.setState({ alerts }) );
+
+    this.map = this.mapRef.current.leafletElement;
+
+    this.alertsLayer = L.geoJSON().addTo(this.map);
+
+    L.control
+      .zoom({
+        position: 'topright',
+      })
+      .addTo(this.map);
+
+    // shows popup when polygon is drawn
+    // on map
+    this.map.on('draw:created', e => {
+      const { layer } = e;
+      this.drawnItems.addLayer(layer);
+      const area = layer.toGeoJSON().geometry;
+      this.setState({ position: layer.getBounds().getCenter(), area });
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { alerts } = this.state;
+    if (alerts !== prevState.alerts) {
+      console.log('this is these are the alerts');
+      console.log(alerts);
+      alerts.map( ({ area }) =>  this.alertsLayer.addData({ ...area, "type": "Feature" }));
+     
     }
   }
 
-
-
   // shows interface for new alert
   onclickNewAlertButton = () => {
-    console.log('new alert buton clicked');
+    const popupContent = `<div>
+    <div class="ant-modal-body">
+        <h2>To create new Alert, Draw the area that is involved  in the Alert</h2>
+    </div>
+    <div class="ant-modal-footer">
+        <div>
+            <button type="button" id="info-button" class="ant-btn ant-btn-primary"><span>OK</span></button>
+        </div>
+    </div>
+</div>`;
 
     L.popup({ minWidth: 450 })
       .setLatLng([-6.179, 35.754])
-      .setContent('<h2>Select a Control to Draw on Map </h2>')
+      .setContent(popupContent)
       .openOn(this.map);
-    this.map.removeLayer(this.alertsGeoJsonLayer);
+    this.map.removeLayer(this.alertsLayer);
     this.setState({ hideAlerts: true });
+
+    document.querySelector('#info-button').addEventListener('click', e => {
+      e.preventDefault();
+      this.map.closePopup();
+    });
 
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
@@ -50,228 +113,81 @@ class AlertMap extends React.Component {
         marker: false,
       },
       edit: {
-        featureGroup: this.drawnItems
-      }
+        featureGroup: this.drawnItems,
+      },
     });
     this.map.addControl(this.drawControl);
+  };
 
-  }
+  closePopup = () => {
+    this.map.removeControl(this.drawControl);
+    this.map.removeLayer(this.drawnItems);
+    this.map.addLayer(this.alertsLayer);
+    this.setState({ hideAlerts: false });
+    this.map.closePopup();
+  };
 
-
-
-  componentDidMount() {
-    API.getAlerts()
-      .then(alerts => this.setState({ alerts }));
-
-    this.map = L.map('map', { zoomControl: false }).setView([-6.179, 35.754], 7);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
-
-    L.control.zoom({
-      position: 'topright'
-    }).addTo(this.map);
-    this.alertsGeoJsonLayer = L.geoJSON().addTo(this.map);
-
-
-    let form = `
-    <form id="alert-form">
-            Event:<br />
-            <input type="text" id="event" />
-            <br />
-            Urgency: <br />
-            <select id="urgency">
-                <option value="Immediate">Imediate</option>
-                <option value="Expected">Expected</option>
-            </select>
-            <br />
-            Certainity: <br />
-            <select id="certainity">
-                <option value="Observed">Observed</option>
-                <option value="Likely">Likely</option>
-            </select>
-            <br />
-            Severity: <br />
-            <select id="severity">
-                <option value="Extreme">Extreme</option>
-                <option value="Minor">Minor</option>
-            </select>
-            <br />
-            Instructions:<br />
-            <textarea rows="4" cols="50" id="instructions"> 
-            </textarea>
-            <br />
-            <button type="submit">save</button>
-        </form> 
-    `;
-
-    // shows popup when polygon is drawn
-    // on map
-    this.map.on('draw:created', (e) => {
-
-      let layer = e.layer;
-      this.drawnItems.addLayer(layer);
-      this.popup = L.popup({ minWidth: 450 })
-        .setLatLng(layer.getBounds().getCenter())
-        .setContent(form)
-        .openOn(this.map);
-
-
-
-      document.querySelector("#alert-form").addEventListener("submit", (e) => {
-        e.preventDefault();
-        console.log('click just occured');
-        let event = document.getElementById("event").value;
-        let urgency = document.getElementById("urgency").value;
-        let certainity = document.getElementById("certainity").value;
-        let severity = document.getElementById("severity").value;
-        let instructions = document.getElementById("instructions").value;
-        const area = layer.toGeoJSON();
-        this.map.removeControl(this.drawControl);
-        this.map.removeLayer(this.drawnItems);
-        this.map.closePopup();
-        this.setState({ hideAlerts: false });
-        this.map.addLayer(this.alertsGeoJsonLayer);
-
-        let alert =  {
-          "source": {
-            "name": "Parker - Rice",
-            "phone": "544.252.1361 x8021",
-            "email": "isac.simonis@gmail.com",
-            "website": "http://waldo.com"
-          },
-          "event": {
-            "code": "c75541c3-5e00-4896-9a20-ad2f2750ac9a",
-            "name": event,
-            "category": "Geo",
-            "description": "Quos quam molestias sed assumenda. Ullam minima repudiandae quia enim. Doloribus eum ea quasi deleniti non inventore a sapiente. Officia consequatur maiores aut. Hic et perferendis quos. Perferendis qui vitae atque repellendus eaque quia hic voluptatem.",
-            "urgency": urgency,
-            "severity": severity,
-            "certainty": certainity,
-            "response": "Prepare"
-          },
-          "message": {
-            "status": "Actual",
-            "type": "Update",
-            "scope": "Private",
-            "restriction": "Non tempore occaecati autem.",
-            "addresses": [
-              "alta_lindgren@yahoo.com"
-            ],
-            "code": "turquoise",
-            "note": "Consequatur tenetur beatae qui.",
-            "headline": "Qui porro fuga necessitatibus tempora.",
-            "instruction": instructions,
-            "website": "https://magali.com"
-          },
-          "area": {
-            "description": "Avon",
-            "geometry": area.geometry,
-            "altitude": 4716265329393664,
-            "ceiling": 2912052882440192
-          },
-          "resources": [
-            {
-              "description": "Expedita perspiciatis beatae laudantium sit atque.",
-              "mime": "application/cms",
-              "uri": "https://s3.amazonaws.com/uifaces/faces/twitter/weavermedia/128.jpg"
-            }
-          ],
-          "reportedAt": "2018-08-19T18:47:03.379Z",
-          "expectedAt": "2018-07-20T10:23:09.375Z",
-          "expiredAt": "2018-08-23T20:34:57.716Z",
-          "occuredAt": "2018-09-10T05:25:48.213Z",
-          "endedAt": "2018-07-16T16:48:49.568Z",
-          "direction": "Inbound",
-          "_id": "5bb31edb82319900042e970e",
-          "updatedAt": "2018-10-02T07:31:41.891Z",
-          "createdAt": "2018-10-02T07:31:41.891Z"
-        };
-
-        const payload = {
-          ...alert,
-          "event": {
-            "name": event,
-            "urgency": urgency,
-            "severity": severity,
-            "certainty": certainity
-          },
-          "message": {
-            "instruction": instructions
-          },
-          "area": {
-            "geometry": area,
-          }
-
-        };
-
-        API.createAlert({ payload })
-          .then(res => {
-            console.log('looking at the response object');
-            console.log(res);
-          });
-
-      });
-
-
-
-
-
-    });
-
-    this.setState({ map: this.map })
-
-
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-
-    const { alerts } = this.state;
-    if (alerts !== prevState.alerts) {
-      alerts.map(({ area }) => {
-        const { createdAt, updatedAt } = area.geometry;
-        if (createdAt || updatedAt) {
-          delete area.geometry.createdAt;
-          delete area.geometry.updatedAt;
-        }
-        this.alertsGeoJsonLayer.addData({ ...area, "type": "Feature" });
-      })
+  // this shows popup on map
+  showPopup() {
+    const { position, area } = this.state;
+    if (!isEmpty(position)) {
+      return (
+        <Popup position={position} minWidth={400}>
+          <WrappedAlertForm area={area} closePopup={this.closePopup} />
+        </Popup>
+      );
     }
+    return null;
   }
-
-
-
 
   render() {
     const { hideAlerts } = this.state;
+    const position = [-6.179, 35.754];
     return (
       <div>
-
-
         <div id="sidebar">
-          <Row style={{ padding: "5px", display: hideAlerts ? 'none' : 'block' }}>
+          <Row
+            style={{ padding: '5px', display: hideAlerts ? 'none' : 'block' }}
+          >
             <Col span={8}>
-              <Button type="primary" onClick={this.onclickNewAlertButton}>+ New Alert</Button>
+              <Button type="primary" onClick={this.onclickNewAlertButton}>
+                + New Alert
+              </Button>
             </Col>
             <Col span={8}>
-              <Button type="primary"><Icon type="export" theme="outlined" />Export</Button>
+              <Button type="primary">
+                <Icon type="export" theme="outlined" />
+                Export
+              </Button>
             </Col>
             <Col span={4}>
-              <Button type="default"><Icon type="table" theme="outlined" /></Button>
+              <Button type="default">
+                <Icon type="table" theme="outlined" />
+              </Button>
             </Col>
-            <Col span={4}><Button type="default"><Icon type="caret-up" theme="outlined" /></Button></Col>
+            <Col span={4}>
+              <Button type="default">
+                <Icon type="caret-up" theme="outlined" />
+              </Button>
+            </Col>
           </Row>
         </div>
 
-        <div id="map"></div>
+        <LeafletMap
+          center={position}
+          zoom={7}
+          zoomControl={false}
+          ref={this.mapRef}
+        >
+          <TileLayer
+            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          />
+          {this.showPopup()}
+        </LeafletMap>
       </div>
-
     );
   }
 }
 
 export default AlertMap;
-
-
-
-
