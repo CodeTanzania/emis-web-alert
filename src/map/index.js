@@ -8,6 +8,7 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
 import WrappedAlertForm from './components/form';
+import WrappedAlertFilter from './components/alertFilter';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -29,7 +30,6 @@ class AlertMap extends React.Component {
       hideAlerts: false,
       alerts: [],
       position: {},
-      polygons: [],
     };
 
     this.mapRef = React.createRef();
@@ -44,7 +44,7 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => this.setState({ alerts }) );
+    API.getAlerts().then(alerts => this.setState({ alerts }));
 
     this.map = this.mapRef.current.leafletElement;
 
@@ -69,10 +69,9 @@ class AlertMap extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { alerts } = this.state;
     if (alerts !== prevState.alerts) {
-      console.log('this is these are the alerts');
-      console.log(alerts);
-      alerts.map( ({ area }) =>  this.alertsLayer.addData({ ...area, "type": "Feature" }));
-     
+      alerts.map(({ area }) =>
+        this.alertsLayer.addData({ ...area, type: 'Feature' })
+      );
     }
   }
 
@@ -145,7 +144,7 @@ class AlertMap extends React.Component {
     const position = [-6.179, 35.754];
     return (
       <div>
-        <div id="sidebar">
+        <div id="alert-actions">
           <Row
             style={{ padding: '5px', display: hideAlerts ? 'none' : 'block' }}
           >
@@ -171,6 +170,10 @@ class AlertMap extends React.Component {
               </Button>
             </Col>
           </Row>
+        </div>
+
+        <div id="filters">
+          <WrappedAlertFilter />
         </div>
 
         <LeafletMap

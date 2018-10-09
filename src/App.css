@@ -11,17 +11,24 @@
   text-align: center;
 }
 
-
-
-
-
- #sidebar {
+#alert-actions {
   position: absolute;
   z-index: 1000;
   height: auto;
   overflow: hidden;
   float: left;
   width: 20vw;
+  background: #fff;
+  font-size: 12px;
+}
+
+#filters {
+  position: absolute;
+  z-index: 1000;
+  height: auto;
+  overflow: hidden;
+  left: 77.9vw;
+  width: 22vw;
   background: #fff;
   font-size: 12px;
 }
