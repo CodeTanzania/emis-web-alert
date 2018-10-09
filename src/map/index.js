@@ -29,7 +29,6 @@ class AlertMap extends React.Component {
       hideAlerts: false,
       alerts: [],
       position: {},
-      polygons: [],
     };
 
     this.mapRef = React.createRef();
@@ -44,7 +43,7 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => this.setState({ alerts }) );
+    API.getAlerts().then(alerts => this.setState({ alerts }));
 
     this.map = this.mapRef.current.leafletElement;
 
@@ -69,10 +68,9 @@ class AlertMap extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { alerts } = this.state;
     if (alerts !== prevState.alerts) {
-      console.log('this is these are the alerts');
-      console.log(alerts);
-      alerts.map( ({ area }) =>  this.alertsLayer.addData({ ...area, "type": "Feature" }));
-     
+      alerts.map(({ area }) =>
+        this.alertsLayer.addData({ ...area, type: 'Feature' })
+      );
     }
   }
 
