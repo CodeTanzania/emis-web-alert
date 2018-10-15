@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { test } from './actions'
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
@@ -36,6 +38,8 @@ class AlertMap extends React.Component {
   }
 
   componentDidMount() {
+    const { testRedux } = this.props;
+    testRedux();
     const DefaultIcon = L.icon({
       iconUrl: icon,
       shadowUrl: iconShadow,
@@ -188,4 +192,11 @@ class AlertMap extends React.Component {
   }
 }
 
-export default AlertMap;
+const mapStateToProps = state => ({ });
+
+export default connect(
+  mapStateToProps,
+  {
+    testRedux: test
+  }
+)(AlertMap);
