@@ -9,46 +9,42 @@ const { TextArea } = Input;
 class AlertForm extends React.Component {
   handleSubmit = e => {
     const { area, closePopup, form } = this.props;
-    
+
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { event, category, urgency, severity, certainty, instructions } = values;
-        let payload = {
-          "source":
-          {
-            "name": "Tanzania Meteorological Agency",
-            "phone": "255 22 2460706-8",
-            "email": "severe@meteo.go.tz",
-            "website": "met@meteo.go.tz"
+        const {
+          event,
+          category,
+          urgency,
+          severity,
+          certainty,
+          instructions,
+        } = values;
+        const payload = {
+          source: {
+            name: 'Tanzania Meteorological Agency',
+            phone: '255 22 2460706-8',
+            email: 'severe@meteo.go.tz',
+            website: 'met@meteo.go.tz',
           },
-          "event":
-          {
-            "name": event,
-            "category": category,
-            "urgency": urgency,
-            "severity": severity,
-            "certainty": certainty,
-            "response": "Monitor"
+          event: {
+            name: event,
+            category,
+            urgency,
+            severity,
+            certainty,
+            response: 'Monitor',
           },
-          "message":
-          {
-            "instruction": instructions
+          message: {
+            instruction: instructions,
           },
-          "area":
-          {
-            "description": "Bedfordshire",
-            "geometry": area
-          }
-        }
-
-        console.log('looking At payload');
-        console.log(payload);
-        API.createAlert(payload)
-        .then(res => {
-          console.log('looking at the response');
-          console.log(res);
-        })
+          area: {
+            description: 'Bedfordshire',
+            geometry: area,
+          },
+        };
+        API.createAlert(payload);
         closePopup();
       }
     });
