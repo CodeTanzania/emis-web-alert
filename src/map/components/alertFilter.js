@@ -1,276 +1,219 @@
-import React from 'react';
-import {
-  Form,
-  Checkbox,
-  Collapse,
-  Select,
-  Row,
-  Col,
-  Button,
-  DatePicker,
-  Divider,
-} from 'antd';
-import moment from 'moment';
-import API from '../../common/API';
+// import React from 'react';
+// import PropTypes from 'prop-types';
+// import classnames from 'classnames';
+// import {
+//   Form,
+//   Checkbox,
+//   Collapse,
+//   Row,
+//   Col,
+//   Badge,
+//   Icon,
+//   Divider,
+//   List,
+// } from 'antd';
+// import leafletOveridenStyles from '../leaflet-overide.css';
 
-const FormItem = Form.Item;
-const { Option } = Select;
-const CheckboxGroup = Checkbox.Group;
-const Panel = Collapse.Panel;
-const { RangePicker } = DatePicker;
-const plainOptions = [
-  'Apple',
-  'Pear',
-  'plain',
-  'butter',
-  'Orange',
-  'Maize',
-  'plain',
-  'butter',
-];
-const defaultCheckedList = [];
+// classnames.bind(leafletOveridenStyles);
+// const { Panel } = Collapse;
 
-class AlertFilter extends React.Component {
-  state = {
-    checkedList: defaultCheckedList,
-    indeterminate: true,
-    checkAll: false,
-  };
+// const data = [
+//   'Racing car sprays burning fuel into crowd.',
+//   'Japanese princess to wed commoner.',
+//   'Australian walks 100km after outback crash.',
+//   'Man charged over missing wedding girl.',
+//   'Los Angeles battles huge wildfires.',
+// ];
 
-  onChange = checkedList => {
-    this.setState({
-      checkedList,
-      indeterminate:
-        !!checkedList.length && checkedList.length < plainOptions.length,
-      checkAll: checkedList.length === plainOptions.length,
-    });
-  };
+// class AlertFilter extends React.Component {
+//   render() {
+//     return (
+//       <Collapse
+//         accordion
+//         defaultActiveKey={['1']}
+//         style={{
+//           backgroundColor: '#fff',
+//           textAlign: 'center',
+//         }}
+//       >
+//         <Panel header="CATEGORY" key="1">
+//           <div style={{ backgroundColor: '#f7f7f7' }}>
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Met</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Safety</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Rescue</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Health</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Env</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Transport</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>Infra</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//             <Divider />
+//             <Row style={{ padding: '16px 0px 0px 0px' }}>
+//               <Col span={3}>
+//                 <Icon type="medicine-box" theme="outlined" />
+//               </Col>
+//               <Col span={3}>
+//                 <p>CBRNE</p>
+//               </Col>
+//               <Col span={2} offset={13}>
+//                 <Badge
+//                   count={25}
+//                   style={{ backgroundColor: '#fff', color: '#2d2d2d' }}
+//                 />
+//               </Col>
+//               <Col span={3}>
+//                 <Checkbox onChange={this.onChange} />
+//               </Col>
+//             </Row>
+//           </div>
+//         </Panel>
+//         <Panel header="URGENCY" key="2">
+//           <List
+//             size="small"
+//             bordered
+//             dataSource={data}
+//             renderItem={item => <List.Item>{item}</List.Item>}
+//           />
+//         </Panel>
+//         <Panel header="CERTAINTY" key="3">
+//           <List
+//             size="small"
+//             bordered
+//             dataSource={data}
+//             renderItem={item => <List.Item>{item}</List.Item>}
+//           />
+//         </Panel>
+//         <Panel header="SEVERITY" key="4">
+//           <List
+//             size="small"
+//             bordered
+//             dataSource={data}
+//             renderItem={item => <List.Item>{item}</List.Item>}
+//           />
+//         </Panel>
+//       </Collapse>
+//     );
+//   }
+// }
 
-  handleSubmit = e => {
-    const { area, closePopup, form } = this.props;
-
-    e.preventDefault();
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        const {
-          event,
-          category,
-          urgency,
-          severity,
-          certainty,
-          instructions,
-        } = values;
-        const payload = {
-          source: {
-            name: 'Tanzania Meteorological Agency',
-            phone: '255 22 2460706-8',
-            email: 'severe@meteo.go.tz',
-            website: 'met@meteo.go.tz',
-          },
-          event: {
-            name: event,
-            category,
-            urgency,
-            severity,
-            certainty,
-            response: 'Monitor',
-          },
-          message: {
-            instruction: instructions,
-          },
-          area: {
-            description: 'Bedfordshire',
-            geometry: area,
-          },
-        };
-
-        API.createAlert(payload);
-        closePopup();
-      }
-    });
-  };
-
-  render() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
-    const dateFormat = 'YYYY/MM/DD';
-    const formItemLayout = {
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 24 },
-      },
-    };
-
-    return (
-      <Form
-        onSubmit={this.handleSubmit}
-        style={{
-          height: '100vh',
-        }}
-      >
-        <FormItem style={{ textAlign: 'center' }}>
-          <h2>Create New Alert </h2>
-          <Divider style={{ margin: 0 }} />
-        </FormItem>
-        <FormItem
-          label="Incident-Type"
-          {...formItemLayout}
-          style={{
-            marginLeft: '55px',
-            marginBottom: '2px',
-          }}
-        >
-          {getFieldDecorator('Incident-Type', {
-            rules: [
-              {},
-              {
-                required: true,
-                message: 'Please Incident-type of an Alert!',
-              },
-            ],
-          })(
-            <Select showSearch style={{ width: 250 }}>
-              <Option value="Flood">Flood</Option>
-              <Option value="Fire">Fire</Option>
-              <Option value="Draught">Draught</Option>
-              <Option value="Eartquick">Eartquick</Option>
-              <Option value="Volcanic-erruption">Volcanic erruption</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-          label="Region"
-          style={{
-            marginLeft: '55px',
-            marginBottom: '2px',
-          }}
-        >
-          {getFieldDecorator('Region', {
-            rules: [
-              {},
-              {
-                required: true,
-                message: 'Please region of an Alert!',
-              },
-            ],
-          })(
-            <Select showSearch style={{ width: 250 }}>
-              <Option value="Dar es Salaam">Dar es Salaam</Option>
-              <Option value="Mbeya">Mbeya</Option>
-              <Option value="Morogoro">Morogoro</Option>
-              <Option value="Iringa">Iringa</Option>
-              <Option value="Arusha">Arusha</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-          label="Source"
-          style={{
-            marginLeft: '55px',
-            marginBottom: '2px',
-          }}
-        >
-          {getFieldDecorator('source', {
-            rules: [
-              {},
-              {
-                required: true,
-                message: 'Please source of an Alert!',
-              },
-            ],
-          })(
-            <Select showSearch style={{ width: 250 }}>
-              <Option value="TMA">TMA</Option>
-              <Option value="Flood-tags">Flood-tags</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem
-          {...formItemLayout}
-          label="Dates"
-          style={{
-            marginLeft: '55px',
-            marginBottom: '2px',
-          }}
-        >
-          {getFieldDecorator('DatePicker', {
-            rules: [
-              {},
-              {
-                required: true,
-                message: 'Please dates of an Alert!',
-              },
-            ],
-          })(
-            <RangePicker
-              style={{ width: '70%' }}
-              defaultValue={[
-                moment('2015/01/01', dateFormat),
-                moment('2015/01/01', dateFormat),
-              ]}
-              format={dateFormat}
-            />
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout}>
-          {getFieldDecorator('checkbox')(
-            <Collapse
-              accordion
-              style={{
-                marginTop: '28px',
-                backgroundColor: '#fff',
-                textAlign: 'center',
-              }}
-            >
-              <Panel header="CATEGORY" key="1">
-                <CheckboxGroup
-                  options={plainOptions}
-                  value={this.state.checkedList}
-                  onChange={this.onChange}
-                />
-              </Panel>
-              <Panel header="URGENCY" key="2">
-                <CheckboxGroup
-                  options={plainOptions}
-                  value={this.state.checkedList}
-                  onChange={this.onChange}
-                />
-              </Panel>
-              <Panel header="SEVERITY" key="3">
-                <CheckboxGroup
-                  options={plainOptions}
-                  value={this.state.checkedList}
-                  onChange={this.onChange}
-                />
-              </Panel>
-              <Panel header="RESPONSIBILITY" key="4">
-                <CheckboxGroup
-                  options={plainOptions}
-                  value={this.state.checkedList}
-                  onChange={this.onChange}
-                />
-              </Panel>
-            </Collapse>
-          )}
-        </FormItem>
-        <FormItem>
-          <Row>
-            <Col span={6} offset={12}>
-              <Button type="default">Cancel</Button>
-            </Col>
-            <Col span={3} offset={1}>
-              <Button type="primary" htmlType="submit">
-                Save
-              </Button>
-            </Col>
-          </Row>
-        </FormItem>
-      </Form>
-    );
-  }
-}
-
-const WrappedAlertFilter = Form.create()(AlertFilter);
-export default WrappedAlertFilter;
+// const WrappedAlertFilter = Form.create()(AlertFilter);
+// export default WrappedAlertFilter;
+// AlertFilter.propTypes = {
+//   form: PropTypes.object,
+// };

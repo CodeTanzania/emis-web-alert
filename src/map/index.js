@@ -8,7 +8,7 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
 import API from '../common/API';
 import WrappedAlertForm from './components/form';
-import WrappedAlertFilter from './components/alertFilter';
+// import WrappedAlertFilter from './components/alertFilter';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -44,7 +44,22 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => this.setState({ alerts }));
+    API.getAlerts().then(res => {
+      const alerts = res.map(({ info }) => {
+        const { polygon } = info.area;
+        return {
+          area: {
+            geometry: {
+              type: 'Polygon',
+              coordinates: this.stringToArrayCoordinates(polygon),
+            },
+          },
+        };
+      });
+      console.log('looking at Alerts');
+      console.log(alerts);
+      this.setState({ alerts });
+    });
 
     this.map = this.mapRef.current.leafletElement;
 
@@ -74,6 +89,19 @@ class AlertMap extends React.Component {
       );
     }
   }
+
+  // converts a string containig whitespace-delimited list of  coordinate pairs
+  // to an array of coordinate arrays
+  stringToArrayCoordinates = stringCoordinates => {
+    const splitCoordinates = stringCoordinates.trim().split(' ');
+    const coord = splitCoordinates.map(splitCoordinate =>
+      splitCoordinate
+        .split(',')
+        .reverse()
+        .map(value => parseFloat(value))
+    );
+    return [coord];
+  };
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
@@ -171,10 +199,23 @@ class AlertMap extends React.Component {
             </Col>
           </Row>
         </div>
-
-        <div id="filters">
-          <WrappedAlertFilter />
+        <div id="filters-header">
+          <Row>
+            <Col span={2}>
+              <Icon
+                type="caret-right"
+                style={{ fontSize: '26px', paddingTop: '10px' }}
+                theme="outlined"
+              />
+            </Col>
+            <Col span={22}>
+              <h1>Filter Alerts</h1>
+            </Col>
+          </Row>
         </div>
+        {/* <div id="filters">
+          <WrappedAlertFilter />
+        </div> */}
 
         <LeafletMap
           center={position}

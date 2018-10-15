@@ -1,7 +1,6 @@
 
-@import '~antd/dist/antd.css';
-@import '~leaflet/dist/leaflet.css';
-@import '~leaflet-draw/dist/leaflet.draw.css';
+
+
 
 .App {
   text-align: center;
@@ -9,6 +8,14 @@
 
 #map .leaflet-popup-content-wrapper {
   text-align: center;
+}
+
+.ant-collapse-content > .ant-collapse-content-box {
+  padding : 0;
+}
+
+.ant-divider-horizontal {
+  margin: 0;
 }
 
 #alert-actions {
@@ -22,12 +29,25 @@
   font-size: 12px;
 }
 
+#filters-header {
+  text-align: center;
+  position: absolute;
+  z-index: 1000;
+  height: auto;
+  overflow: hidden;
+  left: 77vw;
+  width: 22.9vw;
+  background: #fff;
+  font-size: 12px;
+}
+
 #filters {
   position: absolute;
   z-index: 1000;
   height: auto;
   overflow: hidden;
   left: 77.9vw;
+  top: 5.1vh;
   width: 22vw;
   background: #fff;
   font-size: 12px;
