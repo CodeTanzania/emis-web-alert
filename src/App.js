@@ -19,10 +19,9 @@ const store = configureStore();
 function App() {
   return (
     <Provider store={store}>
-     <AlertMap />
+      <AlertMap />
     </Provider>
   );
 }
 
 export default App;
-

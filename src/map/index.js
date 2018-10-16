@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { test } from './actions'
+import { PropTypes } from 'prop-types';
 import L from 'leaflet';
 import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
@@ -8,6 +8,7 @@ import { isEmpty } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
+import { test } from './actions';
 import API from '../common/API';
 import WrappedAlertForm from './components/form';
 
@@ -192,11 +193,19 @@ class AlertMap extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({ });
+const mapStateToProps = () => ({});
 
 export default connect(
   mapStateToProps,
   {
-    testRedux: test
+    testRedux: test,
   }
 )(AlertMap);
+
+AlertMap.propTypes = {
+  testRedux: PropTypes.func,
+};
+
+AlertMap.defaultProps = {
+  testRedux: () => {},
+};
