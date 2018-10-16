@@ -31,23 +31,12 @@ class AlertMap extends React.Component {
       area: {},
       hideAlerts: false,
       alerts: [],
+      selected: {},
       position: {},
     };
 
     this.mapRef = React.createRef();
     this.closePopup = this.closePopup.bind(this);
-  }
-
-  geoJsonFilter = (feature) => {
-    const { geometry } = feature;
-    const { type } = geometry;
-    switch (type) {
-      case 'Point': {
-        return true;
-      }
-      default:
-        return false;
-    }
   }
 
   componentDidMount() {
@@ -64,7 +53,9 @@ class AlertMap extends React.Component {
 
     this.map = this.mapRef.current.leafletElement;
 
-    this.alertsLayer = L.geoJSON([], {filter: this.geoJsonFilter}).addTo(this.map);
+    this.alertsLayer = L.geoJSON([], { filter: this.geoJsonFilter, onEachFeature: this.onEachFeature }).addTo(
+      this.map
+    );
 
     L.control
       .zoom({
@@ -83,14 +74,61 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { alerts } = this.state;
+    const { alerts, selected } = this.state;
     if (alerts !== prevState.alerts) {
-      alerts.map( alert  =>
-        this.alertsLayer.addData(alert)
+      alerts.map(alert => this.alertsLayer.addData(alert));
+    }
+
+    if (selected !== prevState.selected) {
+   const alertLayer = L.geoJSON([selected],{filter: (feature) => {
+      const { geometry } = feature;
+      const { type } = geometry;
+      switch (type) {
+        case 'Polygon': {
+          return true;
+        }
+        default:
+          return false;
+      }
+
+    }}).addTo(
+        this.map
       );
+      this. map.fitBounds(alertLayer.getBounds());
     }
   }
 
+  geoJsonFilter = feature => {
+  
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Point': {
+        return true;
+      }
+      default:
+        return false;
+    }
+  };
+
+  onEachFeature = (feature, layer) => {
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Point': {
+        layer.on({click: this.onclickGeoJson})
+        return true;
+      }
+      default:
+        return false;
+    }
+    
+  }
+
+  onclickGeoJson = (e) => {
+    this.map.removeLayer(this.alertsLayer);
+    API.getAlert().then(( selected ) => this.setState({ selected }))
+  }
   // shows interface for new alert
   onclickNewAlertButton = () => {
     const popupContent = `<div>

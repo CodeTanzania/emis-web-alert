@@ -8,6 +8,14 @@ const API = {
       .then(res => res.data),
 
   /**
+  * Get Alert
+  */
+  getAlert: () =>
+    fetch(`http://localhost:3000/test-data/alert.json`)
+      .then(res => res.json())
+      .then(res => res.data),
+
+  /**
    * Create new Alert
    * @param {Object} data alert data to create
    */
