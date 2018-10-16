@@ -1,8 +1,11 @@
-import { createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
+import { createEpicMiddleware } from 'redux-observable';
+import { composeWithDevTools } from 'redux-devtools-extension';
 /* local dependencies */
 import rootReducer from './rootReducer';
+import rootEpic from './rootEpic';
 
-
+const epicMiddleware = createEpicMiddleware();
 
 /**
  * Configure Redux store
@@ -14,6 +17,15 @@ import rootReducer from './rootReducer';
  * @version 0.1.0
  * @since 0.1.0
  */
-const configureStore = () => createStore(rootReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const configureStore = () => {
+  const store = createStore(
+    rootReducer,
+    composeWithDevTools(applyMiddleware(epicMiddleware))
+  );
+  // epicMiddleware.run(); add root epics here
+  epicMiddleware.run(rootEpic);
+
+  return store;
+};
 
 export default configureStore;
