@@ -38,6 +38,18 @@ class AlertMap extends React.Component {
     this.closePopup = this.closePopup.bind(this);
   }
 
+  geoJsonFilter = (feature) => {
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Point': {
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
   componentDidMount() {
     const { testRedux } = this.props;
     testRedux();
@@ -52,7 +64,7 @@ class AlertMap extends React.Component {
 
     this.map = this.mapRef.current.leafletElement;
 
-    this.alertsLayer = L.geoJSON().addTo(this.map);
+    this.alertsLayer = L.geoJSON([], {filter: this.geoJsonFilter}).addTo(this.map);
 
     L.control
       .zoom({
@@ -73,8 +85,8 @@ class AlertMap extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { alerts } = this.state;
     if (alerts !== prevState.alerts) {
-      alerts.map(({ area }) =>
-        this.alertsLayer.addData({ ...area, type: 'Feature' })
+      alerts.map( alert  =>
+        this.alertsLayer.addData(alert)
       );
     }
   }
