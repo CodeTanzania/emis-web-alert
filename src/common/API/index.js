@@ -10,9 +10,10 @@ const API = {
   /**
    * Get Alert
    */
-  getAlert: (id) =>
-    fetch(`https://emis-alert.herokuapp.com/v1/alerts/${id}`)
-      .then(res => res.json()),
+  getAlert: id =>
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts/${id}`).then(res =>
+      res.json()
+    ),
 
   /**
    * Create new Alert

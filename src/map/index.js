@@ -1,10 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
-import { get } from 'lodash';
 import L from 'leaflet';
 import 'leaflet-draw';
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
@@ -79,7 +78,7 @@ class AlertMap extends React.Component {
 
     if (selected !== prevProps.selected) {
       const { area } = selected;
-      const alertLayer = L.geoJSON([area], {
+      L.geoJSON([area], {
         filter: feature => {
           const { geometry } = feature;
           const { type } = geometry;
@@ -122,7 +121,7 @@ class AlertMap extends React.Component {
   };
 
   onclickGeoJson = e => {
-    const id = get( e, "target.feature.properties.id");
+    const id = get(e, 'target.feature.properties.id');
     const { startGetAlert } = this.props;
     this.map.removeLayer(this.alertsLayer);
     startGetAlert(id);
@@ -231,31 +230,84 @@ export default connect(
   }
 )(AlertMap);
 
-// const geometry = PropTypes.shape({
-//   type: PropTypes.string,
-//   coordinates: PropTypes.arrayOf(PropTypes.number),
-// }).isRequired;
-// const feature = PropTypes.shape({
-//   type: PropTypes.string,
-//   properties: PropTypes.shape({ id: PropTypes.string }),
-//   geometry,
-// });
+const geometry = PropTypes.shape({
+  type: PropTypes.string,
+  coordinates: PropTypes.arrayOf(PropTypes.number),
+}).isRequired;
+const feature = PropTypes.shape({
+  type: PropTypes.string,
+  properties: PropTypes.shape({ id: PropTypes.string }),
+  geometry,
+});
 
-// const alertPropTypes = PropTypes.shape({
-//   type: PropTypes.string,
-//   features: PropTypes.arrayOf(feature),
-// }).isRequired;
+const sourcePropTypes = {
+  name: PropTypes.string,
+  phone: PropTypes.string,
+  email: PropTypes.string,
+  website: PropTypes.string,
+};
 
-// AlertMap.propTypes = {
-//   startGetAlerts: PropTypes.func,
-//   startGetAlert: PropTypes.func,
-//   alerts: PropTypes.arrayOf(alertPropTypes),
-//   selected: alertPropTypes,
-// };
+const eventPropTypes = {
+  code: PropTypes.string,
+  name: PropTypes.string,
+  category: PropTypes.string,
+  description: PropTypes.string,
+  urgency: PropTypes.string,
+  severity: PropTypes.string,
+  certainty: PropTypes.string,
+  response: PropTypes.string,
+};
 
-// AlertMap.defaultProps = {
-//   startGetAlerts: () => {},
-//   startGetAlert: () => {},
-//   alerts: [],
-//   selected: null,
-// };
+const messagePropTpes = {
+  status: PropTypes.string,
+  type: PropTypes.string,
+  scope: PropTypes.string,
+  restriction: PropTypes.string,
+  addresses: PropTypes.arrayOf(PropTypes.string),
+  code: PropTypes.string,
+  note: PropTypes.string,
+  headline: PropTypes.string,
+  instruction: PropTypes.string,
+  website: PropTypes.string,
+};
+
+const areaPropTypes = {
+  type: PropTypes.string,
+  features: PropTypes.arrayOf(feature),
+};
+
+const resourcePropTypes = {
+  description: PropTypes.string,
+  mime: PropTypes.string,
+  uri: PropTypes.string,
+};
+
+const alertPropTypes = {
+  source: PropTypes.shape({ sourcePropTypes }),
+  event: PropTypes.shape({ eventPropTypes }),
+  message: PropTypes.shape({ messagePropTpes }),
+  area: PropTypes.shape({ areaPropTypes }),
+  resources: PropTypes.shape({ resourcePropTypes }),
+  reportedAt: PropTypes.string,
+  expectedAt: PropTypes.string,
+  expiredAt: PropTypes.string,
+  occuredAt: PropTypes.string,
+  endedAt: PropTypes.string,
+  direction: PropTypes.string,
+  _id: PropTypes.string,
+  updatedAt: PropTypes.string,
+  createdAt: PropTypes.string,
+};
+AlertMap.propTypes = {
+  startGetAlerts: PropTypes.func,
+  startGetAlert: PropTypes.func,
+  selected: PropTypes.shape(alertPropTypes),
+  alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
+};
+
+AlertMap.defaultProps = {
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  alerts: [],
+  selected: null,
+};
