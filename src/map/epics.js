@@ -10,16 +10,39 @@ import {
 } from './actions';
 import API from '../common/API/index';
 
+const alertToGeoJSON = alert => {
+ 
+  const { area, _id } = alert;
+  const { geometry, centroid } = area;
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { id: _id },
+        geometry: geometry
+      },
+      {
+        type: 'Feature',
+        properties: { id: _id },
+        geometry: centroid
+      }
+    ],
+  }
+}
 export const getAlertsEpic = action$ =>
   action$.pipe(
     ofType(ALERTS_GET_START),
     switchMap(() => from(API.getAlerts())),
-    switchMap(data => of(alertsStore(data)))
+    switchMap(alerts => of(alertsStore(alerts.map ( alert => alertToGeoJSON(alert)))))
   );
 
 export const getAlertEpic = action$ =>
   action$.pipe(
     ofType(ALERT_GET_START),
-    switchMap(() => from(API.getAlert())),
-    switchMap(data => of(alertStore(data)))
+    switchMap( ({ payload }) =>{
+      const { data } = payload;
+      return from(API.getAlert(data))
+    }),
+    switchMap(alert => of(alertStore(alertToGeoJSON(alert))))
   );
