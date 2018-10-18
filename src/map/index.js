@@ -78,7 +78,8 @@ class AlertMap extends React.Component {
     }
 
     if (selected !== prevProps.selected) {
-      const alertLayer = L.geoJSON([selected], {
+      const { area } = selected;
+      const alertLayer = L.geoJSON([area], {
         filter: feature => {
           const { geometry } = feature;
           const { type } = geometry;
@@ -230,31 +231,31 @@ export default connect(
   }
 )(AlertMap);
 
-const geometry = PropTypes.shape({
-  type: PropTypes.string,
-  coordinates: PropTypes.arrayOf(PropTypes.number),
-}).isRequired;
-const feature = PropTypes.shape({
-  type: PropTypes.string,
-  properties: PropTypes.shape({ id: PropTypes.string }),
-  geometry,
-});
+// const geometry = PropTypes.shape({
+//   type: PropTypes.string,
+//   coordinates: PropTypes.arrayOf(PropTypes.number),
+// }).isRequired;
+// const feature = PropTypes.shape({
+//   type: PropTypes.string,
+//   properties: PropTypes.shape({ id: PropTypes.string }),
+//   geometry,
+// });
 
-const alertPropTypes = PropTypes.shape({
-  type: PropTypes.string,
-  features: PropTypes.arrayOf(feature),
-}).isRequired;
+// const alertPropTypes = PropTypes.shape({
+//   type: PropTypes.string,
+//   features: PropTypes.arrayOf(feature),
+// }).isRequired;
 
-AlertMap.propTypes = {
-  startGetAlerts: PropTypes.func,
-  startGetAlert: PropTypes.func,
-  alerts: PropTypes.arrayOf(alertPropTypes),
-  selected: alertPropTypes,
-};
+// AlertMap.propTypes = {
+//   startGetAlerts: PropTypes.func,
+//   startGetAlert: PropTypes.func,
+//   alerts: PropTypes.arrayOf(alertPropTypes),
+//   selected: alertPropTypes,
+// };
 
-AlertMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
-  alerts: [],
-  selected: null,
-};
+// AlertMap.defaultProps = {
+//   startGetAlerts: () => {},
+//   startGetAlert: () => {},
+//   alerts: [],
+//   selected: null,
+// };
