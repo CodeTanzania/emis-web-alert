@@ -8,8 +8,8 @@ const API = {
       .then(res => res.data),
 
   /**
-  * Get Alert
-  */
+   * Get Alert
+   */
   getAlert: () =>
     fetch(`http://localhost:3000/test-data/alert.json`)
       .then(res => res.json())

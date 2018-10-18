@@ -8,8 +8,7 @@ import { isEmpty } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
-import { test } from './actions';
-import API from '../common/API';
+import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
@@ -30,8 +29,6 @@ class AlertMap extends React.Component {
     this.state = {
       area: {},
       hideAlerts: false,
-      alerts: [],
-      selected: {},
       position: {},
     };
 
@@ -40,8 +37,8 @@ class AlertMap extends React.Component {
   }
 
   componentDidMount() {
-    const { testRedux } = this.props;
-    testRedux();
+    const { startGetAlerts } = this.props;
+    startGetAlerts();
     const DefaultIcon = L.icon({
       iconUrl: icon,
       shadowUrl: iconShadow,
@@ -49,13 +46,13 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => this.setState({ alerts }));
 
     this.map = this.mapRef.current.leafletElement;
 
-    this.alertsLayer = L.geoJSON([], { filter: this.geoJsonFilter, onEachFeature: this.onEachFeature }).addTo(
-      this.map
-    );
+    this.alertsLayer = L.geoJSON([], {
+      filter: this.geoJsonFilter,
+      onEachFeature: this.onEachFeature,
+    }).addTo(this.map);
 
     L.control
       .zoom({
@@ -74,32 +71,30 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { alerts, selected } = this.state;
-    if (alerts !== prevState.alerts) {
+    const { alerts, selected } = this.props;
+    if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
     }
 
-    if (selected !== prevState.selected) {
-   const alertLayer = L.geoJSON([selected],{filter: (feature) => {
-      const { geometry } = feature;
-      const { type } = geometry;
-      switch (type) {
-        case 'Polygon': {
-          return true;
-        }
-        default:
-          return false;
-      }
-
-    }}).addTo(
-        this.map
-      );
-      this. map.fitBounds(alertLayer.getBounds());
+    if (selected !== prevProps.selected) {
+      const alertLayer = L.geoJSON([selected], {
+        filter: feature => {
+          const { geometry } = feature;
+          const { type } = geometry;
+          switch (type) {
+            case 'Polygon': {
+              return true;
+            }
+            default:
+              return false;
+          }
+        },
+      }).addTo(this.map);
+      this.map.fitBounds(alertLayer.getBounds());
     }
   }
 
   geoJsonFilter = feature => {
-  
     const { geometry } = feature;
     const { type } = geometry;
     switch (type) {
@@ -116,19 +111,20 @@ class AlertMap extends React.Component {
     const { type } = geometry;
     switch (type) {
       case 'Point': {
-        layer.on({click: this.onclickGeoJson})
+        layer.on({ click: this.onclickGeoJson });
         return true;
       }
       default:
         return false;
     }
-    
-  }
+  };
 
-  onclickGeoJson = (e) => {
+  onclickGeoJson = () => {
+    const { startGetAlert } = this.props;
     this.map.removeLayer(this.alertsLayer);
-    API.getAlert().then(( selected ) => this.setState({ selected }))
-  }
+    startGetAlert();
+  };
+
   // shows interface for new alert
   onclickNewAlertButton = () => {
     const popupContent = `<div>
@@ -243,19 +239,26 @@ class AlertMap extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  alerts: state.alerts && state.alerts ? state.alerts.data : [],
+  selected: state.alert && state.alert ? state.alert.data : null
+}
+);
 
 export default connect(
   mapStateToProps,
   {
-    testRedux: test,
+    startGetAlerts: alertsGetStart,
+    startGetAlert: alertGetStart
   }
 )(AlertMap);
 
 AlertMap.propTypes = {
-  testRedux: PropTypes.func,
+  startGetAlerts: PropTypes.func,
+  startGetAlert: PropTypes.func,
 };
 
 AlertMap.defaultProps = {
-  testRedux: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
 };
