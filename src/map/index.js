@@ -79,10 +79,10 @@ class AlertMap extends React.Component {
     if (selected && selected !== prevProps.selected) {
       const { area } = selected;
       this.selectedAlertLayer = L.geoJSON([area], {
-        filter: this.filterFeatures, style: this.styleFeatures
+        filter: this.filterFeatures,
+        style: this.styleFeatures,
       }).addTo(this.map);
       this.selectedAlertLayer.on('remove', () => {
-        alerts.map(alert => this.alertsLayer.addData(alert));
         this.alertsLayer.addTo(this.map);
       });
       // this.map.fitBounds(alertLayer.getBounds());
@@ -114,36 +114,36 @@ class AlertMap extends React.Component {
       default:
         return true;
     }
-  }
+  };
 
-    
   styleFeatures = feature => {
     const { geometry, properties } = feature;
     const { urgency } = properties;
     const { type } = geometry;
-    if( type === 'Polygon' || 'MultiPolygon') {
+    if (type === 'Polygon' || 'MultiPolygon') {
       switch (urgency) {
         case 'Immediate': {
-          return {"color": "red"};
+          return { color: 'red' };
         }
         case 'Expected': {
-          return {"color": "orange"};
+          return { color: 'orange' };
         }
         case 'Future': {
-          return {"color": "yellow"};
+          return { color: 'yellow' };
         }
         case 'Past': {
-          return {"color": "green"};
+          return { color: 'green' };
         }
         case 'Unknown': {
-          return {"color": "grey"};
+          return { color: 'grey' };
         }
         default:
-          return {"color": "grey"};
+          return { color: 'grey' };
       }
     }
-  }
-  
+
+    return {};
+  };
 
   onEachFeature = (feature, layer) => {
     const { geometry } = feature;
