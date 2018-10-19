@@ -1,17 +1,22 @@
 /* eslint no-underscore-dangle: "off" */
-import { TEST } from './actions';
+import { ALERTS_STORE, ALERT_STORE } from './actions';
 
-const initialState = {};
-
-/**
- * Alert reducer function
- * @param {Object=} state - Redux store state
- * @param {Object} action - Redux action
- */
-export default function alerts(state = initialState, action) {
-  switch (action.type) {
-    case TEST: {
+export function alerts(state = {}, action) {
+  const { type, payload } = action;
+  switch (type) {
+    case ALERTS_STORE: {
+      return { ...state, ...payload };
+    }
+    default:
       return state;
+  }
+}
+
+export function alert(state = {}, action) {
+  const { type, payload } = action;
+  switch (type) {
+    case ALERT_STORE: {
+      return { ...state, ...payload };
     }
     default:
       return state;

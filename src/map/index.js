@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 import L from 'leaflet';
-import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
-import { test } from './actions';
-import API from '../common/API';
+import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
+import AlertDetails from './components/alertDetails';
+import AlertActions from './components/alertActions';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -30,8 +30,6 @@ class AlertMap extends React.Component {
     this.state = {
       area: {},
       hideAlerts: false,
-      alerts: [],
-      selected: {},
       position: {},
     };
 
@@ -40,8 +38,8 @@ class AlertMap extends React.Component {
   }
 
   componentDidMount() {
-    const { testRedux } = this.props;
-    testRedux();
+    const { startGetAlerts } = this.props;
+    startGetAlerts();
     const DefaultIcon = L.icon({
       iconUrl: icon,
       shadowUrl: iconShadow,
@@ -49,17 +47,16 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(alerts => this.setState({ alerts }));
-
     this.map = this.mapRef.current.leafletElement;
 
-    this.alertsLayer = L.geoJSON([], { filter: this.geoJsonFilter, onEachFeature: this.onEachFeature }).addTo(
-      this.map
-    );
+    this.alertsLayer = L.geoJSON([], {
+      filter: this.geoJsonFilter,
+      onEachFeature: this.onEachFeature,
+    }).addTo(this.map);
 
     L.control
       .zoom({
-        position: 'topright',
+        position: 'topleft',
       })
       .addTo(this.map);
 
@@ -73,33 +70,39 @@ class AlertMap extends React.Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { alerts, selected } = this.state;
-    if (alerts !== prevState.alerts) {
+  componentDidUpdate(prevProps) {
+    const { alerts, selected, startGetAlerts } = this.props;
+    if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
     }
 
-    if (selected !== prevState.selected) {
-   const alertLayer = L.geoJSON([selected],{filter: (feature) => {
-      const { geometry } = feature;
-      const { type } = geometry;
-      switch (type) {
-        case 'Polygon': {
-          return true;
-        }
-        default:
-          return false;
-      }
-
-    }}).addTo(
-        this.map
-      );
-      this. map.fitBounds(alertLayer.getBounds());
+    if (selected && selected !== prevProps.selected) {
+      const { area } = selected;
+      this.selectedAlertLayer = L.geoJSON([area], {
+        filter: feature => {
+          const { geometry } = feature;
+          const { type } = geometry;
+          switch (type) {
+            case 'Polygon': {
+              return true;
+            }
+            default:
+              return true;
+          }
+        },
+      }).addTo(this.map);
+      this.selectedAlertLayer.on('remove', () => {
+        alerts.map(alert => this.alertsLayer.addData(alert));
+        this.alertsLayer.addTo(this.map);
+      });
+      // this.map.fitBounds(alertLayer.getBounds());
+    } else if (selected !== prevProps.selected) {
+      this.map.removeLayer(this.selectedAlertLayer);
+      startGetAlerts();
     }
   }
 
   geoJsonFilter = feature => {
-  
     const { geometry } = feature;
     const { type } = geometry;
     switch (type) {
@@ -116,19 +119,21 @@ class AlertMap extends React.Component {
     const { type } = geometry;
     switch (type) {
       case 'Point': {
-        layer.on({click: this.onclickGeoJson})
+        layer.on({ click: this.onclickGeoJson });
         return true;
       }
       default:
         return false;
     }
-    
-  }
+  };
 
-  onclickGeoJson = (e) => {
+  onclickGeoJson = e => {
+    const id = get(e, 'target.feature.properties.id');
+    const { startGetAlert } = this.props;
     this.map.removeLayer(this.alertsLayer);
-    API.getAlert().then(( selected ) => this.setState({ selected }))
-  }
+    startGetAlert(id);
+  };
+
   // shows interface for new alert
   onclickNewAlertButton = () => {
     const popupContent = `<div>
@@ -195,36 +200,12 @@ class AlertMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
+    const { selected, startGetAlert } = this.props;
     const position = [-6.179, 35.754];
     return (
       <div>
-        <div id="sidebar">
-          <Row
-            style={{ padding: '5px', display: hideAlerts ? 'none' : 'block' }}
-          >
-            <Col span={8}>
-              <Button type="primary" onClick={this.onclickNewAlertButton}>
-                + New Alert
-              </Button>
-            </Col>
-            <Col span={8}>
-              <Button type="primary">
-                <Icon type="export" theme="outlined" />
-                Export
-              </Button>
-            </Col>
-            <Col span={4}>
-              <Button type="default">
-                <Icon type="table" theme="outlined" />
-              </Button>
-            </Col>
-            <Col span={4}>
-              <Button type="default">
-                <Icon type="caret-up" theme="outlined" />
-              </Button>
-            </Col>
-          </Row>
-        </div>
+        <AlertActions hideAlerts={hideAlerts} />
+        <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
           center={position}
@@ -243,19 +224,97 @@ class AlertMap extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  alerts: state.alerts && state.alerts ? state.alerts.data : [],
+  selected: state.alert && state.alert ? state.alert.data : null,
+});
 
 export default connect(
   mapStateToProps,
   {
-    testRedux: test,
+    startGetAlerts: alertsGetStart,
+    startGetAlert: alertGetStart,
   }
 )(AlertMap);
 
+const geometry = PropTypes.shape({
+  type: PropTypes.string,
+  coordinates: PropTypes.arrayOf(PropTypes.number),
+}).isRequired;
+const feature = PropTypes.shape({
+  type: PropTypes.string,
+  properties: PropTypes.shape({ id: PropTypes.string }),
+  geometry,
+});
+
+const sourcePropTypes = {
+  name: PropTypes.string,
+  phone: PropTypes.string,
+  email: PropTypes.string,
+  website: PropTypes.string,
+};
+
+const eventPropTypes = {
+  code: PropTypes.string,
+  name: PropTypes.string,
+  category: PropTypes.string,
+  description: PropTypes.string,
+  urgency: PropTypes.string,
+  severity: PropTypes.string,
+  certainty: PropTypes.string,
+  response: PropTypes.string,
+};
+
+const messagePropTpes = {
+  status: PropTypes.string,
+  type: PropTypes.string,
+  scope: PropTypes.string,
+  restriction: PropTypes.string,
+  addresses: PropTypes.arrayOf(PropTypes.string),
+  code: PropTypes.string,
+  note: PropTypes.string,
+  headline: PropTypes.string,
+  instruction: PropTypes.string,
+  website: PropTypes.string,
+};
+
+const areaPropTypes = {
+  type: PropTypes.string,
+  features: PropTypes.arrayOf(feature),
+};
+
+const resourcePropTypes = {
+  description: PropTypes.string,
+  mime: PropTypes.string,
+  uri: PropTypes.string,
+};
+
+const alertPropTypes = {
+  source: PropTypes.shape({ sourcePropTypes }),
+  event: PropTypes.shape({ eventPropTypes }),
+  message: PropTypes.shape({ messagePropTpes }),
+  area: PropTypes.shape({ areaPropTypes }),
+  resources: PropTypes.shape({ resourcePropTypes }),
+  reportedAt: PropTypes.string,
+  expectedAt: PropTypes.string,
+  expiredAt: PropTypes.string,
+  occuredAt: PropTypes.string,
+  endedAt: PropTypes.string,
+  direction: PropTypes.string,
+  _id: PropTypes.string,
+  updatedAt: PropTypes.string,
+  createdAt: PropTypes.string,
+};
 AlertMap.propTypes = {
-  testRedux: PropTypes.func,
+  startGetAlerts: PropTypes.func,
+  startGetAlert: PropTypes.func,
+  selected: PropTypes.shape(alertPropTypes),
+  alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
 };
 
 AlertMap.defaultProps = {
-  testRedux: () => {},
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  alerts: [],
+  selected: null,
 };
