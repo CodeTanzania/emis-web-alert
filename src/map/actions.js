@@ -4,6 +4,7 @@ export const ALERTS_STORE = 'ALERTS_STORE';
 export const ALERT_STORE = 'ALERT_STORE';
 export const MAP_SET_POSITION = 'MAP_SET_POSITION';
 
+export const alertsGetStart = () => ({ type: ALERTS_GET_START });
 
 export const alertsStore = alerts => ({
   type: ALERTS_STORE,
@@ -18,7 +19,9 @@ export const alertStore = alert => ({
     data: alert,
   },
 });
-
-
-export const alertsGetStart = () => ({ type: ALERTS_GET_START });
-export const alertGetStart = () => ({ type: ALERT_GET_START });
+export const alertGetStart = (id = null) => ({
+  type: ALERT_GET_START,
+  payload: {
+    data: id,
+  },
+});
