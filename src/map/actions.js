@@ -19,9 +19,9 @@ export const alertStore = alert => ({
     data: alert,
   },
 });
-export const alertGetStart = id => ({
+export const alertGetStart = (id = null ) => ({
   type: ALERT_GET_START,
   payload: {
-    data: id,
+    data: id
   },
 });

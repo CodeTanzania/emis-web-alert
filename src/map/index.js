@@ -71,14 +71,14 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { alerts, selected } = this.props;
+    const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
     }
 
-    if (selected !== prevProps.selected) {
+    if (selected && (selected !== prevProps.selected)) {
       const { area } = selected;
-      L.geoJSON([area], {
+     this.selectedAlertLayer = L.geoJSON([area], {
         filter: feature => {
           const { geometry } = feature;
           const { type } = geometry;
@@ -91,7 +91,15 @@ class AlertMap extends React.Component {
           }
         },
       }).addTo(this.map);
+      this.selectedAlertLayer.on('remove', () => {
+        alerts.map(alert => this.alertsLayer.addData(alert));
+        this.alertsLayer.addTo(this.map);
+      })
       // this.map.fitBounds(alertLayer.getBounds());
+    }
+    else if (selected !== prevProps.selected) {
+      this.map.removeLayer(this.selectedAlertLayer);
+      startGetAlerts();
     }
   }
 
@@ -193,12 +201,12 @@ class AlertMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
-    const { selected } = this.props;
+    const { selected, startGetAlert } = this.props;
     const position = [-6.179, 35.754];
     return (
       <div>
         <AlertActions hideAlerts={hideAlerts} />
-        <AlertDetails selected={selected} />
+        <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
           center={position}

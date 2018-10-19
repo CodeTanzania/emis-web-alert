@@ -2,11 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
+
 export default function AlertDetails(props) {
-  const { selected } = props;
+  const { selected, unSelectAlert } = props;
+  const closeAlertDetails = () => {
+    unSelectAlert();
+    console.log('closed alert details clicked')
+  }
   return selected ? (
     <div id="filters-header">
-      <h1>Alert Details</h1>
+      <h1><strong onClick={closeAlertDetails}>x</strong>  Alert Details </h1>
       <p>
         {' '}
         <strong>Event:</strong> {get(selected, 'event.name')}{' '}
