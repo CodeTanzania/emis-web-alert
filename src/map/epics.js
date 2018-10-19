@@ -46,7 +46,9 @@ export const getAlertEpic = action$ =>
       return data ? from(API.getAlert(data)) : of(payload);
     }),
     switchMap(alert => {
-      if (!alert.area) { return of(alertStore(alert.data)) }
+      if (!alert.area) {
+        return of(alertStore(alert.data));
+      }
       const area = alertToGeoJSON(alert);
       return of(alertStore({ ...alert, area }));
     })

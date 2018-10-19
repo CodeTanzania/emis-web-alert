@@ -56,7 +56,7 @@ class AlertMap extends React.Component {
 
     L.control
       .zoom({
-        position: 'topright',
+        position: 'topleft',
       })
       .addTo(this.map);
 
@@ -76,9 +76,9 @@ class AlertMap extends React.Component {
       alerts.map(alert => this.alertsLayer.addData(alert));
     }
 
-    if (selected && (selected !== prevProps.selected)) {
+    if (selected && selected !== prevProps.selected) {
       const { area } = selected;
-     this.selectedAlertLayer = L.geoJSON([area], {
+      this.selectedAlertLayer = L.geoJSON([area], {
         filter: feature => {
           const { geometry } = feature;
           const { type } = geometry;
@@ -94,10 +94,9 @@ class AlertMap extends React.Component {
       this.selectedAlertLayer.on('remove', () => {
         alerts.map(alert => this.alertsLayer.addData(alert));
         this.alertsLayer.addTo(this.map);
-      })
+      });
       // this.map.fitBounds(alertLayer.getBounds());
-    }
-    else if (selected !== prevProps.selected) {
+    } else if (selected !== prevProps.selected) {
       this.map.removeLayer(this.selectedAlertLayer);
       startGetAlerts();
     }

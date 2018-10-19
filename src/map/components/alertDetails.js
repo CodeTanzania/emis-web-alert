@@ -2,39 +2,47 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
-
 export default function AlertDetails(props) {
   const { selected, unSelectAlert } = props;
   const closeAlertDetails = () => {
     unSelectAlert();
-    console.log('closed alert details clicked')
-  }
+  };
   return selected ? (
     <div id="filters-header">
-      <h1><strong onClick={closeAlertDetails}>x</strong>  Alert Details </h1>
+      <h1>
+        <strong
+          role="button"
+          onClick={closeAlertDetails}
+          onKeyPress={() => {}}
+          tabIndex={0}
+        >
+          x
+        </strong>{' '}
+        Alert Details{' '}
+      </h1>
       <p>
         {' '}
         <strong>Event:</strong> {get(selected, 'event.name')}{' '}
       </p>
       <p>
         {' '}
-        <strong>Category:</strong> {get(selected, 'event.name')}{' '}
+        <strong>Category:</strong> {get(selected, 'event.category')}{' '}
       </p>
       <p>
         {' '}
-        <strong>Urgency:</strong> {get(selected, 'event.name')}{' '}
+        <strong>Urgency:</strong> {get(selected, 'event.urgency')}{' '}
       </p>
       <p>
         {' '}
-        <strong>Severity:</strong> {get(selected, 'event.name')}{' '}
+        <strong>Severity:</strong> {get(selected, 'event.severity')}{' '}
       </p>
       <p>
         {' '}
-        <strong>Certainty:</strong> {get(selected, 'event.name')}{' '}
+        <strong>Certainty:</strong> {get(selected, 'event.certainty')}{' '}
       </p>
       <p>
         {' '}
-        <strong>Instructions:</strong> {get(selected, 'event.name')}{' '}
+        <strong>Instructions:</strong> {get(selected, 'message.instruction')}{' '}
       </p>
     </div>
   ) : null;
@@ -109,9 +117,11 @@ const alertPropTypes = {
   createdAt: PropTypes.string,
 };
 AlertDetails.propTypes = {
+  unSelectAlert: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
 };
 
 AlertDetails.defaultProps = {
   selected: null,
+  unSelectAlert: () => {},
 };
