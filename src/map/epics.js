@@ -16,6 +16,7 @@ const alertToGeoJSON = alert => {
   const { category, urgency } = event;
   return {
     type: 'FeatureCollection',
+    description: area.description,
     features: [
       {
         type: 'Feature',
