@@ -3,19 +3,42 @@ import PropTypes from 'prop-types';
 import { Row, Col, Divider, Icon } from 'antd';
 import { get } from 'lodash';
 
-function AlertDetailsValue ({ property, value }) {
-
+function AlertDetailsValue({ property, value }) {
   return (
-    <div style={{marginBottom: '20px'}}>
-      <div style={{color: '#189ad1',
-    display: 'table',
-    textTransform: 'uppercase'}}> { property }</div>
-      <div style={{fontWeight: 700,
-    fontSize: '13px',
-    color: '#8a8a8a'}}> { value } </div>
+    <div style={{ marginBottom: '20px' }}>
+      <div
+        style={{
+          color: '#189ad1',
+          display: 'table',
+          textTransform: 'uppercase',
+        }}
+      >
+        {' '}
+        {property}
+      </div>
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: '13px',
+          color: '#8a8a8a',
+        }}
+      >
+        {' '}
+        {value}{' '}
+      </div>
     </div>
   );
 }
+
+AlertDetailsValue.propTypes = {
+  property: PropTypes.string,
+  value: PropTypes.string,
+};
+
+AlertDetailsValue.defaultProps = {
+  property: 'no data',
+  value: 'no data',
+};
 
 export default function AlertDetails(props) {
   const { selected, unSelectAlert } = props;
@@ -24,24 +47,53 @@ export default function AlertDetails(props) {
   };
   return selected ? (
     <div id="filters-header">
-      <Row style={{paddingTop: '10px'}}>
-      <Col span={20}>
-        <h2>ALERT DETAILS</h2>
+      <Row style={{ paddingTop: '10px' }}>
+        <Col span={20}>
+          <h2>ALERT DETAILS</h2>
         </Col>
         <Col span={4} onClick={closeAlertDetails}>
-        <Icon onClick={closeAlertDetails} type="close-square" style={{fontSize: '20px'}} theme="outlined" />
+          <Icon
+            onClick={closeAlertDetails}
+            type="close-square"
+            style={{ fontSize: '20px' }}
+            theme="outlined"
+          />
         </Col>
       </Row>
-      <Divider style={{margin: 0}} />
+      <Divider style={{ margin: 0 }} />
       <Row>
-        <Col span={24} style={{textAlign: 'left', paddingLeft: '10px', marginTop: '15px'}}>
-        <AlertDetailsValue property={'event'} value={get(selected, 'event.name')} />
-        <AlertDetailsValue property={'category'} value={get(selected, 'event.category')} />
-        <AlertDetailsValue property={'urgency'} value={get(selected, 'event.urgency')} />
-        <AlertDetailsValue property={'severity'} value={get(selected, 'event.severity')} />
-        <AlertDetailsValue property={'certainty'} value={get(selected, 'event.certainty')} />
-        <AlertDetailsValue property={'area description'} value={get(selected, 'area.description')} />
-        <AlertDetailsValue property={'instructions'} value={get(selected, 'message.instruction')} />
+        <Col
+          span={24}
+          style={{ textAlign: 'left', paddingLeft: '10px', marginTop: '15px' }}
+        >
+          <AlertDetailsValue
+            property="event"
+            value={get(selected, 'event.name')}
+          />
+          <AlertDetailsValue
+            property="category"
+            value={get(selected, 'event.category')}
+          />
+          <AlertDetailsValue
+            property="urgency"
+            value={get(selected, 'event.urgency')}
+          />
+          <AlertDetailsValue
+            property="severity"
+            value={get(selected, 'event.severity')}
+          />
+          <AlertDetailsValue
+            property="certainty"
+            value={get(selected, 'event.certainty')}
+          />
+          <AlertDetailsValue
+            property="area description"
+            value={get(selected, 'area.description')}
+          />
+          <AlertDetailsValue
+            property="instructions"
+            value={get(selected, 'message.instruction')}
+          />
         </Col>
       </Row>
     </div>
