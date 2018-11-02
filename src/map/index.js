@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
+import { Row, Col, Button, Icon } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
@@ -56,7 +57,7 @@ class AlertMap extends React.Component {
 
     L.control
       .zoom({
-        position: 'topleft',
+        position: 'bottomright',
       })
       .addTo(this.map);
 
@@ -165,6 +166,20 @@ class AlertMap extends React.Component {
     startGetAlert(id);
   };
 
+  renderAlertActions = (hideAlerts) => {
+    return !hideAlerts ? (
+      <div id="sidebar">
+        <Row style={{ padding: '5px' }}>
+          <Col span={24}>
+            <Button type="primary" onClick={this.onclickNewAlertButton}>
+              + New Alert
+            </Button>
+          </Col>
+        </Row>
+      </div>
+    ) : null;
+  }
+
   // shows interface for new alert
   onclickNewAlertButton = () => {
     const popupContent = `<div>
@@ -235,7 +250,7 @@ class AlertMap extends React.Component {
     const position = [-6.179, 35.754];
     return (
       <div>
-        <AlertActions hideAlerts={hideAlerts} />
+       {this.renderAlertActions(hideAlerts)}
         <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
