@@ -5,7 +5,7 @@ import { Row, Col, Button, Icon } from 'antd';
 class AlertActions extends React.Component {
   render() {
     const { hideAlerts } = this.props;
-    return true ? (
+    return hideAlerts ? (
       <div id="sidebar">
         <Row style={{ padding: '5px' }}>
           <Col span={8}>

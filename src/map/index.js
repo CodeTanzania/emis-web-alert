@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
-import { Row, Col, Button, Icon } from 'antd';
+import { Row, Col, Button } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
@@ -11,7 +11,6 @@ import * as ReactLeaflet from 'react-leaflet';
 import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
-import AlertActions from './components/alertActions';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -166,8 +165,8 @@ class AlertMap extends React.Component {
     startGetAlert(id);
   };
 
-  renderAlertActions = (hideAlerts) => {
-    return !hideAlerts ? (
+  renderAlertActions = hideAlerts =>
+    !hideAlerts ? (
       <div id="sidebar">
         <Row style={{ padding: '5px' }}>
           <Col span={24}>
@@ -178,7 +177,6 @@ class AlertMap extends React.Component {
         </Row>
       </div>
     ) : null;
-  }
 
   // shows interface for new alert
   onclickNewAlertButton = () => {
@@ -250,7 +248,7 @@ class AlertMap extends React.Component {
     const position = [-6.179, 35.754];
     return (
       <div>
-       {this.renderAlertActions(hideAlerts)}
+        {this.renderAlertActions(hideAlerts)}
         <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
