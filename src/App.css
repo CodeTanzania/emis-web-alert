@@ -18,7 +18,8 @@
   margin: 0;
 }
 
-#alert-actions {
+
+ #sidebar {
   position: absolute;
   z-index: 1000;
   height: auto;
@@ -35,8 +36,8 @@
   z-index: 1000;
   height: auto;
   overflow: hidden;
-  left: 77vw;
-  width: 22.9vw;
+  left: 83vw;
+  width: 16.9vw;
   background: #fff;
   font-size: 12px;
 }

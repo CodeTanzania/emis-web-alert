@@ -1,14 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
 import L from 'leaflet';
-import { Row, Col, Button, Icon } from 'antd';
 import 'leaflet-draw';
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
-import API from '../common/API';
+import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
-// import WrappedAlertFilter from './components/alertFilter';
+import AlertDetails from './components/alertDetails';
+import AlertActions from './components/alertActions';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -28,7 +30,6 @@ class AlertMap extends React.Component {
     this.state = {
       area: {},
       hideAlerts: false,
-      alerts: [],
       position: {},
     };
 
@@ -37,6 +38,8 @@ class AlertMap extends React.Component {
   }
 
   componentDidMount() {
+    const { startGetAlerts } = this.props;
+    startGetAlerts();
     const DefaultIcon = L.icon({
       iconUrl: icon,
       shadowUrl: iconShadow,
@@ -44,30 +47,16 @@ class AlertMap extends React.Component {
 
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    API.getAlerts().then(res => {
-      const alerts = res.map(({ info }) => {
-        const { polygon } = info.area;
-        return {
-          area: {
-            geometry: {
-              type: 'Polygon',
-              coordinates: this.stringToArrayCoordinates(polygon),
-            },
-          },
-        };
-      });
-      console.log('looking at Alerts');
-      console.log(alerts);
-      this.setState({ alerts });
-    });
-
     this.map = this.mapRef.current.leafletElement;
 
-    this.alertsLayer = L.geoJSON().addTo(this.map);
+    this.alertsLayer = L.geoJSON([], {
+      filter: this.geoJsonFilter,
+      onEachFeature: this.onEachFeature,
+    }).addTo(this.map);
 
     L.control
       .zoom({
-        position: 'topright',
+        position: 'topleft',
       })
       .addTo(this.map);
 
@@ -81,26 +70,99 @@ class AlertMap extends React.Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { alerts } = this.state;
-    if (alerts !== prevState.alerts) {
-      alerts.map(({ area }) =>
-        this.alertsLayer.addData({ ...area, type: 'Feature' })
-      );
+  componentDidUpdate(prevProps) {
+    const { alerts, selected, startGetAlerts } = this.props;
+    if (alerts !== prevProps.alerts) {
+      alerts.map(alert => this.alertsLayer.addData(alert));
+    }
+
+    if (selected && selected !== prevProps.selected) {
+      const { area } = selected;
+      this.selectedAlertLayer = L.geoJSON([area], {
+        filter: this.filterFeatures,
+        style: this.styleFeatures,
+      }).addTo(this.map);
+      this.selectedAlertLayer.on('remove', () => {
+        this.alertsLayer.addTo(this.map);
+      });
+      // this.map.fitBounds(alertLayer.getBounds());
+    } else if (selected !== prevProps.selected) {
+      this.map.removeLayer(this.selectedAlertLayer);
+      startGetAlerts();
     }
   }
 
-  // converts a string containig whitespace-delimited list of  coordinate pairs
-  // to an array of coordinate arrays
-  stringToArrayCoordinates = stringCoordinates => {
-    const splitCoordinates = stringCoordinates.trim().split(' ');
-    const coord = splitCoordinates.map(splitCoordinate =>
-      splitCoordinate
-        .split(',')
-        .reverse()
-        .map(value => parseFloat(value))
-    );
-    return [coord];
+  geoJsonFilter = feature => {
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Point': {
+        return true;
+      }
+      default:
+        return false;
+    }
+  };
+
+  filterFeatures = feature => {
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Polygon': {
+        return true;
+      }
+      default:
+        return true;
+    }
+  };
+
+  styleFeatures = feature => {
+    const { geometry, properties } = feature;
+    const { urgency } = properties;
+    const { type } = geometry;
+    if (type === 'Polygon' || 'MultiPolygon') {
+      switch (urgency) {
+        case 'Immediate': {
+          return { color: 'red' };
+        }
+        case 'Expected': {
+          return { color: 'orange' };
+        }
+        case 'Future': {
+          return { color: 'yellow' };
+        }
+        case 'Past': {
+          return { color: 'green' };
+        }
+        case 'Unknown': {
+          return { color: 'grey' };
+        }
+        default:
+          return { color: 'grey' };
+      }
+    }
+
+    return {};
+  };
+
+  onEachFeature = (feature, layer) => {
+    const { geometry } = feature;
+    const { type } = geometry;
+    switch (type) {
+      case 'Point': {
+        layer.on({ click: this.onclickGeoJson });
+        return true;
+      }
+      default:
+        return false;
+    }
+  };
+
+  onclickGeoJson = e => {
+    const id = get(e, 'target.feature.properties.id');
+    const { startGetAlert } = this.props;
+    this.map.removeLayer(this.alertsLayer);
+    startGetAlert(id);
   };
 
   // shows interface for new alert
@@ -169,53 +231,12 @@ class AlertMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
+    const { selected, startGetAlert } = this.props;
     const position = [-6.179, 35.754];
     return (
       <div>
-        <div id="alert-actions">
-          <Row
-            style={{ padding: '5px', display: hideAlerts ? 'none' : 'block' }}
-          >
-            <Col span={8}>
-              <Button type="primary" onClick={this.onclickNewAlertButton}>
-                + New Alert
-              </Button>
-            </Col>
-            <Col span={8}>
-              <Button type="primary">
-                <Icon type="export" theme="outlined" />
-                Export
-              </Button>
-            </Col>
-            <Col span={4}>
-              <Button type="default">
-                <Icon type="table" theme="outlined" />
-              </Button>
-            </Col>
-            <Col span={4}>
-              <Button type="default">
-                <Icon type="caret-up" theme="outlined" />
-              </Button>
-            </Col>
-          </Row>
-        </div>
-        <div id="filters-header">
-          <Row>
-            <Col span={2}>
-              <Icon
-                type="caret-right"
-                style={{ fontSize: '26px', paddingTop: '10px' }}
-                theme="outlined"
-              />
-            </Col>
-            <Col span={22}>
-              <h1>Filter Alerts</h1>
-            </Col>
-          </Row>
-        </div>
-        {/* <div id="filters">
-          <WrappedAlertFilter />
-        </div> */}
+        <AlertActions hideAlerts={hideAlerts} />
+        <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
           center={position}
@@ -234,4 +255,97 @@ class AlertMap extends React.Component {
   }
 }
 
-export default AlertMap;
+const mapStateToProps = state => ({
+  alerts: state.alerts && state.alerts ? state.alerts.data : [],
+  selected: state.alert && state.alert ? state.alert.data : null,
+});
+
+export default connect(
+  mapStateToProps,
+  {
+    startGetAlerts: alertsGetStart,
+    startGetAlert: alertGetStart,
+  }
+)(AlertMap);
+
+const geometry = PropTypes.shape({
+  type: PropTypes.string,
+  coordinates: PropTypes.arrayOf(PropTypes.number),
+}).isRequired;
+const feature = PropTypes.shape({
+  type: PropTypes.string,
+  properties: PropTypes.shape({ id: PropTypes.string }),
+  geometry,
+});
+
+const sourcePropTypes = {
+  name: PropTypes.string,
+  phone: PropTypes.string,
+  email: PropTypes.string,
+  website: PropTypes.string,
+};
+
+const eventPropTypes = {
+  code: PropTypes.string,
+  name: PropTypes.string,
+  category: PropTypes.string,
+  description: PropTypes.string,
+  urgency: PropTypes.string,
+  severity: PropTypes.string,
+  certainty: PropTypes.string,
+  response: PropTypes.string,
+};
+
+const messagePropTpes = {
+  status: PropTypes.string,
+  type: PropTypes.string,
+  scope: PropTypes.string,
+  restriction: PropTypes.string,
+  addresses: PropTypes.arrayOf(PropTypes.string),
+  code: PropTypes.string,
+  note: PropTypes.string,
+  headline: PropTypes.string,
+  instruction: PropTypes.string,
+  website: PropTypes.string,
+};
+
+const areaPropTypes = {
+  type: PropTypes.string,
+  features: PropTypes.arrayOf(feature),
+};
+
+const resourcePropTypes = {
+  description: PropTypes.string,
+  mime: PropTypes.string,
+  uri: PropTypes.string,
+};
+
+const alertPropTypes = {
+  source: PropTypes.shape({ sourcePropTypes }),
+  event: PropTypes.shape({ eventPropTypes }),
+  message: PropTypes.shape({ messagePropTpes }),
+  area: PropTypes.shape({ areaPropTypes }),
+  resources: PropTypes.shape({ resourcePropTypes }),
+  reportedAt: PropTypes.string,
+  expectedAt: PropTypes.string,
+  expiredAt: PropTypes.string,
+  occuredAt: PropTypes.string,
+  endedAt: PropTypes.string,
+  direction: PropTypes.string,
+  _id: PropTypes.string,
+  updatedAt: PropTypes.string,
+  createdAt: PropTypes.string,
+};
+AlertMap.propTypes = {
+  startGetAlerts: PropTypes.func,
+  startGetAlert: PropTypes.func,
+  selected: PropTypes.shape(alertPropTypes),
+  alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
+};
+
+AlertMap.defaultProps = {
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  alerts: [],
+  selected: null,
+};

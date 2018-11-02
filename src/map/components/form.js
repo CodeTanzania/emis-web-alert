@@ -44,7 +44,6 @@ class AlertForm extends React.Component {
             geometry: area,
           },
         };
-
         API.createAlert(payload);
         closePopup();
       }
