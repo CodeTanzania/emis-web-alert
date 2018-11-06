@@ -5,12 +5,11 @@ import { Row, Col, Button } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import * as ReactLeaflet from 'react-leaflet';
 import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
+import markerIcon from '../images/Dead.png';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -41,8 +40,8 @@ class AlertMap extends React.Component {
     const { startGetAlerts } = this.props;
     startGetAlerts();
     const DefaultIcon = L.icon({
-      iconUrl: icon,
-      shadowUrl: iconShadow,
+      iconUrl: markerIcon,
+      iconSize: [30, 30], // size of the icon
     });
 
     L.Marker.prototype.options.icon = DefaultIcon;
@@ -150,6 +149,8 @@ class AlertMap extends React.Component {
     const { type } = geometry;
     switch (type) {
       case 'Point': {
+        console.log('looking at the feature');
+        console.log(feature);
         layer.on({ click: this.onclickGeoJson });
         return true;
       }

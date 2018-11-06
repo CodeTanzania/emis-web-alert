@@ -25,7 +25,7 @@ const alertToGeoJSON = alert => {
       },
       {
         type: 'Feature',
-        properties: { id: _id },
+        properties: { id: _id, icon: null },
         geometry: centroid,
       },
     ],

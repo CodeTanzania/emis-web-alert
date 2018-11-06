@@ -3,7 +3,7 @@ const API = {
    * Get Alerts
    */
   getAlerts: () =>
-    fetch(`https://emis-alert-api.herokuapp.com/v1/alerts`)
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts`)
       .then(res => res.json())
       .then(res => res.data),
 
@@ -11,7 +11,7 @@ const API = {
    * Get Alert
    */
   getAlert: id =>
-    fetch(`https://emis-alert-api.herokuapp.com/v1/alert/${id}`).then(res =>
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts/${id}`).then(res =>
       res.json()
     ),
 
