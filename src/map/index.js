@@ -10,6 +10,10 @@ import { alertsGetStart, alertGetStart } from './actions';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
 import markerIcon from '../images/Dead.png';
+import tsunami from '../images/Tsunami.png';
+import stormSurge from '../images/storm-surge.png';
+import fire from '../images/Fire.png';
+import flood from '../images/Flood.png';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -51,6 +55,7 @@ class AlertMap extends React.Component {
     this.alertsLayer = L.geoJSON([], {
       filter: this.geoJsonFilter,
       onEachFeature: this.onEachFeature,
+      pointToLayer: this.showAlertMarkers
     }).addTo(this.map);
 
     L.control
@@ -149,8 +154,6 @@ class AlertMap extends React.Component {
     const { type } = geometry;
     switch (type) {
       case 'Point': {
-        console.log('looking at the feature');
-        console.log(feature);
         layer.on({ click: this.onclickGeoJson });
         return true;
       }
@@ -158,6 +161,41 @@ class AlertMap extends React.Component {
         return false;
     }
   };
+
+  showAlertMarkers = (feature, latlng) => {
+    const { geometry, properties } = feature;
+    const { severity } = properties;
+    const { type } = geometry;
+    const customIcon = L.icon({
+      iconUrl: this.selectIcon(severity),
+      iconSize: [30, 30], // size of the icon
+    });
+    if (type === 'Point') {
+      return L.marker(latlng, { icon: customIcon})
+    }
+  }
+
+  selectIcon = (incidentType) => {
+    switch (incidentType) {
+      case 'Extreme': {
+        return tsunami
+      }
+      case 'Severe': {
+        return markerIcon
+      }
+      case 'Moderate': {
+        return fire
+      }
+      case 'Minor': {
+        return flood
+      }
+      case 'Unknown': {
+        return markerIcon
+      }
+      default:
+        return markerIcon
+    }
+  }
 
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');

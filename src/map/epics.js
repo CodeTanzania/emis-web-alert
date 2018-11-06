@@ -13,19 +13,20 @@ import API from '../common/API/index';
 const alertToGeoJSON = alert => {
   const { area, _id, event } = alert;
   const { geometry, centroid } = area;
-  const { category, urgency } = event;
+  const { category, urgency, severity } = event;
+  const properties = { id: _id, category, urgency, severity };
   return {
     type: 'FeatureCollection',
     description: area.description,
     features: [
       {
         type: 'Feature',
-        properties: { id: _id, category, urgency },
+        properties,
         geometry,
       },
       {
         type: 'Feature',
-        properties: { id: _id, icon: null },
+        properties,
         geometry: centroid,
       },
     ],
