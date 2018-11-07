@@ -294,9 +294,11 @@ class AlertMap extends React.Component {
           ref={this.mapRef}
         >
           <TileLayer
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            id='mapbox.light'
+            url='https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0'
           />
+
           {this.showPopup()}
         </LeafletMap>
       </div>
@@ -393,8 +395,8 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
   alerts: [],
   selected: null,
 };
