@@ -1,4 +1,11 @@
 
+import markerIcon from '../../images/Dead.png';
+import tsunami from '../../images/Tsunami.png';
+import fire from '../../images/Fire.png';
+import flood from '../../images/Flood.png';
+
+
+
 
 export const alertToGeoJSON = alert => {
     const { area, _id, event } = alert;
@@ -21,4 +28,28 @@ export const alertToGeoJSON = alert => {
         },
       ],
     };
+  };
+
+
+
+  export const selectIcon = (incidentType = '') => {
+    switch (incidentType) {
+      case 'Extreme': {
+        return tsunami;
+      }
+      case 'Severe': {
+        return markerIcon;
+      }
+      case 'Moderate': {
+        return fire;
+      }
+      case 'Minor': {
+        return flood;
+      }
+      case 'Unknown': {
+        return markerIcon;
+      }
+      default:
+        return markerIcon;
+    }
   };

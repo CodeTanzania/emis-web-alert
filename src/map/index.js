@@ -9,10 +9,7 @@ import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from './epics'
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
-import markerIcon from '../images/Dead.png';
-import tsunami from '../images/Tsunami.png';
-import fire from '../images/Fire.png';
-import flood from '../images/Flood.png';
+import { selectIcon } from '../common/lib/util';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -43,7 +40,7 @@ class AlertMap extends React.Component {
     const { startGetAlerts } = this.props;
     startGetAlerts();
     const DefaultIcon = L.icon({
-      iconUrl: markerIcon,
+      iconUrl: selectIcon(),
       iconSize: [30, 30], // size of the icon
     });
 
@@ -165,34 +162,14 @@ class AlertMap extends React.Component {
     const { properties } = feature;
     const { severity } = properties;
     const customIcon = L.icon({
-      iconUrl: this.selectIcon(severity),
+      iconUrl: selectIcon(severity),
       iconSize: [30, 30], // size of the icon
     });
 
     return L.marker(latlng, { icon: customIcon });
   };
 
-  selectIcon = incidentType => {
-    switch (incidentType) {
-      case 'Extreme': {
-        return tsunami;
-      }
-      case 'Severe': {
-        return markerIcon;
-      }
-      case 'Moderate': {
-        return fire;
-      }
-      case 'Minor': {
-        return flood;
-      }
-      case 'Unknown': {
-        return markerIcon;
-      }
-      default:
-        return markerIcon;
-    }
-  };
+
 
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
