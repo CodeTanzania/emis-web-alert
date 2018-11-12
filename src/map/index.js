@@ -9,6 +9,7 @@ import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
+import AlertLegend from './components/alertLegend';
 import { selectIcon } from '../common/lib/util';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
@@ -52,7 +53,7 @@ class AlertMap extends React.Component {
 
     L.control
       .zoom({
-        position: 'bottomright',
+        position: 'topleft',
       })
       .addTo(this.map);
 
@@ -279,6 +280,7 @@ class AlertMap extends React.Component {
       <div>
         {this.renderAlertActions(hideAlerts)}
         <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
+        <AlertLegend selected={selected} unSelectAlert={startGetAlert} />
 
         <LeafletMap
           center={position}
