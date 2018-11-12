@@ -70,7 +70,7 @@ class AlertMap extends React.Component {
     const { startGetAlerts } = this.props;
     startGetAlerts();
 
-    L.Marker.prototype.options.icon = this.generateMarkerIcon();
+    // L.Marker.prototype.options.icon = this.generateMarkerIcon();
 
     this.map = this.mapRef.current.leafletElement;
 
