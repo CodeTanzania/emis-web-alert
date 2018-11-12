@@ -9,7 +9,7 @@ import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
-import AlertLegend from './components/alertLegend';
+import AlertLegend from './components/AlertLegend';
 import { selectIcon } from '../common/lib/util';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
