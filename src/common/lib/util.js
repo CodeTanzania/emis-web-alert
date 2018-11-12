@@ -3,6 +3,15 @@ import tsunami from '../../images/Tsunami.png';
 import fire from '../../images/Fire.png';
 import flood from '../../images/Flood.png';
 
+// data about severity colors
+export const severityColors = [
+  { property: 'Extreme', value: '#d72e29' },
+  { property: 'Severe', value: '#fe9901' },
+  { property: 'Moderate', value: '#ffff00' },
+  { property: 'Minor', value: '#88e729' },
+  { property: 'Unknown', value: '#3366ff' },
+];
+// converts alert object to a GeoJSON object
 export const alertToGeoJSON = alert => {
   const {
     _id,
