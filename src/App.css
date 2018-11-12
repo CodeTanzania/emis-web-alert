@@ -1,4 +1,36 @@
+.legend {
+  line-height: 18px;
+  color: #555;
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  cursor: auto;
+}
+i {
+  font-style: italic;
+}
 
+.legend i {
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  opacity: 0.7;
+  display: inline-block;
+  vertical-align: top;
+  zoom: 1;
+}
+.top-right {
+  z-index: 1000;
+  width: 36vw;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  margin-right: 10px;
+  margin-bottom: 30px;
+}
 
 
 
@@ -21,6 +53,8 @@
 
  #sidebar {
   position: absolute;
+  left: 60px;
+  top: 10px;
   z-index: 1000;
   height: auto;
   overflow: hidden;
