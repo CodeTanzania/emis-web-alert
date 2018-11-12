@@ -12,16 +12,6 @@ i {
   font-style: italic;
 }
 
-.severity-legend-1 {
-  padding: 3px 6px 3px 18px;
-  background-color: #ffffffbf;
-  margin-left: 16px;
-  font-size: 12px;
-  position: absolute;
-  bottom: 62px;
-  right: 8px;
-}
-
 .legend i {
   width: 18px;
   height: 18px;
@@ -33,12 +23,13 @@ i {
 }
 .top-right {
   z-index: 1000;
+  width: 36vw;
   position: absolute;
   right: 0;
   bottom: 0;
   pointer-events: none;
   margin-right: 10px;
-  margin-top: 10px;
+  margin-bottom: 30px;
 }
 
 

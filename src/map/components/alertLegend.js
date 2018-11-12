@@ -1,4 +1,5 @@
 import React from 'react';
+import { Col, Row } from 'antd';
 import PropTypes from 'prop-types';
 
 function AlertDetailsValue({ property, value }) {
@@ -33,18 +34,24 @@ export default function AlertLegend(props) {
 
   const renderLegendItems = data =>
     data.map(({ property, value }) => (
-      <AlertDetailsValue property={property} value={value} />
+      <Col span={4}>
+        <AlertDetailsValue property={property} value={value} />
+      </Col>
     ));
-  return !selected ? (
+  return (
     <div className="top-right">
       <div className="legend">
-        <div style={{ marginBottom: '3px' }}>
-          <strong>Severity Level</strong>
-        </div>
-        {renderLegendItems(severityData)}
+        <Row>
+          <Col span={4} >
+            <div style={{ marginBottom: '3px' }}>
+              <strong>Severity Level:  </strong>
+            </div>
+          </Col>
+          {renderLegendItems(severityData)}
+        </Row>
       </div>
     </div>
-  ) : null;
+  ) ;
 }
 
 const geometry = PropTypes.shape({
