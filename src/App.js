@@ -2,6 +2,9 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './common/store/configureStore';
 import AlertMap from './map';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import 'antd/dist/antd.css';
 import './App.css';
 
 /* local constants */

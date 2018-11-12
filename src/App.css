@@ -1,7 +1,6 @@
 
-@import '~antd/dist/antd.css';
-@import '~leaflet/dist/leaflet.css';
-@import '~leaflet-draw/dist/leaflet.draw.css';
+
+
 
 .App {
   text-align: center;
@@ -11,7 +10,13 @@
   text-align: center;
 }
 
+.ant-collapse-content > .ant-collapse-content-box {
+  padding : 0;
+}
 
+.ant-divider-horizontal {
+  margin: 0;
+}
 
 
  #sidebar {
@@ -20,8 +25,7 @@
   height: auto;
   overflow: hidden;
   float: left;
-  width: 20vw;
-  background: #fff;
+  width: 7vw;
   font-size: 12px;
 }
 

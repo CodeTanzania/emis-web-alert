@@ -1,57 +1,31 @@
 /* eslint no-console: "off" */
-import { ofType } from 'redux-observable';
-import { of, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import {
-  ALERTS_GET_START,
-  ALERT_GET_START,
+  alertsGetStart,
+  alertGetStart,
   alertsStore,
   alertStore,
 } from './actions';
-import API from '../common/API/index';
+import { alertToGeoJSON } from '../common/lib/util';
 
-const alertToGeoJSON = alert => {
-  const { area, _id, event } = alert;
-  const { geometry, centroid } = area;
-  const { category, urgency } = event;
-  return {
-    type: 'FeatureCollection',
-    description: area.description,
-    features: [
-      {
-        type: 'Feature',
-        properties: { id: _id, category, urgency },
-        geometry,
-      },
-      {
-        type: 'Feature',
-        properties: { id: _id },
-        geometry: centroid,
-      },
-    ],
-  };
+export const getAlertsOperation = () => (dispatch, getState, { API }) => {
+  dispatch(alertsGetStart());
+  API.getAlerts().then(alerts =>
+    dispatch(alertsStore(alerts.map(alert => alertToGeoJSON(alert))))
+  );
 };
-export const getAlertsEpic = action$ =>
-  action$.pipe(
-    ofType(ALERTS_GET_START),
-    switchMap(() => from(API.getAlerts())),
-    switchMap(alerts =>
-      of(alertsStore(alerts.map(alert => alertToGeoJSON(alert))))
-    )
-  );
 
-export const getAlertEpic = action$ =>
-  action$.pipe(
-    ofType(ALERT_GET_START),
-    switchMap(({ payload }) => {
-      const { data } = payload;
-      return data ? from(API.getAlert(data)) : of(payload);
-    }),
-    switchMap(alert => {
-      if (!alert.area) {
-        return of(alertStore(alert.data));
-      }
+export const getAlertOperation = (id = null) => (
+  dispatch,
+  getState,
+  { API }
+) => {
+  dispatch(alertGetStart(id));
+  if (id) {
+    API.getAlert(id).then(alert => {
       const area = alertToGeoJSON(alert);
-      return of(alertStore({ ...alert, area }));
-    })
-  );
+      dispatch(alertStore({ ...alert, area }));
+    });
+  } else {
+    dispatch(alertStore(alert.data));
+  }
+};

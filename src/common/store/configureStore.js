@@ -1,15 +1,22 @@
 import { applyMiddleware, createStore } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
+import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 /* local dependencies */
 import rootReducer from './rootReducer';
 import rootEpic from './rootEpic';
+import API from '../API';
 
-const epicMiddleware = createEpicMiddleware();
+/* local constants */
+const epicMiddleware = createEpicMiddleware({
+  // see https://redux-observable.js.org/docs/recipes/InjectingDependenciesIntoEpics.html
+  dependencies: { API },
+});
 
 /**
  * Configure Redux store
  * Enable redux dev tools
+ * Setup redux observables as async library
  *
  * @function
  * @name configureStore
@@ -20,7 +27,11 @@ const epicMiddleware = createEpicMiddleware();
 const configureStore = () => {
   const store = createStore(
     rootReducer,
-    composeWithDevTools(applyMiddleware(epicMiddleware))
+    // please read https://medium.com/@yeojz/redux-thunk-skipping-mocks-using-withextraargument-513d38d38554
+    // to understand why we use redux thunk with arguments
+    composeWithDevTools(
+      applyMiddleware(epicMiddleware, thunk.withExtraArgument({ API }))
+    )
   );
   // epicMiddleware.run(); add root epics here
   epicMiddleware.run(rootEpic);
