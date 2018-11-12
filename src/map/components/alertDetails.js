@@ -66,10 +66,7 @@ export default function AlertDetails(props) {
           span={24}
           style={{ textAlign: 'left', paddingLeft: '10px', marginTop: '15px' }}
         >
-          <AlertDetailsValue
-            property="event"
-            value={get(selected, 'event')}
-          />
+          <AlertDetailsValue property="event" value={get(selected, 'event')} />
           <AlertDetailsValue
             property="category"
             value={get(selected, 'category')}
@@ -179,5 +176,5 @@ AlertDetails.propTypes = {
 
 AlertDetails.defaultProps = {
   selected: null,
-  unSelectAlert: () => { },
+  unSelectAlert: () => {},
 };

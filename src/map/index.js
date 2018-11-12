@@ -36,36 +36,7 @@ class AlertMap extends React.Component {
     this.closePopup = this.closePopup.bind(this);
   }
 
-  generateMarkerIcon = (fillColor = '#93c47d') => {
-    const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
-    <defs>
-      <style>
-        .cls-1 {
-          fill: ${fillColor};
-        }
-      </style>
-    </defs>
-    <title>Severity-Minor</title>
-    <path class="cls-1" d="M198.43,17.57A160.05,160.05,0,0,0,54.1,246.69c.56,1.19,144.33,282.88,144.33,282.88L341,250.19A160,160,0,0,0,198.43,17.57Zm0,256a96,96,0,1,1,96-96A96,96,0,0,1,198.43,273.57Z"/>
-    </svg>
-    `;
-
-    const CustomIcon = L.Icon.extend({
-      options: {
-        iconSize: [40, 40],
-        shadowSize: [50, 64],
-        iconAnchor: [22, 94],
-        shadowAnchor: [4, 62],
-        popupAnchor: [-3, -76]
-      }
-    });
-
-    const iconUrl = encodeURI("data:image/svg+xml," + svg).replace('#', '%23');
-    const icon = new CustomIcon({ iconUrl })
-    return icon;
-  }
   componentDidMount() {
-
     const { startGetAlerts } = this.props;
     startGetAlerts();
 
@@ -99,7 +70,7 @@ class AlertMap extends React.Component {
     const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
-      this.map.setView([-6.179, 35.754], 7 );
+      this.map.setView([-6.179, 35.754], 7);
       this.map.flyTo([-6.179, 35.754]);
     }
 
@@ -112,7 +83,7 @@ class AlertMap extends React.Component {
       this.selectedAlertLayer.on('remove', () => {
         this.alertsLayer.addTo(this.map);
       });
-      this.map.flyToBounds(this.selectedAlertLayer.getBounds())
+      this.map.flyToBounds(this.selectedAlertLayer.getBounds());
       this.map.fitBounds(this.selectedAlertLayer.getBounds());
     } else if (selected !== prevProps.selected) {
       this.map.removeLayer(this.selectedAlertLayer);
@@ -123,9 +94,38 @@ class AlertMap extends React.Component {
   showMarkers = (feature, latlng) => {
     const { properties } = feature;
     const { color } = properties;
-    const customIcon = this.generateMarkerIcon(color)
+    const customIcon = this.generateMarkerIcon(color);
 
     return L.marker(latlng, { icon: customIcon });
+  };
+
+  generateMarkerIcon = (fillColor = '#93c47d') => {
+    const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
+    <defs>
+      <style>
+        .cls-1 {
+          fill: ${fillColor};
+        }
+      </style>
+    </defs>
+    <title>Severity-Minor</title>
+    <path class="cls-1" d="M198.43,17.57A160.05,160.05,0,0,0,54.1,246.69c.56,1.19,144.33,282.88,144.33,282.88L341,250.19A160,160,0,0,0,198.43,17.57Zm0,256a96,96,0,1,1,96-96A96,96,0,0,1,198.43,273.57Z"/>
+    </svg>
+    `;
+
+    const CustomIcon = L.Icon.extend({
+      options: {
+        iconSize: [40, 40],
+        shadowSize: [50, 64],
+        iconAnchor: [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor: [-3, -76],
+      },
+    });
+
+    const iconUrl = encodeURI(`data:image/svg+xml,${svg}`).replace('#', '%23');
+    const icon = new CustomIcon({ iconUrl });
+    return icon;
   };
 
   geoJsonFilter = feature => {
@@ -388,8 +388,8 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => { },
-  startGetAlert: () => { },
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
   alerts: [],
   selected: null,
 };
