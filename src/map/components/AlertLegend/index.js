@@ -1,11 +1,9 @@
 import React from 'react';
 import { Col, Row } from 'antd';
-import  LegendItem  from './components/LegendItem';
+import LegendItem from './components/LegendItem';
 import { severityColors } from '../../../common/lib/util';
 
-
 export default function AlertLegend() {
-    
   const renderLegendItems = data =>
     data.map(({ property, value }) => (
       <Col span={4}>
