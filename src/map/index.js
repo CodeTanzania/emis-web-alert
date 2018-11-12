@@ -11,7 +11,6 @@ import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
 import { selectIcon } from '../common/lib/util';
-import severe from '../images/Severity-Minor.svg';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -38,20 +37,46 @@ class AlertMap extends React.Component {
     this.closePopup = this.closePopup.bind(this);
   }
 
-  componentDidMount() {
-    const { startGetAlerts } = this.props;
-    startGetAlerts();
-    const DefaultIcon = L.icon({
-      iconUrl: severe,
-      shadowUrl: iconShadow,
+  generateMarkerIcon = ( fillColor = '#93c47d' ) => {
+    const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
+    <defs>
+      <style>
+        .cls-1 {
+          fill: ${fillColor};
+        }
+      </style>
+    </defs>
+    <title>Severity-Minor</title>
+    <path class="cls-1" d="M198.43,17.57A160.05,160.05,0,0,0,54.1,246.69c.56,1.19,144.33,282.88,144.33,282.88L341,250.19A160,160,0,0,0,198.43,17.57Zm0,256a96,96,0,1,1,96-96A96,96,0,0,1,198.43,273.57Z"/>
+    </svg>
+    `;
+
+    const CustomIcon = L.Icon.extend({
+      options: {
+        iconSize:     [40, 40],
+        shadowSize:   [50, 64],
+        iconAnchor:   [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor:  [-3, -76]
+      }
     });
 
-    L.Marker.prototype.options.icon = DefaultIcon;
+    const iconUrl = encodeURI("data:image/svg+xml," + svg).replace('#','%23');
+    const icon = new CustomIcon({iconUrl: iconUrl})
+    return icon;
+  }
+  componentDidMount() {
+
+    const { startGetAlerts } = this.props;
+    startGetAlerts();
+
+    L.Marker.prototype.options.icon = this.generateMarkerIcon();
 
     this.map = this.mapRef.current.leafletElement;
 
     this.alertsLayer = L.geoJSON([], {
       filter: this.geoJsonFilter,
+      pointToLayer: this.showMarkers,
       onEachFeature: this.onEachFeature,
     }).addTo(this.map);
 
@@ -92,6 +117,14 @@ class AlertMap extends React.Component {
       startGetAlerts();
     }
   }
+
+  showMarkers = (feature, latlng) => {
+    const { properties } = feature;
+    const { color } = properties;
+    const customIcon = this.generateMarkerIcon(color)
+
+    return L.marker(latlng, { icon: customIcon });
+  };
 
   geoJsonFilter = feature => {
     const { geometry } = feature;

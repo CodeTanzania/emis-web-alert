@@ -4,13 +4,29 @@ import fire from '../../images/Fire.png';
 import flood from '../../images/Flood.png';
 
 export const alertToGeoJSON = alert => {
-  const { area, _id, event } = alert;
-  const { geometry, centroid } = area;
-  const { category, urgency, severity } = event;
-  const properties = { id: _id, category, urgency, severity };
+  const { _id, category, urgency, severity, color, area, geometry, centroid } = alert;
+  const properties = { id: _id, category, urgency, severity, color };
+
+  console.log('looking at alerts GEOJSON');
+  console.log({
+    type: 'FeatureCollection',
+    description: area,
+    features: [
+      {
+        type: 'Feature',
+        properties,
+        geometry,
+      },
+      {
+        type: 'Feature',
+        properties,
+        geometry: centroid,
+      },
+    ],
+  });
   return {
     type: 'FeatureCollection',
-    description: area.description,
+    description: area,
     features: [
       {
         type: 'Feature',
