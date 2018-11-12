@@ -45,5 +45,4 @@ describe('Alerts:Actions', () => {
       },
     });
   });
-
 });

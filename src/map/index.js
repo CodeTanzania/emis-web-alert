@@ -6,10 +6,12 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
-import { getAlertsOperation, getAlertOperation } from './epics'
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
 import { selectIcon } from '../common/lib/util';
+import severe from '../images/Severity-Minor.svg';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -40,8 +42,8 @@ class AlertMap extends React.Component {
     const { startGetAlerts } = this.props;
     startGetAlerts();
     const DefaultIcon = L.icon({
-      iconUrl: selectIcon(),
-      iconSize: [30, 30], // size of the icon
+      iconUrl: severe,
+      shadowUrl: iconShadow,
     });
 
     L.Marker.prototype.options.icon = DefaultIcon;
@@ -51,7 +53,6 @@ class AlertMap extends React.Component {
     this.alertsLayer = L.geoJSON([], {
       filter: this.geoJsonFilter,
       onEachFeature: this.onEachFeature,
-      pointToLayer: this.showAlertMarkers,
     }).addTo(this.map);
 
     L.control
@@ -168,8 +169,6 @@ class AlertMap extends React.Component {
 
     return L.marker(latlng, { icon: customIcon });
   };
-
-
 
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
