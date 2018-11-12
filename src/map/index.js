@@ -6,10 +6,10 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
-import { alertsGetStart, alertGetStart } from './actions';
+import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
-import markerIcon from '../images/Dead.png';
+import { selectIcon } from '../common/lib/util';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -39,17 +39,14 @@ class AlertMap extends React.Component {
   componentDidMount() {
     const { startGetAlerts } = this.props;
     startGetAlerts();
-    const DefaultIcon = L.icon({
-      iconUrl: markerIcon,
-      iconSize: [30, 30], // size of the icon
-    });
 
-    L.Marker.prototype.options.icon = DefaultIcon;
+    // L.Marker.prototype.options.icon = this.generateMarkerIcon();
 
     this.map = this.mapRef.current.leafletElement;
 
     this.alertsLayer = L.geoJSON([], {
       filter: this.geoJsonFilter,
+      pointToLayer: this.showMarkers,
       onEachFeature: this.onEachFeature,
     }).addTo(this.map);
 
@@ -73,6 +70,8 @@ class AlertMap extends React.Component {
     const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
+      this.map.setView([-6.179, 35.754], 7);
+      this.map.flyTo([-6.179, 35.754]);
     }
 
     if (selected && selected !== prevProps.selected) {
@@ -84,12 +83,50 @@ class AlertMap extends React.Component {
       this.selectedAlertLayer.on('remove', () => {
         this.alertsLayer.addTo(this.map);
       });
-      // this.map.fitBounds(alertLayer.getBounds());
+      this.map.flyToBounds(this.selectedAlertLayer.getBounds());
+      this.map.fitBounds(this.selectedAlertLayer.getBounds());
     } else if (selected !== prevProps.selected) {
       this.map.removeLayer(this.selectedAlertLayer);
       startGetAlerts();
     }
   }
+
+  showMarkers = (feature, latlng) => {
+    const { properties } = feature;
+    const { color } = properties;
+    const customIcon = this.generateMarkerIcon(color);
+
+    return L.marker(latlng, { icon: customIcon });
+  };
+
+  generateMarkerIcon = (fillColor = '#93c47d') => {
+    const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
+    <defs>
+      <style>
+        .cls-1 {
+          fill: ${fillColor};
+        }
+      </style>
+    </defs>
+    <title>Severity-Minor</title>
+    <path class="cls-1" d="M198.43,17.57A160.05,160.05,0,0,0,54.1,246.69c.56,1.19,144.33,282.88,144.33,282.88L341,250.19A160,160,0,0,0,198.43,17.57Zm0,256a96,96,0,1,1,96-96A96,96,0,0,1,198.43,273.57Z"/>
+    </svg>
+    `;
+
+    const CustomIcon = L.Icon.extend({
+      options: {
+        iconSize: [40, 40],
+        shadowSize: [50, 64],
+        iconAnchor: [22, 94],
+        shadowAnchor: [4, 62],
+        popupAnchor: [-3, -76],
+      },
+    });
+
+    const iconUrl = encodeURI(`data:image/svg+xml,${svg}`).replace('#', '%23');
+    const icon = new CustomIcon({ iconUrl });
+    return icon;
+  };
 
   geoJsonFilter = feature => {
     const { geometry } = feature;
@@ -111,34 +148,16 @@ class AlertMap extends React.Component {
         return true;
       }
       default:
-        return true;
+        return false;
     }
   };
 
   styleFeatures = feature => {
     const { geometry, properties } = feature;
-    const { urgency } = properties;
+    const { color } = properties;
     const { type } = geometry;
     if (type === 'Polygon' || 'MultiPolygon') {
-      switch (urgency) {
-        case 'Immediate': {
-          return { color: 'red' };
-        }
-        case 'Expected': {
-          return { color: 'orange' };
-        }
-        case 'Future': {
-          return { color: 'yellow' };
-        }
-        case 'Past': {
-          return { color: 'green' };
-        }
-        case 'Unknown': {
-          return { color: 'grey' };
-        }
-        default:
-          return { color: 'grey' };
-      }
+      return { color };
     }
 
     return {};
@@ -149,14 +168,23 @@ class AlertMap extends React.Component {
     const { type } = geometry;
     switch (type) {
       case 'Point': {
-        console.log('looking at the feature');
-        console.log(feature);
         layer.on({ click: this.onclickGeoJson });
         return true;
       }
       default:
         return false;
     }
+  };
+
+  showAlertMarkers = (feature, latlng) => {
+    const { properties } = feature;
+    const { severity } = properties;
+    const customIcon = L.icon({
+      iconUrl: selectIcon(severity),
+      iconSize: [30, 30], // size of the icon
+    });
+
+    return L.marker(latlng, { icon: customIcon });
   };
 
   onclickGeoJson = e => {
@@ -260,8 +288,10 @@ class AlertMap extends React.Component {
         >
           <TileLayer
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+            id="mapbox.light"
+            url="https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0"
           />
+
           {this.showPopup()}
         </LeafletMap>
       </div>
@@ -277,8 +307,8 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    startGetAlerts: alertsGetStart,
-    startGetAlert: alertGetStart,
+    startGetAlerts: getAlertsOperation,
+    startGetAlert: getAlertOperation,
   }
 )(AlertMap);
 

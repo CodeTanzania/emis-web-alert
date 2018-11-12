@@ -66,25 +66,26 @@ export default function AlertDetails(props) {
           span={24}
           style={{ textAlign: 'left', paddingLeft: '10px', marginTop: '15px' }}
         >
-          <AlertDetailsValue
-            property="event"
-            value={get(selected, 'event.name')}
-          />
+          <AlertDetailsValue property="event" value={get(selected, 'event')} />
           <AlertDetailsValue
             property="category"
-            value={get(selected, 'event.category')}
+            value={get(selected, 'category')}
           />
           <AlertDetailsValue
             property="urgency"
-            value={get(selected, 'event.urgency')}
+            value={get(selected, 'urgency')}
           />
           <AlertDetailsValue
             property="severity"
-            value={get(selected, 'event.severity')}
+            value={get(selected, 'severity')}
           />
           <AlertDetailsValue
             property="certainty"
-            value={get(selected, 'event.certainty')}
+            value={get(selected, 'certainty')}
+          />
+          <AlertDetailsValue
+            property="Alert Description"
+            value={get(selected, 'description')}
           />
           <AlertDetailsValue
             property="area description"
@@ -92,7 +93,7 @@ export default function AlertDetails(props) {
           />
           <AlertDetailsValue
             property="instructions"
-            value={get(selected, 'message.instruction')}
+            value={get(selected, 'instruction')}
           />
         </Col>
       </Row>
