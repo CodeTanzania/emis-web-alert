@@ -6,7 +6,6 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
@@ -37,7 +36,7 @@ class AlertMap extends React.Component {
     this.closePopup = this.closePopup.bind(this);
   }
 
-  generateMarkerIcon = ( fillColor = '#93c47d' ) => {
+  generateMarkerIcon = (fillColor = '#93c47d') => {
     const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
     <defs>
       <style>
@@ -53,16 +52,16 @@ class AlertMap extends React.Component {
 
     const CustomIcon = L.Icon.extend({
       options: {
-        iconSize:     [40, 40],
-        shadowSize:   [50, 64],
-        iconAnchor:   [22, 94],
+        iconSize: [40, 40],
+        shadowSize: [50, 64],
+        iconAnchor: [22, 94],
         shadowAnchor: [4, 62],
-        popupAnchor:  [-3, -76]
+        popupAnchor: [-3, -76]
       }
     });
 
-    const iconUrl = encodeURI("data:image/svg+xml," + svg).replace('#','%23');
-    const icon = new CustomIcon({iconUrl: iconUrl})
+    const iconUrl = encodeURI("data:image/svg+xml," + svg).replace('#', '%23');
+    const icon = new CustomIcon({ iconUrl })
     return icon;
   }
   componentDidMount() {
@@ -100,6 +99,8 @@ class AlertMap extends React.Component {
     const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
       alerts.map(alert => this.alertsLayer.addData(alert));
+      this.map.setView([-6.179, 35.754], 7 );
+      this.map.flyTo([-6.179, 35.754]);
     }
 
     if (selected && selected !== prevProps.selected) {
@@ -111,7 +112,8 @@ class AlertMap extends React.Component {
       this.selectedAlertLayer.on('remove', () => {
         this.alertsLayer.addTo(this.map);
       });
-      // this.map.fitBounds(alertLayer.getBounds());
+      this.map.flyToBounds(this.selectedAlertLayer.getBounds())
+      this.map.fitBounds(this.selectedAlertLayer.getBounds());
     } else if (selected !== prevProps.selected) {
       this.map.removeLayer(this.selectedAlertLayer);
       startGetAlerts();
@@ -146,34 +148,16 @@ class AlertMap extends React.Component {
         return true;
       }
       default:
-        return true;
+        return false;
     }
   };
 
   styleFeatures = feature => {
     const { geometry, properties } = feature;
-    const { urgency } = properties;
+    const { color } = properties;
     const { type } = geometry;
     if (type === 'Polygon' || 'MultiPolygon') {
-      switch (urgency) {
-        case 'Immediate': {
-          return { color: 'red' };
-        }
-        case 'Expected': {
-          return { color: 'orange' };
-        }
-        case 'Future': {
-          return { color: 'yellow' };
-        }
-        case 'Past': {
-          return { color: 'green' };
-        }
-        case 'Unknown': {
-          return { color: 'grey' };
-        }
-        default:
-          return { color: 'grey' };
-      }
+      return { color };
     }
 
     return {};
@@ -404,8 +388,8 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
   alerts: [],
   selected: null,
 };
