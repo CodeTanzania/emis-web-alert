@@ -22,27 +22,15 @@ class AlertForm extends React.Component {
           instructions,
         } = values;
         const payload = {
-          source: {
-            name: 'Tanzania Meteorological Agency',
-            phone: '255 22 2460706-8',
-            email: 'severe@meteo.go.tz',
-            website: 'met@meteo.go.tz',
-          },
-          event: {
-            name: event,
-            category,
-            urgency,
-            severity,
-            certainty,
-            response: 'Monitor',
-          },
-          message: {
-            instruction: instructions,
-          },
-          area: {
-            description: 'Bedfordshire',
-            geometry: area,
-          },
+          category,
+          event,
+          urgency,
+          severity,
+          certainty,
+          instruction: instructions,
+          geometry: area,
+          source: 'testing',
+          area: 'testing'
         };
         API.createAlert(payload);
         closePopup();
