@@ -30,7 +30,7 @@ class AlertForm extends React.Component {
           instruction: instructions,
           geometry: area,
           source: 'testing',
-          area: 'testing'
+          area: 'testing',
         };
         API.createAlert(payload);
         closePopup();

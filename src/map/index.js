@@ -117,10 +117,9 @@ class AlertMap extends React.Component {
     const CustomIcon = L.Icon.extend({
       options: {
         iconSize: [40, 40],
-        shadowSize: [50, 64],
-        iconAnchor: [22, 94],
+        iconAnchor: [15, 30],
         shadowAnchor: [4, 62],
-        popupAnchor: [-3, -76],
+        popupAnchor: [0, -25],
       },
     });
 
@@ -165,11 +164,15 @@ class AlertMap extends React.Component {
   };
 
   onEachFeature = (feature, layer) => {
-    const { geometry } = feature;
+    const { geometry, properties } = feature;
+    const { event } = properties;
     const { type } = geometry;
     switch (type) {
       case 'Point': {
-        layer.on({ click: this.onclickGeoJson });
+        layer
+          .on({ click: this.onclickGeoJson })
+          .bindTooltip(`${event}`)
+          .openTooltip();
         return true;
       }
       default:

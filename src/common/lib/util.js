@@ -17,13 +17,14 @@ export const alertToGeoJSON = alert => {
     _id,
     category,
     urgency,
+    event,
     severity,
     color,
     area,
     geometry,
     centroid,
   } = alert;
-  const properties = { id: _id, category, urgency, severity, color };
+  const properties = { id: _id, category, urgency, severity, color, event };
   return {
     type: 'FeatureCollection',
     description: area,
