@@ -3,7 +3,7 @@ const API = {
    * Get Alerts
    */
   getAlerts: () =>
-    fetch(`http://192.168.43.78:5000/v1/alerts?limit=50`)
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts?limit=50`)
       .then(res => res.json())
       .then(res => res.data),
 
@@ -11,7 +11,7 @@ const API = {
    * Get Alert
    */
   getAlert: id =>
-    fetch(`http://192.168.43.78:5000/v1/alerts/${id}`).then(res =>
+    fetch(`https://emis-alert.herokuapp.com/v1/alerts/${id}`).then(res =>
       res.json()
     ),
 
@@ -20,7 +20,7 @@ const API = {
    * @param {Object} data alert data to create
    */
   createAlert: data => {
-    const url = `http://192.168.43.78:5000/v1/alerts`;
+    const url = `https://emis-alert.herokuapp.com/v1/alerts`;
     const config = {
       method: 'POST',
       body: JSON.stringify(data),
