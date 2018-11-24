@@ -1,6 +1,7 @@
 .legend {
   line-height: 18px;
   color: #555;
+  z-index: 1000;
   padding: 6px 8px;
   font: 14px/16px Arial, Helvetica, sans-serif;
   background: rgba(255,255,255,0.8);
@@ -27,7 +28,6 @@ i {
   position: absolute;
   right: 0;
   bottom: 0;
-  pointer-events: none;
   margin-right: 10px;
   margin-bottom: 30px;
 }

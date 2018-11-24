@@ -42,25 +42,3 @@ export const alertToGeoJSON = alert => {
     ],
   };
 };
-
-export const selectIcon = (incidentType = '') => {
-  switch (incidentType) {
-    case 'Extreme': {
-      return tsunami;
-    }
-    case 'Severe': {
-      return markerIcon;
-    }
-    case 'Moderate': {
-      return fire;
-    }
-    case 'Minor': {
-      return flood;
-    }
-    case 'Unknown': {
-      return markerIcon;
-    }
-    default:
-      return markerIcon;
-  }
-};

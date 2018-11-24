@@ -1,27 +1,20 @@
 import React from 'react';
-import { Col, Row } from 'antd';
-import LegendItem from './components/LegendItem';
-import { severityColors } from '../../../common/lib/util';
+import classnames from 'classnames/bind';
+// import LegendItem from './components/LegendItem';
+import styles from './alertlegend.css';
+
+const cx = classnames.bind(styles);
 
 export default function AlertLegend() {
-  const renderLegendItems = data =>
-    data.map(({ property, value }) => (
-      <Col span={4}>
-        <LegendItem property={property} value={value} />
-      </Col>
-    ));
+  // const renderLegendItems = data =>
+  //   data.map(({ property, value }) => (
+  //     <Col span={4}>
+  //       <LegendItem property={property} value={value} />
+  //     </Col>
+  //   ));
   return (
-    <div className="top-right">
-      <div className="legend">
-        <Row>
-          <Col span={4}>
-            <div style={{ marginBottom: '3px' }}>
-              <strong>Severity Level: </strong>
-            </div>
-          </Col>
-          {renderLegendItems(severityColors)}
-        </Row>
-      </div>
+    <div className={cx('AlertLegend')}>
+      <h1>This is a legend </h1>
     </div>
   );
 }
