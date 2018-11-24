@@ -30,7 +30,7 @@ export const alertGetStart = (id = null) => ({
 
 export const setSeverityFilter = severity => ({
   type: FILTER_SET_SEVERITY,
-  payload: { severity },
+  payload: severity,
 });
 
 export const setAlertNavActive = activeItem => ({

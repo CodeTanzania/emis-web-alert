@@ -77,6 +77,7 @@ class AlertMap extends React.Component {
   componentDidUpdate(prevProps) {
     const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
+      this.alertsLayer.clearLayers();
       alerts.map(alert => this.alertsLayer.addData(alert));
       this.map.setView([-6.179, 35.754], 7);
       this.map.flyTo([-6.179, 35.754]);

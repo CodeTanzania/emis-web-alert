@@ -6,6 +6,7 @@ import { Menu } from 'antd';
 import { setAlertNavActive } from '../../actions';
 import AlertDetails from '../AlertDetails';
 import AlertLegend from '../AlertLegend';
+import AlertFilter from '../AlertFilter';
 
 import styles from './styles.css';
 
@@ -24,9 +25,7 @@ class AlertNav extends React.Component {
         return <AlertLegend />;
       }
       case 'filter': {
-        return (
-          <div className={cx('AlertNavLegend')}>This is Filters content</div>
-        );
+        return <AlertFilter />;
       }
       case 'details': {
         return <AlertDetails />;

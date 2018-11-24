@@ -32,7 +32,8 @@ export function filter(state = {}, action) {
   const { type, payload } = action;
   switch (type) {
     case FILTER_SET_SEVERITY: {
-      return { ...state, ...payload };
+      const severity = payload;
+      return { ...state, severity };
     }
     default:
       return state;
