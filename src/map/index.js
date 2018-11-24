@@ -7,9 +7,9 @@ import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from './epics';
+import { setAlertNavActive } from './actions';
 import WrappedAlertForm from './components/form';
-import AlertDetails from './components/alertDetails';
-import AlertLegend from './components/AlertLegend';
+import AlertNav from './components/AlertNav';
 import { alertPropTypes } from '../common/lib/propTypesUtil';
 import {
   baseMaps,
@@ -17,7 +17,7 @@ import {
   styleFeatures,
   geoJsonFilter,
   filterFeatures,
-  popupContent
+  popupContent,
 } from '../common/lib/mapUtil';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
@@ -50,7 +50,7 @@ class AlertMap extends React.Component {
     startGetAlerts();
     this.map = this.mapRef.current.leafletElement;
 
-    L.control.layers(baseMaps).addTo(this.map);
+    L.control.layers(baseMaps, {}, { position: 'bottomleft' }).addTo(this.map);
 
     this.alertsLayer = L.geoJSON([], {
       filter: geoJsonFilter,
@@ -116,12 +116,12 @@ class AlertMap extends React.Component {
     }
   };
 
-
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
-    const { startGetAlert } = this.props;
+    const { startGetAlert, showAlertDetailsOnNav } = this.props;
     this.map.removeLayer(this.alertsLayer);
     startGetAlert(id);
+    showAlertDetailsOnNav('details');
   };
 
   renderAlertActions = hideAlerts =>
@@ -136,8 +136,6 @@ class AlertMap extends React.Component {
         </Row>
       </div>
     ) : null;
-
-
 
   storeEditableLayers = () => {
     // FeatureGroup is to store editable layers
@@ -156,10 +154,10 @@ class AlertMap extends React.Component {
       },
     });
     this.map.addControl(this.drawControl);
-  }
+  };
+
   // shows interface for new alert
   onclickNewAlertButton = () => {
-
     L.popup({ minWidth: 450 })
       .setLatLng([-6.179, 35.754])
       .setContent(popupContent)
@@ -174,7 +172,6 @@ class AlertMap extends React.Component {
 
     this.storeEditableLayers();
   };
-
 
   closePopup = () => {
     this.map.removeControl(this.drawControl);
@@ -199,14 +196,11 @@ class AlertMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
-    const { selected, startGetAlert } = this.props;
     const position = [-6.179, 35.754];
     return (
       <div>
         {this.renderAlertActions(hideAlerts)}
-        <AlertDetails selected={selected} unSelectAlert={startGetAlert} />
-        <AlertLegend selected={selected} unSelectAlert={startGetAlert} />
-
+        <AlertNav />
         <LeafletMap
           center={position}
           zoom={7}
@@ -237,19 +231,22 @@ export default connect(
   {
     startGetAlerts: getAlertsOperation,
     startGetAlert: getAlertOperation,
+    showAlertDetailsOnNav: setAlertNavActive,
   }
 )(AlertMap);
 
 AlertMap.propTypes = {
   startGetAlerts: PropTypes.func,
   startGetAlert: PropTypes.func,
+  showAlertDetailsOnNav: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
   alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => { },
-  startGetAlert: () => { },
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  showAlertDetailsOnNav: () => {},
   alerts: [],
   selected: null,
 };

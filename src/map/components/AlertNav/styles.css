@@ -1,0 +1,21 @@
+.AlertNav {
+    margin: 10px 10px 0 0;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1000;  
+}
+
+.AlertNavLegend {
+    flex: 1
+}
+
+.AlertNavFilters {
+    flex: 1
+}
+
+.AlertNavDetails {
+    flex: 1
+}
