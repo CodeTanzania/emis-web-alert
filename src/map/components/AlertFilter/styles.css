@@ -1,0 +1,20 @@
+
+.AlertFilter {
+display: flex;
+}
+
+.AlertFilter .ant-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+
+.AlertFilter .ant-collapse {
+    width: 300px;
+}
+
+.AlertFilter .ant-checkbox-wrapper {
+    display: flex;
+    margin: 0 0 0 8px;
+}

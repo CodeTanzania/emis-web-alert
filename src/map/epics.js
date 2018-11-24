@@ -1,4 +1,6 @@
 /* eslint no-console: "off" */
+
+import { get } from 'lodash';
 import {
   alertsGetStart,
   alertGetStart,
@@ -8,8 +10,11 @@ import {
 import { alertToGeoJSON } from '../common/lib/util';
 
 export const getAlertsOperation = () => (dispatch, getState, { API }) => {
+  const state = getState();
+  const severity = get(state, 'filter.severity');
+
   dispatch(alertsGetStart());
-  API.getAlerts().then(alerts =>
+  API.getAlerts(severity).then(alerts =>
     dispatch(alertsStore(alerts.map(alert => alertToGeoJSON(alert))))
   );
 };
