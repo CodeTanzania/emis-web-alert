@@ -10,7 +10,15 @@ import { getAlertsOperation, getAlertOperation } from './epics';
 import WrappedAlertForm from './components/form';
 import AlertDetails from './components/alertDetails';
 import AlertLegend from './components/AlertLegend';
-import { selectIcon } from '../common/lib/util';
+import { alertPropTypes } from '../common/lib/propTypesUtil';
+import {
+  baseMaps,
+  showMarkers,
+  styleFeatures,
+  geoJsonFilter,
+  filterFeatures,
+  popupContent
+} from '../common/lib/mapUtil';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
@@ -40,86 +48,13 @@ class AlertMap extends React.Component {
   componentDidMount() {
     const { startGetAlerts } = this.props;
     startGetAlerts();
-
     this.map = this.mapRef.current.leafletElement;
-    const mapboxAttribution =
-      '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>' +
-      ' © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
-      '<strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">' +
-      'Improve this map</a></strong>';
-
-    const inundationAttribution =
-      '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>' +
-      ' © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
-      '© <a href="https://www.ramanihuria.org">Ramani Huria</a>' +
-      '<strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">' +
-      'Improve this map</a></strong>';
-
-    const osmAttr =
-      'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,' +
-      ' <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
-
-    const osm = new L.TileLayer(
-      'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      {
-        attribution: osmAttr,
-        maxZoom: 19,
-      }
-    );
-
-    const inundation = new L.TileLayer(
-      'https://api.mapbox.com/styles/v1/samtwesa/' +
-        'cj670gav2029o2rmrrg886sj7/tiles/256/{z}/{x}/{y}?access_token=' +
-        'pk.eyJ1Ijoic2FtdHdlc2EiLCJhIjoiZTc1OTQ4ODE0ZmY2MzY0MGYwMDNjOWNlYTYxMjU4NDYifQ.' +
-        'F1zCcOYqpXWd4C9l9xqvEQ',
-      {
-        attribution: inundationAttribution,
-        maxZoom: 18,
-      }
-    );
-    const customOsmBright = new L.TileLayer(
-      'https://api.mapbox.com/styles/v1/samtwesa/' +
-        'cj6p13u2o25wa2rmj3k05qnrx/tiles/256/{z}/{x}/{y}?access_token=' +
-        'pk.eyJ1Ijoic2FtdHdlc2EiLCJhIjoiZTc1OTQ4ODE0ZmY2MzY0MGYwMDNjOWNlYTYxMjU4NDYifQ.' +
-        'F1zCcOYqpXWd4C9l9xqvEQ',
-      {
-        attribution: mapboxAttribution,
-        maxZoom: 20,
-      }
-    );
-
-    const defaultMap = new L.TileLayer(
-      'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0',
-      {
-        attribution: mapboxAttribution,
-        maxZoom: 20,
-      }
-    );
-
-    const satelliteLayer = new L.TileLayer(
-      'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/' +
-        'tiles/256/{z}/{x}/{y}?access_token=' +
-        'pk.eyJ1Ijoic2FtdHdlc2EiLCJhIjoiZTc1OTQ4ODE0ZmY2MzY0MGYwMDNjOWNlYTYxMjU4NDYifQ.' +
-        'F1zCcOYqpXWd4C9l9xqvEQ',
-      {
-        attribution: mapboxAttribution,
-        maxZoom: 20,
-      }
-    );
-
-    const baseMaps = {
-      OpenStreetMap: osm,
-      Satellite: satelliteLayer,
-      Standard: customOsmBright,
-      Inundation: inundation,
-      Dafault: defaultMap,
-    };
 
     L.control.layers(baseMaps).addTo(this.map);
 
     this.alertsLayer = L.geoJSON([], {
-      filter: this.geoJsonFilter,
-      pointToLayer: this.showMarkers,
+      filter: geoJsonFilter,
+      pointToLayer: showMarkers,
       onEachFeature: this.onEachFeature,
     }).addTo(this.map);
 
@@ -150,8 +85,8 @@ class AlertMap extends React.Component {
     if (selected && selected !== prevProps.selected) {
       const { area } = selected;
       this.selectedAlertLayer = L.geoJSON([area], {
-        filter: this.filterFeatures,
-        style: this.styleFeatures,
+        filter: filterFeatures,
+        style: styleFeatures,
       }).addTo(this.map);
       this.selectedAlertLayer.on('remove', () => {
         this.alertsLayer.addTo(this.map);
@@ -163,77 +98,6 @@ class AlertMap extends React.Component {
       startGetAlerts();
     }
   }
-
-  showMarkers = (feature, latlng) => {
-    const { properties } = feature;
-    const { color } = properties;
-    const customIcon = this.generateMarkerIcon(color);
-
-    return L.marker(latlng, { icon: customIcon });
-  };
-
-  generateMarkerIcon = (fillColor = '#93c47d') => {
-    const svg = `<svg id="Capa_1" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.54 566.93">
-    <defs>
-      <style>
-        .cls-1 {
-          fill: ${fillColor};
-        }
-      </style>
-    </defs>
-    <title>Severity-Minor</title>
-    <path class="cls-1" d="M198.43,17.57A160.05,160.05,0,0,0,54.1,246.69c.56,1.19,144.33,282.88,144.33,282.88L341,250.19A160,160,0,0,0,198.43,17.57Zm0,256a96,96,0,1,1,96-96A96,96,0,0,1,198.43,273.57Z"/>
-    </svg>
-    `;
-
-    const CustomIcon = L.Icon.extend({
-      options: {
-        iconSize: [40, 40],
-        iconAnchor: [15, 30],
-        shadowAnchor: [4, 62],
-        popupAnchor: [0, -25],
-      },
-    });
-
-    const iconUrl = encodeURI(`data:image/svg+xml,${svg}`).replace('#', '%23');
-    const icon = new CustomIcon({ iconUrl });
-    return icon;
-  };
-
-  geoJsonFilter = feature => {
-    const { geometry } = feature;
-    const { type } = geometry;
-    switch (type) {
-      case 'Point': {
-        return true;
-      }
-      default:
-        return false;
-    }
-  };
-
-  filterFeatures = feature => {
-    const { geometry } = feature;
-    const { type } = geometry;
-    switch (type) {
-      case 'Polygon': {
-        return true;
-      }
-      default:
-        return false;
-    }
-  };
-
-  styleFeatures = feature => {
-    const { geometry, properties } = feature;
-    const { color } = properties;
-    const { type } = geometry;
-    if (type === 'Polygon' || 'MultiPolygon') {
-      return { color };
-    }
-
-    return {};
-  };
 
   onEachFeature = (feature, layer) => {
     const { geometry, properties } = feature;
@@ -252,16 +116,6 @@ class AlertMap extends React.Component {
     }
   };
 
-  showAlertMarkers = (feature, latlng) => {
-    const { properties } = feature;
-    const { severity } = properties;
-    const customIcon = L.icon({
-      iconUrl: selectIcon(severity),
-      iconSize: [30, 30], // size of the icon
-    });
-
-    return L.marker(latlng, { icon: customIcon });
-  };
 
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
@@ -283,31 +137,9 @@ class AlertMap extends React.Component {
       </div>
     ) : null;
 
-  // shows interface for new alert
-  onclickNewAlertButton = () => {
-    const popupContent = `<div>
-    <div class="ant-modal-body">
-        <h2>To create new Alert, Draw the area that is involved  in the Alert</h2>
-    </div>
-    <div class="ant-modal-footer">
-        <div>
-            <button type="button" id="info-button" class="ant-btn ant-btn-primary"><span>OK</span></button>
-        </div>
-    </div>
-</div>`;
 
-    L.popup({ minWidth: 450 })
-      .setLatLng([-6.179, 35.754])
-      .setContent(popupContent)
-      .openOn(this.map);
-    this.map.removeLayer(this.alertsLayer);
-    this.setState({ hideAlerts: true });
 
-    document.querySelector('#info-button').addEventListener('click', e => {
-      e.preventDefault();
-      this.map.closePopup();
-    });
-
+  storeEditableLayers = () => {
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
@@ -324,7 +156,25 @@ class AlertMap extends React.Component {
       },
     });
     this.map.addControl(this.drawControl);
+  }
+  // shows interface for new alert
+  onclickNewAlertButton = () => {
+
+    L.popup({ minWidth: 450 })
+      .setLatLng([-6.179, 35.754])
+      .setContent(popupContent)
+      .openOn(this.map);
+    this.map.removeLayer(this.alertsLayer);
+    this.setState({ hideAlerts: true });
+
+    document.querySelector('#info-button').addEventListener('click', e => {
+      e.preventDefault();
+      this.map.closePopup();
+    });
+
+    this.storeEditableLayers();
   };
+
 
   closePopup = () => {
     this.map.removeControl(this.drawControl);
@@ -379,6 +229,7 @@ class AlertMap extends React.Component {
 const mapStateToProps = state => ({
   alerts: state.alerts && state.alerts ? state.alerts.data : [],
   selected: state.alert && state.alert ? state.alert.data : null,
+  filter: state.filter,
 });
 
 export default connect(
@@ -389,74 +240,6 @@ export default connect(
   }
 )(AlertMap);
 
-const geometry = PropTypes.shape({
-  type: PropTypes.string,
-  coordinates: PropTypes.arrayOf(PropTypes.number),
-}).isRequired;
-const feature = PropTypes.shape({
-  type: PropTypes.string,
-  properties: PropTypes.shape({ id: PropTypes.string }),
-  geometry,
-});
-
-const sourcePropTypes = {
-  name: PropTypes.string,
-  phone: PropTypes.string,
-  email: PropTypes.string,
-  website: PropTypes.string,
-};
-
-const eventPropTypes = {
-  code: PropTypes.string,
-  name: PropTypes.string,
-  category: PropTypes.string,
-  description: PropTypes.string,
-  urgency: PropTypes.string,
-  severity: PropTypes.string,
-  certainty: PropTypes.string,
-  response: PropTypes.string,
-};
-
-const messagePropTpes = {
-  status: PropTypes.string,
-  type: PropTypes.string,
-  scope: PropTypes.string,
-  restriction: PropTypes.string,
-  addresses: PropTypes.arrayOf(PropTypes.string),
-  code: PropTypes.string,
-  note: PropTypes.string,
-  headline: PropTypes.string,
-  instruction: PropTypes.string,
-  website: PropTypes.string,
-};
-
-const areaPropTypes = {
-  type: PropTypes.string,
-  features: PropTypes.arrayOf(feature),
-};
-
-const resourcePropTypes = {
-  description: PropTypes.string,
-  mime: PropTypes.string,
-  uri: PropTypes.string,
-};
-
-const alertPropTypes = {
-  source: PropTypes.shape({ sourcePropTypes }),
-  event: PropTypes.shape({ eventPropTypes }),
-  message: PropTypes.shape({ messagePropTpes }),
-  area: PropTypes.shape({ areaPropTypes }),
-  resources: PropTypes.shape({ resourcePropTypes }),
-  reportedAt: PropTypes.string,
-  expectedAt: PropTypes.string,
-  expiredAt: PropTypes.string,
-  occuredAt: PropTypes.string,
-  endedAt: PropTypes.string,
-  direction: PropTypes.string,
-  _id: PropTypes.string,
-  updatedAt: PropTypes.string,
-  createdAt: PropTypes.string,
-};
 AlertMap.propTypes = {
   startGetAlerts: PropTypes.func,
   startGetAlert: PropTypes.func,
@@ -465,8 +248,8 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
   alerts: [],
   selected: null,
 };
