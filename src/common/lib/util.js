@@ -1,8 +1,3 @@
-import markerIcon from '../../images/Dead.png';
-import tsunami from '../../images/Tsunami.png';
-import fire from '../../images/Fire.png';
-import flood from '../../images/Flood.png';
-
 // data about severity colors
 export const severityColors = [
   { property: 'Extreme', value: '#d72e29' },

@@ -1,0 +1,11 @@
+.LegendItem {
+    display: flex;
+    padding: 0 10px 10px 0;
+}
+
+.LegendItem i {
+    margin: 0 5px 0 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+}

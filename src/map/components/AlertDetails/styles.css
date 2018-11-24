@@ -1,0 +1,27 @@
+.AlertDetails {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    width: 18vw;
+    height: 90vh;
+    overflow-y: scroll;
+}
+
+.AlertDetailsBack {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 5px 40px 5px;
+
+}
+
+.AlertDetailsBack button {
+    flex: 0.3;
+}
+.AlertDetailsContent {
+    flex: 1;
+}
+
+.AlertDetailsHeader, .AlertDetailsContent {
+    padding: 10px;
+}
+
