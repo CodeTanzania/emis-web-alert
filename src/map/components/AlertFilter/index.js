@@ -2,12 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Form, Checkbox, Collapse } from 'antd';
+import { Form, Checkbox, Collapse, DatePicker } from 'antd';
 import { setSeverityFilter } from '../../actions';
 import { getAlertsOperation } from '../../epics';
 import styles from './styles.css';
 
+// constants
 const cx = classnames.bind(styles);
+const { RangePicker } = DatePicker;
 const { Panel } = Collapse;
 
 class WrappedAlertFilter extends React.Component {
@@ -17,11 +19,30 @@ class WrappedAlertFilter extends React.Component {
     refreshMap();
   };
 
+  onOk = (value) => {
+    console.log('onOk: ', value);
+  }
+ onDateChangeChange = (value, dateString) => {
+    console.log('Selected Time: ', value);
+    console.log('Formatted Selected Time: ', dateString);
+  }
+
   render() {
     const { filter } = this.props;
     const { severity } = filter;
     return (
       <div className={cx('AlertFilter')}>
+      <div className={cx('AlertFilterDates')}>
+      <div>Dates:</div>
+          <RangePicker
+          style={{width:'auto'}}
+            showTime={{ format: 'HH:mm' }}
+            format="YYYY-MM-DD HH:mm"
+            placeholder={['Start Time', 'End Time']}
+            onChange={this.onChange}
+            onOk={this.onOk}
+          />
+      </div>
         <Collapse
           accordion
           defaultActiveKey={['1']}
@@ -69,7 +90,7 @@ WrappedAlertFilter.propTypes = {
 };
 
 WrappedAlertFilter.defaultProps = {
-  updateFilter: () => {},
-  refreshMap: () => {},
+  updateFilter: () => { },
+  refreshMap: () => { },
   filter: [],
 };
