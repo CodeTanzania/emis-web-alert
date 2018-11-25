@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Form, Checkbox, Collapse, DatePicker } from 'antd';
-import { setSeverityFilter } from '../../actions';
+import { setSeverityFilter, setDateRageFilter } from '../../actions';
 import { getAlertsOperation } from '../../epics';
 import styles from './styles.css';
 
@@ -19,12 +19,10 @@ class WrappedAlertFilter extends React.Component {
     refreshMap();
   };
 
-  onOk = (value) => {
-    console.log('onOk: ', value);
-  }
- onDateChangeChange = (value, dateString) => {
-    console.log('Selected Time: ', value);
-    console.log('Formatted Selected Time: ', dateString);
+
+ onDateChangeChange = ( dateString) => {
+   const { updateDateRengeFilter } = this.props;
+   updateDateRengeFilter(dateString);
   }
 
   render() {
@@ -39,8 +37,7 @@ class WrappedAlertFilter extends React.Component {
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             placeholder={['Start Time', 'End Time']}
-            onChange={this.onChange}
-            onOk={this.onOk}
+            onChange={this.onDateChangeChange}
           />
       </div>
         <Collapse
@@ -80,11 +77,13 @@ export default connect(
   {
     updateFilter: setSeverityFilter,
     refreshMap: getAlertsOperation,
+    updateDateRengeFilter: setDateRageFilter
   }
 )(AlertFilter);
 
 WrappedAlertFilter.propTypes = {
   updateFilter: PropTypes.func,
+  updateDateRengeFilter: PropTypes.func,
   refreshMap: PropTypes.func,
   filter: PropTypes.arrayOf(PropTypes.string),
 };
@@ -92,5 +91,6 @@ WrappedAlertFilter.propTypes = {
 WrappedAlertFilter.defaultProps = {
   updateFilter: () => { },
   refreshMap: () => { },
+  updateDateRengeFilter: () => {},
   filter: [],
 };

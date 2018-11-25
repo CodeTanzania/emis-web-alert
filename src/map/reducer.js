@@ -4,8 +4,13 @@ import {
   ALERT_STORE,
   FILTER_SET_SEVERITY,
   ALERT_NAV_SET_ACTIVE,
+  FILTER_SET_DATE_RANGE,
 } from './actions';
 
+const initialFilter = {
+  severity: [],
+  dates: [],
+};
 export function alerts(state = {}, action) {
   const { type, payload } = action;
   switch (type) {
@@ -28,12 +33,16 @@ export function alert(state = {}, action) {
   }
 }
 
-export function filter(state = {}, action) {
+export function filter(state = initialFilter, action) {
   const { type, payload } = action;
   switch (type) {
     case FILTER_SET_SEVERITY: {
       const severity = payload;
       return { ...state, severity };
+    }
+    case FILTER_SET_DATE_RANGE: {
+      const dates = payload;
+      return { ...state, dates };
     }
     default:
       return state;
