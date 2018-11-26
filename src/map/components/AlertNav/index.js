@@ -48,9 +48,7 @@ class AlertNav extends React.Component {
           <Menu.Item key="filter">Filters</Menu.Item>
           <Menu.Item key="details">Details</Menu.Item>
         </Menu>
-        <div>
-        {this.renderNavContent(current)}
-        </div>
+        <div>{this.renderNavContent(current)}</div>
       </div>
     );
   }

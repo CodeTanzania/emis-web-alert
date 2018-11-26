@@ -4,7 +4,7 @@ export const ALERTS_STORE = 'ALERTS_STORE';
 export const ALERT_STORE = 'ALERT_STORE';
 export const MAP_SET_POSITION = 'MAP_SET_POSITION';
 export const FILTER_SET_SEVERITY = 'FILTER_SET_SEVERITY';
-export const FILTER_SET_DATE_RANGE = 'FILTER_SET_DATE_RANGE'
+export const FILTER_SET_DATE_RANGE = 'FILTER_SET_DATE_RANGE';
 export const ALERT_NAV_SET_ACTIVE = 'ALERT_NAV_SET_ACTIVE';
 
 export const alertsGetStart = () => ({ type: ALERTS_GET_START });

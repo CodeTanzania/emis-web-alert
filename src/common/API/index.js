@@ -19,18 +19,30 @@ const Axios = axios.create({
   },
 });
 
+const generateFiter = (severityData, dates) => {
+  let filter = {};
+
+  if(severityData.length > 0) {
+    const severity = { $in: severityData}
+    filter = {...filter, severity };
+  }
+
+  if(dates.length > 0) {
+    const reportedAt = {$gte: dates[0], $lt: dates[1] }
+    filter = {...filter, reportedAt };
+  }
+
+  return filter;
+}
+
 const API = {
   /**
    * Get Alerts
    */
-  getAlerts: (severity = []) => {
-    const filter = {
-      severity: { $in: severity },
-    };
+  getAlerts: ({ severity, dates } = {}) => {
+    const filter = generateFiter(severity, dates);
 
-    const params = severity.length > 0 ? { filter } : {};
-
-    return Axios.get(`/alerts`, { params })
+    return Axios.get(`/alerts`, { params: { filter } })
       .then(res => res.data)
       .then(res => res.data);
   },

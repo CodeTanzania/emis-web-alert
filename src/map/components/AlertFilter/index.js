@@ -19,27 +19,29 @@ class WrappedAlertFilter extends React.Component {
     refreshMap();
   };
 
-
- onDateChangeChange = ( dateString) => {
-   const { updateDateRengeFilter } = this.props;
-   updateDateRengeFilter(dateString);
-  }
+  onDateChangeChange = dateString => {
+    const { updateDateRengeFilter, refreshMap } = this.props;
+    // updateDateRengeFilter(['2018-07-19T14:00:00.000Z', '2018-08-12T14:00:00.000Z']);
+    const formatedDate = dateString.map( date =>date.toISOString())
+    updateDateRengeFilter(formatedDate);
+    refreshMap();
+  };
 
   render() {
     const { filter } = this.props;
     const { severity } = filter;
     return (
       <div className={cx('AlertFilter')}>
-      <div className={cx('AlertFilterDates')}>
-      <div>Dates:</div>
+        <div className={cx('AlertFilterDates')}>
+          <div>Dates:</div>
           <RangePicker
-          style={{width:'auto'}}
+            style={{ width: 'auto' }}
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             placeholder={['Start Time', 'End Time']}
             onChange={this.onDateChangeChange}
           />
-      </div>
+        </div>
         <Collapse
           accordion
           defaultActiveKey={['1']}
@@ -77,7 +79,7 @@ export default connect(
   {
     updateFilter: setSeverityFilter,
     refreshMap: getAlertsOperation,
-    updateDateRengeFilter: setDateRageFilter
+    updateDateRengeFilter: setDateRageFilter,
   }
 )(AlertFilter);
 
@@ -89,8 +91,8 @@ WrappedAlertFilter.propTypes = {
 };
 
 WrappedAlertFilter.defaultProps = {
-  updateFilter: () => { },
-  refreshMap: () => { },
+  updateFilter: () => {},
+  refreshMap: () => {},
   updateDateRengeFilter: () => {},
   filter: [],
 };
