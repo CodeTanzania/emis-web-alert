@@ -36,8 +36,8 @@ class AlertNav extends React.Component {
   };
 
   render() {
-    const { current } = this.props;
-    return (
+    const { current, hideNav } = this.props;
+    return !hideNav ? (
       <div className={cx('AlertNav')}>
         <Menu
           onClick={this.handleClick}
@@ -50,7 +50,7 @@ class AlertNav extends React.Component {
         </Menu>
         <div>{this.renderNavContent(current)}</div>
       </div>
-    );
+    ) : null;
   }
 }
 

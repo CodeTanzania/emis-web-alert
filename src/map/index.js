@@ -201,7 +201,7 @@ class AlertMap extends React.Component {
     return (
       <div>
         {this.renderAlertActions(hideAlerts)}
-        <AlertNav />
+        <AlertNav hideNav={hideAlerts}/>
         <LeafletMap
           center={position}
           zoom={7}
