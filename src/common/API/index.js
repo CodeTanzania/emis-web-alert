@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_END_POINT = `https://emis-alert.herokuapp.com/v1`;
+const API_END_POINT = `https://emis-plan.herokuapp.com/v1`;
 
 /**
  * Initialize axios library
@@ -19,18 +19,30 @@ const Axios = axios.create({
   },
 });
 
+const generateFiter = (severityData, dates) => {
+  let filter = {};
+
+  if (severityData.length > 0) {
+    const severity = { $in: severityData };
+    filter = { ...filter, severity };
+  }
+
+  if (dates.length > 0) {
+    const reportedAt = { $gte: dates[0], $lt: dates[1] };
+    filter = { ...filter, reportedAt };
+  }
+
+  return filter;
+};
+
 const API = {
   /**
    * Get Alerts
    */
-  getAlerts: (severity = []) => {
-    const filter = {
-      severity: { $in: severity },
-    };
+  getAlerts: ({ severity, dates } = {}) => {
+    const filter = generateFiter(severity, dates);
 
-    const params = severity.length > 0 ? { filter } : {};
-
-    return Axios.get(`/alerts`, { params })
+    return Axios.get(`/alerts`, { params: { filter, limit: 100 } })
       .then(res => res.data)
       .then(res => res.data);
   },
@@ -46,7 +58,7 @@ const API = {
    * @param {Object} data alert data to create
    */
   createAlert: data => {
-    const url = `${API_END_POINT}/v1/alerts`;
+    const url = `${API_END_POINT}/alerts`;
     const config = {
       method: 'POST',
       body: JSON.stringify(data),

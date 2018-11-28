@@ -4,7 +4,11 @@ export const ALERTS_STORE = 'ALERTS_STORE';
 export const ALERT_STORE = 'ALERT_STORE';
 export const MAP_SET_POSITION = 'MAP_SET_POSITION';
 export const FILTER_SET_SEVERITY = 'FILTER_SET_SEVERITY';
+export const FILTER_SET_DATE_RANGE = 'FILTER_SET_DATE_RANGE';
 export const ALERT_NAV_SET_ACTIVE = 'ALERT_NAV_SET_ACTIVE';
+export const ALERT_CREATE_START = 'ALERT_CREATE_START';
+export const ALERT_CREATE_SUCCESS = 'ALRERT_CREATE_SUCCESS';
+export const ALERT_CREATE_ERROR = 'ALERT_CREATE_ERROR';
 
 export const alertsGetStart = () => ({ type: ALERTS_GET_START });
 
@@ -21,6 +25,7 @@ export const alertStore = alert => ({
     data: alert,
   },
 });
+
 export const alertGetStart = (id = null) => ({
   type: ALERT_GET_START,
   payload: {
@@ -33,7 +38,27 @@ export const setSeverityFilter = severity => ({
   payload: severity,
 });
 
+export const setDateRageFilter = dates => ({
+  type: FILTER_SET_DATE_RANGE,
+  payload: dates,
+});
+
 export const setAlertNavActive = activeItem => ({
   type: ALERT_NAV_SET_ACTIVE,
   payload: { activeItem },
+});
+
+export const startCreateAlert = (startCreate = true) => ({
+  type: ALERT_CREATE_START,
+  payload: { startCreate },
+});
+
+export const createAlertSuccess = created => ({
+  type: ALERT_CREATE_SUCCESS,
+  payload: { created },
+});
+
+export const createAlertError = error => ({
+  type: ALERT_CREATE_ERROR,
+  payload: { error },
 });

@@ -5,9 +5,10 @@ import classnames from 'classnames/bind';
 import { Button } from 'antd';
 import moment from 'moment';
 import { get } from 'lodash';
-import { getAlertOperation } from '../../epics';
+import { getAlertOperation, getAlertsOperation } from '../../epics';
 import styles from './styles.css';
 import { alertPropTypes } from '../../../common/lib/propTypesUtil';
+import { setAlertNavActive } from '../../actions';
 
 const cx = classnames.bind(styles);
 
@@ -40,16 +41,16 @@ function AlertDetailsValue({ property, value }) {
     switch (title) {
       case 'reportedAt': {
         const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()} (${m.fromNow()})`;
+        return `${m.calendar()}`;
       }
       case 'expectedAt': {
         const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()} (${m.toNow()})`;
+        return `${m.calendar()}`;
       }
 
       case 'expiredAt': {
         const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()} (${m.toNow()})`;
+        return `${m.calendar()}`;
       }
 
       default:
@@ -94,7 +95,7 @@ AlertDetailsValue.defaultProps = {
 };
 
 function AlertDetails(props) {
-  const { selected, unSelectAlert } = props;
+  const { selected, unSelectAlert, setActiveItem, refreshAlerts } = props;
   const detailsKeys = [
     'category',
     'urgency',
@@ -114,6 +115,8 @@ function AlertDetails(props) {
       <AlertDetailsValue property={key} value={get(selected, key)} />
     ));
   const closeAlertDetails = () => {
+    setActiveItem('legend');
+    refreshAlerts();
     unSelectAlert();
   };
   return selected ? (
@@ -139,15 +142,21 @@ export default connect(
   mapStateToProps,
   {
     unSelectAlert: getAlertOperation,
+    setActiveItem: setAlertNavActive,
+    refreshAlerts: getAlertsOperation,
   }
 )(AlertDetails);
 
 AlertDetails.propTypes = {
   unSelectAlert: PropTypes.func,
+  setActiveItem: PropTypes.func,
+  refreshAlerts: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
 };
 
 AlertDetails.defaultProps = {
   selected: null,
+  setActiveItem: () => {},
   unSelectAlert: () => {},
+  refreshAlerts: () => {},
 };

@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
 import { Form, Input, Select, Row, Col, Button, Divider } from 'antd';
-import API from '../../common/API';
+import { createAlertOperation } from '../epics';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -8,7 +10,7 @@ const { TextArea } = Input;
 
 class AlertForm extends React.Component {
   handleSubmit = e => {
-    const { area, closePopup, form } = this.props;
+    const { area, closePopup, form, createAlert } = this.props;
 
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
@@ -32,10 +34,15 @@ class AlertForm extends React.Component {
           source: 'testing',
           area: 'testing',
         };
-        API.createAlert(payload);
+        createAlert(payload);
         closePopup();
       }
     });
+  };
+
+  handleCancel = () => {
+    const { removeDrawnAlert } = this.props;
+    removeDrawnAlert();
   };
 
   render() {
@@ -168,7 +175,9 @@ class AlertForm extends React.Component {
           <Divider style={{ margin: '0px 0px 20px 0px' }} />
           <Row>
             <Col span={6} offset={12}>
-              <Button type="default">Cancel</Button>
+              <Button type="default" onClick={this.handleCancel}>
+                Cancel
+              </Button>
             </Col>
             <Col span={3} offset={1}>
               <Button type="primary" htmlType="submit">
@@ -183,4 +192,18 @@ class AlertForm extends React.Component {
 }
 
 const WrappedAlertForm = Form.create()(AlertForm);
-export default WrappedAlertForm;
+
+export default connect(
+  null,
+  {
+    createAlert: createAlertOperation,
+  }
+)(WrappedAlertForm);
+
+WrappedAlertForm.propTypes = {
+  createAlert: PropTypes.func,
+};
+
+WrappedAlertForm.defaultProps = {
+  createAlert: () => {},
+};

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Form, Checkbox, Collapse, DatePicker } from 'antd';
-import { setSeverityFilter } from '../../actions';
+import { setSeverityFilter, setDateRageFilter } from '../../actions';
 import { getAlertsOperation } from '../../epics';
 import styles from './styles.css';
 
@@ -19,30 +19,29 @@ class WrappedAlertFilter extends React.Component {
     refreshMap();
   };
 
-  onOk = (value) => {
-    console.log('onOk: ', value);
-  }
- onDateChangeChange = (value, dateString) => {
-    console.log('Selected Time: ', value);
-    console.log('Formatted Selected Time: ', dateString);
-  }
+  onDateChangeChange = dateString => {
+    const { updateDateRengeFilter, refreshMap } = this.props;
+    // updateDateRengeFilter(['2018-07-19T14:00:00.000Z', '2018-08-12T14:00:00.000Z']);
+    const formatedDate = dateString.map(date => date.toISOString());
+    updateDateRengeFilter(formatedDate);
+    refreshMap();
+  };
 
   render() {
     const { filter } = this.props;
     const { severity } = filter;
     return (
       <div className={cx('AlertFilter')}>
-      <div className={cx('AlertFilterDates')}>
-      <div>Dates:</div>
+        <div className={cx('AlertFilterDates')}>
+          <div>Dates:</div>
           <RangePicker
-          style={{width:'auto'}}
+            style={{ width: 'auto' }}
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             placeholder={['Start Time', 'End Time']}
-            onChange={this.onChange}
-            onOk={this.onOk}
+            onChange={this.onDateChangeChange}
           />
-      </div>
+        </div>
         <Collapse
           accordion
           defaultActiveKey={['1']}
@@ -80,17 +79,20 @@ export default connect(
   {
     updateFilter: setSeverityFilter,
     refreshMap: getAlertsOperation,
+    updateDateRengeFilter: setDateRageFilter,
   }
 )(AlertFilter);
 
 WrappedAlertFilter.propTypes = {
   updateFilter: PropTypes.func,
+  updateDateRengeFilter: PropTypes.func,
   refreshMap: PropTypes.func,
   filter: PropTypes.arrayOf(PropTypes.string),
 };
 
 WrappedAlertFilter.defaultProps = {
-  updateFilter: () => { },
-  refreshMap: () => { },
+  updateFilter: () => {},
+  refreshMap: () => {},
+  updateDateRengeFilter: () => {},
   filter: [],
 };
