@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Icon } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { isEmpty, get } from 'lodash';
@@ -38,65 +38,31 @@ class AlertMap extends React.Component {
     this.state = {
       area: {},
       hideAlerts: false,
+      isPopupOPen: false,
       position: {},
     };
 
     this.mapRef = React.createRef();
     this.closePopup = this.closePopup.bind(this);
+    this.removeDrawnAlert = this.removeDrawnAlert.bind(this);
   }
 
   componentDidMount() {
     const { startGetAlerts } = this.props;
     startGetAlerts();
-    this.map = this.mapRef.current.leafletElement;
-
-    L.control.layers(baseMaps, {}, { position: 'bottomleft' }).addTo(this.map);
-
-    this.alertsLayer = L.geoJSON([], {
-      filter: geoJsonFilter,
-      pointToLayer: showMarkers,
-      onEachFeature: this.onEachFeature,
-    }).addTo(this.map);
-
-    L.control
-      .zoom({
-        position: 'topleft',
-      })
-      .addTo(this.map);
-
-    // shows popup when polygon is drawn
-    // on map
-    this.map.on('draw:created', e => {
-      const { layer } = e;
-      this.drawnItems.addLayer(layer);
-      const area = layer.toGeoJSON().geometry;
-      this.setState({ position: layer.getBounds().getCenter(), area });
-    });
+    this.initializeMap();
   }
 
   componentDidUpdate(prevProps) {
     const { alerts, selected, startGetAlerts } = this.props;
     if (alerts !== prevProps.alerts) {
-      this.alertsLayer.clearLayers();
-      alerts.map(alert => this.alertsLayer.addData(alert));
-      this.map.setView([-6.179, 35.754], 7);
-      this.map.flyTo([-6.179, 35.754]);
+      this.showAllAlerts(alerts);
     }
 
     if (selected && selected !== prevProps.selected) {
-      const { area } = selected;
-      this.selectedAlertLayer = L.geoJSON([area], {
-        filter: filterFeatures,
-        style: styleFeatures,
-      }).addTo(this.map);
-      this.selectedAlertLayer.on('remove', () => {
-        this.alertsLayer.addTo(this.map);
-      });
-      this.map.flyToBounds(this.selectedAlertLayer.getBounds());
-      this.map.fitBounds(this.selectedAlertLayer.getBounds());
+      this.showSelectedAlert(selected);
     } else if (selected !== prevProps.selected) {
       this.map.removeLayer(this.selectedAlertLayer);
-      startGetAlerts();
     }
   }
 
@@ -117,6 +83,95 @@ class AlertMap extends React.Component {
     }
   };
 
+
+  initializeMap = () => {
+    this.map = this.mapRef.current.leafletElement;
+    this.createLayerControls();
+    this.alertsLayer = this.createAlertsLayer();
+    this.map.on('draw:created', e => {
+      this.showDrawnAlert(e);
+    });
+  }
+
+  showAllAlerts = (alerts) => {
+    this.alertsLayer.clearLayers();
+    alerts.map(alert => this.alertsLayer.addData(alert));
+    this.alertsLayer.addTo(this.map);
+    this.map.setView([-6.179, 35.754], 7);
+  }
+
+  showPoint = (area) => {
+    return L.geoJSON([area], {
+      filter: geoJsonFilter,
+      pointToLayer: showMarkers
+    }).addTo(this.map);
+  }
+
+  showPolygon = (area) => {
+    return L.geoJSON([area], {
+      filter: filterFeatures,
+      style: styleFeatures,
+    }).addTo(this.map);
+    this.selectedAlertLayer.on('remove', () => {
+      this.alertsLayer.addTo(this.map);
+    });
+    this.map.flyToBounds(this.selectedAlertLayer.getBounds());
+    this.map.fitBounds(this.selectedAlertLayer.getBounds());
+
+  }
+
+  showSelectedAlert = ({ area }) => {
+    const { features } = area;
+    const pointsOnly = features.filter(({ geometry }) => {
+      const { type } = geometry;
+      return type === 'Point'
+    });
+
+    if (pointsOnly.length > 1) {
+      this.selectedAlertLayer = this.showPoint(area);
+    }
+    else {
+      this.selectedAlertLayer = this.showPolygon(area);
+    }
+  }
+  showDrawnAlert = ({ layer }) => {
+    this.drawnItems.addLayer(layer);
+    const area = layer.toGeoJSON().geometry;
+    this.setState({ position: layer.getBounds().getCenter(), isPopupOPen : true, area });
+  }
+
+  removeDrawnAlert = () => {
+    this.drawnItems.clearLayers();
+    this.setState({ isPopupOPen: false });
+    this.map.closePopup();
+  }
+
+  createLayerControls = () => {
+
+    // LayerSwitching Controls
+    L.control.
+      layers(baseMaps, {}, {
+        position: 'bottomleft'
+      })
+      .addTo(this.map);
+
+    // Zoom controls
+    L.control
+      .zoom({
+        position: 'topleft',
+      })
+      .addTo(this.map);
+  }
+
+  createAlertsLayer = () => {
+    return L.geoJSON([], {
+      filter: geoJsonFilter,
+      pointToLayer: showMarkers,
+      onEachFeature: this.onEachFeature,
+    }).addTo(this.map);
+
+  }
+
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
     const { startGetAlert, showAlertDetailsOnNav } = this.props;
@@ -126,17 +181,20 @@ class AlertMap extends React.Component {
   };
 
   renderAlertActions = hideAlerts =>
-    !hideAlerts ? (
+  (
       <div id="sidebar">
         <Row style={{ padding: '5px' }}>
           <Col span={24}>
-            <Button type="primary" onClick={this.onclickNewAlertButton}>
-              + New Alert
+            {hideAlerts ? <Button type="primary" onClick={this.onClickBackButton}>
+            <Icon type="arrow-left" />Back
             </Button>
+              : <Button type="primary" onClick={this.onclickNewAlertButton}>
+              <Icon type="plus" />New Alert
+            </Button>}
           </Col>
         </Row>
       </div>
-    ) : null;
+    );
 
   storeEditableLayers = () => {
     // FeatureGroup is to store editable layers
@@ -178,17 +236,24 @@ class AlertMap extends React.Component {
     this.map.removeControl(this.drawControl);
     this.map.removeLayer(this.drawnItems);
     this.map.addLayer(this.alertsLayer);
-    this.setState({ hideAlerts: false });
+    this.setState({ hideAlerts: false, isPopupOPen: false });
     this.map.closePopup();
   };
 
+  onClickBackButton = () => {
+    this.map.removeControl(this.drawControl);
+    this.map.addLayer(this.alertsLayer);
+    this.map.closePopup();
+    this.setState({ hideAlerts: false });
+  }
+
   // this shows popup on map
   showPopup() {
-    const { position, area } = this.state;
-    if (!isEmpty(position)) {
+    const { position, area, isPopupOPen } = this.state;
+    if (isPopupOPen) {
       return (
-        <Popup position={position} minWidth={400}>
-          <WrappedAlertForm area={area} closePopup={this.closePopup} />
+        <Popup position={position} minWidth={400} onClose={this.removeDrawnAlert}>
+          <WrappedAlertForm area={area} closePopup={this.closePopup} removeDrawnAlert={this.removeDrawnAlert} />
         </Popup>
       );
     }
@@ -201,7 +266,7 @@ class AlertMap extends React.Component {
     return (
       <div>
         {this.renderAlertActions(hideAlerts)}
-        <AlertNav hideNav={hideAlerts}/>
+        <AlertNav hideNav={hideAlerts} />
         <LeafletMap
           center={position}
           zoom={7}
@@ -245,9 +310,9 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
-  showAlertDetailsOnNav: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
+  showAlertDetailsOnNav: () => { },
   alerts: [],
   selected: null,
 };

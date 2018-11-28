@@ -38,6 +38,13 @@ class AlertForm extends React.Component {
     });
   };
 
+
+
+  handleCancel = () => {
+    const { removeDrawnAlert } = this.props;
+    removeDrawnAlert();
+  }
+
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -168,7 +175,7 @@ class AlertForm extends React.Component {
           <Divider style={{ margin: '0px 0px 20px 0px' }} />
           <Row>
             <Col span={6} offset={12}>
-              <Button type="default">Cancel</Button>
+              <Button type="default" onClick={this.handleCancel}>Cancel</Button>
             </Col>
             <Col span={3} offset={1}>
               <Button type="primary" htmlType="submit">

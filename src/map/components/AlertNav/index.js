@@ -7,6 +7,7 @@ import { setAlertNavActive } from '../../actions';
 import AlertDetails from '../AlertDetails';
 import AlertLegend from '../AlertLegend';
 import AlertFilter from '../AlertFilter';
+import { alertPropTypes } from '../../../common/lib/propTypesUtil';
 
 import styles from './styles.css';
 
@@ -36,7 +37,7 @@ class AlertNav extends React.Component {
   };
 
   render() {
-    const { current, hideNav } = this.props;
+    const { current, hideNav, selected } = this.props;
     return !hideNav ? (
       <div className={cx('AlertNav')}>
         <Menu
@@ -46,7 +47,7 @@ class AlertNav extends React.Component {
         >
           <Menu.Item key="legend">Legend</Menu.Item>
           <Menu.Item key="filter">Filters</Menu.Item>
-          <Menu.Item key="details">Details</Menu.Item>
+          { selected ? <Menu.Item key="details">Details</Menu.Item> : null}
         </Menu>
         <div>{this.renderNavContent(current)}</div>
       </div>
@@ -56,6 +57,7 @@ class AlertNav extends React.Component {
 
 const mapStateToProps = state => ({
   current: state.alertNav && state.alertNav.activeItem,
+  selected: state.alert && state.alert ? state.alert.data : null,
 });
 
 export default connect(
@@ -68,9 +70,11 @@ export default connect(
 AlertNav.propTypes = {
   current: PropTypes.string,
   setActiveItem: PropTypes.func,
+  selected: PropTypes.shape(alertPropTypes),
 };
 
 AlertNav.defaultProps = {
   current: '',
+  selected: null,
   setActiveItem: () => {},
 };
