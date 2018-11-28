@@ -118,7 +118,6 @@ function AlertDetails(props) {
     setActiveItem('legend');
     refreshAlerts();
     unSelectAlert();
-
   };
   return selected ? (
     <div className={cx('AlertDetails')}>

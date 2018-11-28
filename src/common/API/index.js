@@ -22,18 +22,18 @@ const Axios = axios.create({
 const generateFiter = (severityData, dates) => {
   let filter = {};
 
-  if(severityData.length > 0) {
-    const severity = { $in: severityData}
-    filter = {...filter, severity };
+  if (severityData.length > 0) {
+    const severity = { $in: severityData };
+    filter = { ...filter, severity };
   }
 
-  if(dates.length > 0) {
-    const reportedAt = {$gte: dates[0], $lt: dates[1] }
-    filter = {...filter, reportedAt };
+  if (dates.length > 0) {
+    const reportedAt = { $gte: dates[0], $lt: dates[1] };
+    filter = { ...filter, reportedAt };
   }
 
   return filter;
-}
+};
 
 const API = {
   /**

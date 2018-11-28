@@ -4,7 +4,7 @@ import { PropTypes } from 'prop-types';
 import { Row, Col, Button, Icon } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
-import { isEmpty, get } from 'lodash';
+import { get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from './epics';
 import { setAlertNavActive } from './actions';
@@ -54,7 +54,7 @@ class AlertMap extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { alerts, selected, startGetAlerts } = this.props;
+    const { alerts, selected } = this.props;
     if (alerts !== prevProps.alerts) {
       this.showAllAlerts(alerts);
     }
@@ -83,7 +83,6 @@ class AlertMap extends React.Component {
     }
   };
 
-
   initializeMap = () => {
     this.map = this.mapRef.current.leafletElement;
     this.createLayerControls();
@@ -91,68 +90,69 @@ class AlertMap extends React.Component {
     this.map.on('draw:created', e => {
       this.showDrawnAlert(e);
     });
-  }
+  };
 
-  showAllAlerts = (alerts) => {
+  showAllAlerts = alerts => {
     this.alertsLayer.clearLayers();
     alerts.map(alert => this.alertsLayer.addData(alert));
     this.alertsLayer.addTo(this.map);
     this.map.setView([-6.179, 35.754], 7);
-  }
+  };
 
-  showPoint = (area) => {
-    return L.geoJSON([area], {
+  showPoint = area =>
+    L.geoJSON([area], {
       filter: geoJsonFilter,
-      pointToLayer: showMarkers
+      pointToLayer: showMarkers,
     }).addTo(this.map);
-  }
 
-  showPolygon = (area) => {
-    return L.geoJSON([area], {
+  showPolygon = area =>
+    L.geoJSON([area], {
       filter: filterFeatures,
       style: styleFeatures,
     }).addTo(this.map);
-    this.selectedAlertLayer.on('remove', () => {
-      this.alertsLayer.addTo(this.map);
-    });
-    this.map.flyToBounds(this.selectedAlertLayer.getBounds());
-    this.map.fitBounds(this.selectedAlertLayer.getBounds());
-
-  }
 
   showSelectedAlert = ({ area }) => {
     const { features } = area;
     const pointsOnly = features.filter(({ geometry }) => {
       const { type } = geometry;
-      return type === 'Point'
+      return type === 'Point';
     });
 
     if (pointsOnly.length > 1) {
       this.selectedAlertLayer = this.showPoint(area);
-    }
-    else {
+    } else {
       this.selectedAlertLayer = this.showPolygon(area);
+      this.map.flyToBounds(this.selectedAlertLayer.getBounds());
+      this.map.fitBounds(this.selectedAlertLayer.getBounds());
     }
-  }
+  };
+
   showDrawnAlert = ({ layer }) => {
     this.drawnItems.addLayer(layer);
     const area = layer.toGeoJSON().geometry;
-    this.setState({ position: layer.getBounds().getCenter(), isPopupOPen : true, area });
-  }
+    this.setState({
+      position: layer.getBounds().getCenter(),
+      isPopupOPen: true,
+      area,
+    });
+  };
 
   removeDrawnAlert = () => {
     this.drawnItems.clearLayers();
     this.setState({ isPopupOPen: false });
     this.map.closePopup();
-  }
+  };
 
   createLayerControls = () => {
-
     // LayerSwitching Controls
-    L.control.
-      layers(baseMaps, {}, {
-        position: 'bottomleft'
-      })
+    L.control
+      .layers(
+        baseMaps,
+        {},
+        {
+          position: 'bottomleft',
+        }
+      )
       .addTo(this.map);
 
     // Zoom controls
@@ -161,16 +161,14 @@ class AlertMap extends React.Component {
         position: 'topleft',
       })
       .addTo(this.map);
-  }
+  };
 
-  createAlertsLayer = () => {
-    return L.geoJSON([], {
+  createAlertsLayer = () =>
+    L.geoJSON([], {
       filter: geoJsonFilter,
       pointToLayer: showMarkers,
       onEachFeature: this.onEachFeature,
     }).addTo(this.map);
-
-  }
 
   onclickGeoJson = e => {
     const id = get(e, 'target.feature.properties.id');
@@ -180,21 +178,25 @@ class AlertMap extends React.Component {
     showAlertDetailsOnNav('details');
   };
 
-  renderAlertActions = hideAlerts =>
-  (
-      <div id="sidebar">
-        <Row style={{ padding: '5px' }}>
-          <Col span={24}>
-            {hideAlerts ? <Button type="primary" onClick={this.onClickBackButton}>
-            <Icon type="arrow-left" />Back
+  renderAlertActions = hideAlerts => (
+    <div id="sidebar">
+      <Row style={{ padding: '5px' }}>
+        <Col span={24}>
+          {hideAlerts ? (
+            <Button type="primary" onClick={this.onClickBackButton}>
+              <Icon type="arrow-left" />
+              Back
             </Button>
-              : <Button type="primary" onClick={this.onclickNewAlertButton}>
-              <Icon type="plus" />New Alert
-            </Button>}
-          </Col>
-        </Row>
-      </div>
-    );
+          ) : (
+            <Button type="primary" onClick={this.onclickNewAlertButton}>
+              <Icon type="plus" />
+              New Alert
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </div>
+  );
 
   storeEditableLayers = () => {
     // FeatureGroup is to store editable layers
@@ -245,15 +247,23 @@ class AlertMap extends React.Component {
     this.map.addLayer(this.alertsLayer);
     this.map.closePopup();
     this.setState({ hideAlerts: false });
-  }
+  };
 
   // this shows popup on map
   showPopup() {
     const { position, area, isPopupOPen } = this.state;
     if (isPopupOPen) {
       return (
-        <Popup position={position} minWidth={400} onClose={this.removeDrawnAlert}>
-          <WrappedAlertForm area={area} closePopup={this.closePopup} removeDrawnAlert={this.removeDrawnAlert} />
+        <Popup
+          position={position}
+          minWidth={400}
+          onClose={this.removeDrawnAlert}
+        >
+          <WrappedAlertForm
+            area={area}
+            closePopup={this.closePopup}
+            removeDrawnAlert={this.removeDrawnAlert}
+          />
         </Popup>
       );
     }
@@ -310,9 +320,9 @@ AlertMap.propTypes = {
 };
 
 AlertMap.defaultProps = {
-  startGetAlerts: () => { },
-  startGetAlert: () => { },
-  showAlertDetailsOnNav: () => { },
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  showAlertDetailsOnNav: () => {},
   alerts: [],
   selected: null,
 };

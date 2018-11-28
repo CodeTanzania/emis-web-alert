@@ -47,7 +47,7 @@ class AlertNav extends React.Component {
         >
           <Menu.Item key="legend">Legend</Menu.Item>
           <Menu.Item key="filter">Filters</Menu.Item>
-          { selected ? <Menu.Item key="details">Details</Menu.Item> : null}
+          {selected ? <Menu.Item key="details">Details</Menu.Item> : null}
         </Menu>
         <div>{this.renderNavContent(current)}</div>
       </div>
@@ -69,6 +69,7 @@ export default connect(
 
 AlertNav.propTypes = {
   current: PropTypes.string,
+  hideNav: PropTypes.bool.isRequired,
   setActiveItem: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
 };
