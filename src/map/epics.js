@@ -6,6 +6,9 @@ import {
   alertGetStart,
   alertsStore,
   alertStore,
+  startCreateAlert,
+  createAlertSuccess,
+  createAlertError,
 } from './actions';
 import { alertToGeoJSON } from '../common/lib/util';
 
@@ -33,4 +36,19 @@ export const getAlertOperation = (id = null) => (
   } else {
     dispatch(alertStore(alert.data));
   }
+};
+
+export const createAlertOperation = payload => (
+  dispatch,
+  getState,
+  { API }
+) => {
+  dispatch(startCreateAlert());
+  API.createAlert(payload).then(
+    res => {
+      dispatch(createAlertSuccess(res));
+      dispatch(getAlertsOperation());
+    },
+    error => dispatch(createAlertError(error))
+  );
 };

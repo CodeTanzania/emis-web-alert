@@ -5,6 +5,9 @@ import {
   FILTER_SET_SEVERITY,
   ALERT_NAV_SET_ACTIVE,
   FILTER_SET_DATE_RANGE,
+  ALERT_CREATE_ERROR,
+  ALERT_CREATE_SUCCESS,
+  ALERT_CREATE_START,
 } from './actions';
 
 const initialFilter = {
@@ -28,6 +31,19 @@ export function alert(state = {}, action) {
     case ALERT_STORE: {
       return { ...state, ...payload };
     }
+
+    case ALERT_CREATE_START: {
+      return { ...state, ...payload };
+    }
+
+    case ALERT_CREATE_SUCCESS: {
+      return { ...state, ...payload };
+    }
+
+    case ALERT_CREATE_ERROR: {
+      return { ...state, ...payload };
+    }
+
     default:
       return state;
   }
