@@ -4,8 +4,16 @@ import {
   ALERT_STORE,
   FILTER_SET_SEVERITY,
   ALERT_NAV_SET_ACTIVE,
+  FILTER_SET_DATE_RANGE,
+  ALERT_CREATE_ERROR,
+  ALERT_CREATE_SUCCESS,
+  ALERT_CREATE_START,
 } from './actions';
 
+const initialFilter = {
+  severity: [],
+  dates: [],
+};
 export function alerts(state = {}, action) {
   const { type, payload } = action;
   switch (type) {
@@ -23,17 +31,34 @@ export function alert(state = {}, action) {
     case ALERT_STORE: {
       return { ...state, ...payload };
     }
+
+    case ALERT_CREATE_START: {
+      return { ...state, ...payload };
+    }
+
+    case ALERT_CREATE_SUCCESS: {
+      return { ...state, ...payload };
+    }
+
+    case ALERT_CREATE_ERROR: {
+      return { ...state, ...payload };
+    }
+
     default:
       return state;
   }
 }
 
-export function filter(state = {}, action) {
+export function filter(state = initialFilter, action) {
   const { type, payload } = action;
   switch (type) {
     case FILTER_SET_SEVERITY: {
       const severity = payload;
       return { ...state, severity };
+    }
+    case FILTER_SET_DATE_RANGE: {
+      const dates = payload;
+      return { ...state, dates };
     }
     default:
       return state;
