@@ -10,6 +10,9 @@
   display: flex;
   justify-content: flex-end;
   margin: 0 5px 40px 5px;
+  position: fixed;
+  bottom: 11vh;
+  right: 1.5vw;
 
 }
 

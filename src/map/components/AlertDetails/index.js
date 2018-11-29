@@ -51,7 +51,7 @@ function AlertDetails(props) {
 
       <div className={cx('AlertDetailsBack')}>
         <Button onClick={closeAlertDetails} type="primary">
-          Back
+          Close
         </Button>
       </div>
     </div>
