@@ -31,7 +31,7 @@ function AlertDetails(props) {
     'expiredAt',
     'description',
     'area.description',
-    'instruction'
+    'instruction',
   ];
 
   const renderDetailItems = keys =>
@@ -48,8 +48,13 @@ function AlertDetails(props) {
       <div className={cx('AlertDetailsContent')}>
         {renderDetailItems(detailsKeys)}
       </div>
-
-      <div className={cx('AlertDetailsBack')} onClick={closeAlertDetails}>
+      <div
+        className={cx('AlertDetailsBack')}
+        onClick={closeAlertDetails}
+        onKeyPress={() => {}}
+        role="button"
+        tabIndex="0"
+      >
         <Tooltip placement="topLeft" title={<span>Close</span>}>
           <Icon type="close-square" />
         </Tooltip>
@@ -80,7 +85,7 @@ AlertDetails.propTypes = {
 
 AlertDetails.defaultProps = {
   selected: null,
-  setActiveItem: () => { },
-  unSelectAlert: () => { },
-  refreshAlerts: () => { },
+  setActiveItem: () => {},
+  unSelectAlert: () => {},
+  refreshAlerts: () => {},
 };
