@@ -93,6 +93,10 @@ class AlertMap extends React.Component {
   };
 
   showAllAlerts = alerts => {
+    const checkForSelectedLayer = this.map.hasLayer(this.selectedAlertLayer);
+    if(checkForSelectedLayer) {
+      this.map.removeLayer(this.selectedAlertLayer);
+    }
     this.alertsLayer.clearLayers();
     alerts.map(alert => this.alertsLayer.addData(alert));
     this.alertsLayer.addTo(this.map);
