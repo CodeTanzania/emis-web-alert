@@ -1,18 +1,12 @@
 .AlertDetails {
     background-color: white;
     display: flex;  
-    flex-direction: column;
     height: 80vh;
     overflow-y: auto;
 }
 
 .AlertDetailsBack {
   display: flex;
-  justify-content: flex-end;
-  margin: 0 5px 40px 5px;
-  position: fixed;
-  bottom: 11vh;
-  right: 1.5vw;
 
 }
 
@@ -23,7 +17,11 @@
     flex: 1;
 }
 
-.AlertDetailsHeader, .AlertDetailsContent {
+.AlertDetailsHeader, .AlertDetailsContent, .AlertDetailsBack {
     padding: 10px;
+}
+
+.AlertDetails .anticon {
+    font-size: 24px;
 }
 

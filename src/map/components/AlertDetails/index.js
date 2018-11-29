@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames/bind';
-import { Button } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import { get } from 'lodash';
 import { getAlertOperation, getAlertsOperation } from '../../epics';
 import styles from './styles.css';
@@ -49,10 +49,10 @@ function AlertDetails(props) {
         {renderDetailItems(detailsKeys)}
       </div>
 
-      <div className={cx('AlertDetailsBack')}>
-        <Button onClick={closeAlertDetails} type="primary">
-          Close
-        </Button>
+      <div className={cx('AlertDetailsBack')} onClick={closeAlertDetails}>
+        <Tooltip placement="topLeft" title={<span>Close</span>}>
+          <Icon type="close-square" />
+        </Tooltip>
       </div>
     </div>
   ) : null;
@@ -80,7 +80,7 @@ AlertDetails.propTypes = {
 
 AlertDetails.defaultProps = {
   selected: null,
-  setActiveItem: () => {},
-  unSelectAlert: () => {},
-  refreshAlerts: () => {},
+  setActiveItem: () => { },
+  unSelectAlert: () => { },
+  refreshAlerts: () => { },
 };
