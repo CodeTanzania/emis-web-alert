@@ -10,7 +10,7 @@ import { getAlertsOperation, getAlertOperation } from './epics';
 import { setAlertNavActive } from './actions';
 import WrappedAlertForm from './components/form';
 import AlertNav from './components/AlertNav';
-import { alertPropTypes } from '../common/lib/propTypesUtil';
+import { alertPropTypes } from '../../common/lib/propTypesUtil';
 import {
   baseMaps,
   showMarkers,
@@ -18,7 +18,7 @@ import {
   geoJsonFilter,
   filterFeatures,
   popupContent,
-} from '../common/lib/mapUtil';
+} from '../../common/lib/mapUtil';
 
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 

@@ -7,7 +7,7 @@ import { setAlertNavActive } from '../../actions';
 import AlertDetails from '../AlertDetails';
 import AlertLegend from '../AlertLegend';
 import AlertFilter from '../AlertFilter';
-import { alertPropTypes } from '../../../common/lib/propTypesUtil';
+import { alertPropTypes } from '../../../../common/lib/propTypesUtil';
 
 import styles from './styles.css';
 

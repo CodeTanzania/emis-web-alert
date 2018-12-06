@@ -1,7 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import configureStore from './common/store/configureStore';
-import AlertMap from './map';
+import Alerts from './Alerts';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'antd/dist/antd.css';
@@ -22,7 +23,9 @@ const store = configureStore();
 function App() {
   return (
     <Provider store={store}>
-      <AlertMap />
+    <BrowserRouter>
+    <Alerts />
+    </BrowserRouter>
     </Provider>
   );
 }

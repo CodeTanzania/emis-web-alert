@@ -6,7 +6,7 @@ import { Icon, Tooltip } from 'antd';
 import { get } from 'lodash';
 import { getAlertOperation, getAlertsOperation } from '../../epics';
 import styles from './styles.css';
-import { alertPropTypes } from '../../../common/lib/propTypesUtil';
+import { alertPropTypes } from '../../../../common/lib/propTypesUtil';
 import AlertDetailItem from './components/AlertDetailItem';
 import { setAlertNavActive } from '../../actions';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames/bind';
 import LegendItem from './components/LegendItem';
 import styles from './styles.css';
-import { severityColors } from '../../../common/lib/util';
+import { severityColors } from '../../../../common/lib/util';
 
 const cx = classnames.bind(styles);
 
