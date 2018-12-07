@@ -10,7 +10,7 @@ import {
   createAlertSuccess,
   createAlertError,
 } from './actions';
-import { alertToGeoJSON } from '../../common/lib/util';
+import { alertToGeoJSON } from '../common/lib/util';
 
 export const getAlertsOperation = () => (dispatch, getState, { API }) => {
   const state = getState();
@@ -23,6 +23,22 @@ export const getAlertsOperation = () => (dispatch, getState, { API }) => {
 };
 
 export const getAlertOperation = (id = null) => (
+  dispatch,
+  getState,
+  { API }
+) => {
+  dispatch(alertGetStart(id));
+  if (id) {
+    API.getAlert(id).then(alert => {
+      const area = alertToGeoJSON(alert);
+      dispatch(alertStore({ ...alert, area }));
+    });
+  } else {
+    dispatch(alertStore(alert.data));
+  }
+};
+
+export const getAlertDetailsOperation = (id = null) => (
   dispatch,
   getState,
   { API }

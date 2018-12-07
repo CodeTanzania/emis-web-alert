@@ -6,10 +6,10 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import { get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
-import { getAlertsOperation, getAlertOperation } from './epics';
-import { setAlertNavActive } from './actions';
+import { getAlertsOperation, getAlertOperation } from '../epics';
+import { setAlertNavActive } from '../actions';
 import WrappedAlertForm from './components/form';
-import AlertNav from './components/AlertNav';
+import AlertsNav from './components/AlertsNav';
 import { alertPropTypes } from '../../common/lib/propTypesUtil';
 import {
   baseMaps,
@@ -20,6 +20,8 @@ import {
   popupContent,
 } from '../../common/lib/mapUtil';
 
+import './styles.css';
+
 const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
 
 /**
@@ -27,12 +29,12 @@ const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
  * This component will provide Map visulization for Alerts
  *
  * @function
- * @name AlertMap
+ * @name AlertsMap
  *
  * @version 0.1.0
  * @since 0.1.0
  */
-class AlertMap extends React.Component {
+class AlertsMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -278,9 +280,9 @@ class AlertMap extends React.Component {
     const { hideAlerts } = this.state;
     const position = [-6.179, 35.754];
     return (
-      <div>
+      <div className="AlertsMap">
         {this.renderAlertActions(hideAlerts)}
-        <AlertNav hideNav={hideAlerts} />
+        <AlertsNav hideNav={hideAlerts} />
         <LeafletMap
           center={position}
           zoom={7}
@@ -313,9 +315,9 @@ export default connect(
     startGetAlert: getAlertOperation,
     showAlertDetailsOnNav: setAlertNavActive,
   }
-)(AlertMap);
+)(AlertsMap);
 
-AlertMap.propTypes = {
+AlertsMap.propTypes = {
   startGetAlerts: PropTypes.func,
   startGetAlert: PropTypes.func,
   showAlertDetailsOnNav: PropTypes.func,
@@ -323,7 +325,7 @@ AlertMap.propTypes = {
   alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
 };
 
-AlertMap.defaultProps = {
+AlertsMap.defaultProps = {
   startGetAlerts: () => {},
   startGetAlert: () => {},
   showAlertDetailsOnNav: () => {},

@@ -1,4 +1,4 @@
-import * as Actions from '../actions';
+import * as Actions from '../../actions';
 
 // sample  alert object
 import { alert, alerts } from '../../../common/lib/testData';

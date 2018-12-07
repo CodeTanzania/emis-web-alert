@@ -23,9 +23,9 @@ const store = configureStore();
 function App() {
   return (
     <Provider store={store}>
-    <BrowserRouter>
-    <Alerts />
-    </BrowserRouter>
+      <BrowserRouter>
+        <Alerts />
+      </BrowserRouter>
     </Provider>
   );
 }

@@ -2,18 +2,31 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames/bind';
+import { Link } from 'react-router-dom';
 import { Icon, Tooltip } from 'antd';
 import { get } from 'lodash';
-import { getAlertOperation, getAlertsOperation } from '../../epics';
+import { getAlertOperation, getAlertsOperation } from '../../../epics';
 import styles from './styles.css';
 import { alertPropTypes } from '../../../../common/lib/propTypesUtil';
 import AlertDetailItem from './components/AlertDetailItem';
-import { setAlertNavActive } from '../../actions';
+import { setAlertNavActive } from '../../../actions';
 
 const cx = classnames.bind(styles);
 
+/**
+ * Alert Details  component
+ * This component will provide visualization Alert details
+ * based on CAP fields only
+ *
+ * @function
+ * @name AlertDetails
+ *
+ * @version 0.1.0
+ * @since 0.1.0
+ */
 function AlertDetails(props) {
   const { selected, unSelectAlert, setActiveItem, refreshAlerts } = props;
+  const { _id: id } = selected;
   const detailsKeys = [
     'source',
     'status',
@@ -47,6 +60,9 @@ function AlertDetails(props) {
     <div className={cx('AlertDetails')}>
       <div className={cx('AlertDetailsContent')}>
         {renderDetailItems(detailsKeys)}
+        <Link to={`/${id}/alert`} target="_blank">
+          more details
+        </Link>
       </div>
       <div
         className={cx('AlertDetailsBack')}
@@ -84,7 +100,7 @@ AlertDetails.propTypes = {
 };
 
 AlertDetails.defaultProps = {
-  selected: null,
+  selected: {},
   setActiveItem: () => {},
   unSelectAlert: () => {},
   refreshAlerts: () => {},
