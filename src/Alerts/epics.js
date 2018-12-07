@@ -38,6 +38,22 @@ export const getAlertOperation = (id = null) => (
   }
 };
 
+export const getAlertDetailsOperation = (id = null) => (
+  dispatch,
+  getState,
+  { API }
+) => {
+  dispatch(alertGetStart(id));
+  if (id) {
+    API.getAlert(id).then(alert => {
+      const area = alertToGeoJSON(alert);
+      dispatch(alertStore({ ...alert, area }));
+    });
+  } else {
+    dispatch(alertStore(alert.data));
+  }
+};
+
 export const createAlertOperation = payload => (
   dispatch,
   getState,

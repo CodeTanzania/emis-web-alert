@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 import { Form, Input, Select, Row, Col, Button, Divider } from 'antd';
-import { createAlertOperation } from '../epics';
+import { createAlertOperation } from '../../epics';
 
 const FormItem = Form.Item;
 const { Option } = Select;

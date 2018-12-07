@@ -3,18 +3,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames/bind';
 import { Menu } from 'antd';
-import { setAlertNavActive } from '../../actions';
+import { setAlertNavActive } from '../../../actions';
 import AlertDetails from '../AlertDetails';
 import AlertLegend from '../AlertLegend';
 import AlertFilter from '../AlertFilter';
-import { alertPropTypes } from '../../../common/lib/propTypesUtil';
+import { alertPropTypes } from '../../../../common/lib/propTypesUtil';
 
 import styles from './styles.css';
 
 // constants
 const cx = classnames.bind(styles);
 
-class AlertNav extends React.Component {
+class AlertsNav extends React.Component {
   handleClick = e => {
     const { setActiveItem } = this.props;
     setActiveItem(e.key);
@@ -39,7 +39,7 @@ class AlertNav extends React.Component {
   render() {
     const { current, hideNav, selected } = this.props;
     return !hideNav ? (
-      <div className={cx('AlertNav')}>
+      <div className={cx('AlertsNav')}>
         <Menu
           onClick={this.handleClick}
           selectedKeys={[current]}
@@ -65,16 +65,16 @@ export default connect(
   {
     setActiveItem: setAlertNavActive,
   }
-)(AlertNav);
+)(AlertsNav);
 
-AlertNav.propTypes = {
+AlertsNav.propTypes = {
   current: PropTypes.string,
   hideNav: PropTypes.bool.isRequired,
   setActiveItem: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
 };
 
-AlertNav.defaultProps = {
+AlertsNav.defaultProps = {
   current: '',
   selected: null,
   setActiveItem: () => {},

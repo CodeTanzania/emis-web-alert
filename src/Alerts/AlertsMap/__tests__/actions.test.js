@@ -1,7 +1,7 @@
-import * as Actions from '../actions';
+import * as Actions from '../../actions';
 
 // sample  alert object
-import { alert, alerts } from '../../common/lib/testData';
+import { alert, alerts } from '../../../common/lib/testData';
 
 describe('Alerts:Actions', () => {
   it('should return alerts get start action', () => {
