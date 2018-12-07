@@ -20,31 +20,29 @@ const { Map: LeafletMap, TileLayer } = ReactLeaflet;
  * @since 0.1.0
  */
 class AlertMap extends React.Component {
-
   constructor(props) {
     super(props);
-    this.state = {
-      fullscreen: false
-    }
     this.alertMapRef = React.createRef();
   }
 
-  initilizeFullScreen = () => {
-    L.control.fullscreen({
-      position: 'topleft',
-      title: 'Show me the fullscreen !',
-      titleCancel: 'Exit fullscreen mode',
-      content: null,
-      forceSeparateButton: true,
-      forcePseudoFullscreen: true,
-      fullscreenElement: false
-    }).addTo(this.map);
-  }
   componentDidMount() {
     this.map = this.alertMapRef.current.leafletElement;
     this.initilizeFullScreen();
-  
   }
+
+  initilizeFullScreen = () => {
+    L.control
+      .fullscreen({
+        position: 'topleft',
+        title: 'Show me the fullscreen !',
+        titleCancel: 'Exit fullscreen mode',
+        content: null,
+        forceSeparateButton: true,
+        forcePseudoFullscreen: true,
+        fullscreenElement: false,
+      })
+      .addTo(this.map);
+  };
 
   render() {
     const position = [-6.179, 35.754];
