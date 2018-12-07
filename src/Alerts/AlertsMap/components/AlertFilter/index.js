@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Form, Checkbox, Collapse, DatePicker } from 'antd';
-import { setSeverityFilter, setDateRageFilter } from '../../actions';
-import { getAlertsOperation } from '../../epics';
+import { setSeverityFilter, setDateRageFilter } from '../../../actions';
+import { getAlertsOperation } from '../../../epics';
 import styles from './styles.css';
 
 // constants

@@ -1,3 +1,10 @@
+import moment from 'moment';
+
+// converts ISO date string to human readable
+// date and time
+export const isoDateToHumanReadableDate = date =>
+  moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
+
 // data about severity colors
 export const severityColors = [
   { property: 'Extreme', value: '#d72e29' },
