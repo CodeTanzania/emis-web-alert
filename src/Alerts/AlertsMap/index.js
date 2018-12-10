@@ -10,6 +10,7 @@ import { getAlertsOperation, getAlertOperation } from '../epics';
 import { setAlertNavActive } from '../actions';
 import WrappedAlertForm from './components/form';
 import AlertsNav from './components/AlertsNav';
+import Display from './components/Display';
 import { alertPropTypes } from '../../common/lib/propTypesUtil';
 import {
   baseMaps,
@@ -283,6 +284,7 @@ class AlertsMap extends React.Component {
       <div className="AlertsMap">
         {this.renderAlertActions(hideAlerts)}
         <AlertsNav hideNav={hideAlerts} />
+        <Display />
         <LeafletMap
           center={position}
           zoom={7}

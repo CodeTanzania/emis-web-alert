@@ -5,6 +5,10 @@ import moment from 'moment';
 export const isoDateToHumanReadableDate = date =>
   moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
+export const humanTimeToday = () => 
+moment().format('dddd, MMMM Do ');
+
+
 // data about severity colors
 export const severityColors = [
   { property: 'Extreme', value: '#d72e29' },

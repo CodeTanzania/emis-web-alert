@@ -1,0 +1,9 @@
+
+.Display {
+    display: flex;
+    position: absolute;
+    left: 70px;
+    bottom: 15px;
+    z-index: 1000;
+    width: 20vw;
+  };
