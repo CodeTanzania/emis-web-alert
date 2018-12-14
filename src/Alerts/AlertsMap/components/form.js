@@ -1,7 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
-import { Form, Input, Select, Row, Col, Button, Divider } from 'antd';
+import {
+  Form,
+  Input,
+  Select,
+  Row,
+  Col,
+  Button,
+  Divider,
+  DatePicker,
+} from 'antd';
 import { createAlertOperation } from '../../epics';
 
 const FormItem = Form.Item;
@@ -73,6 +82,17 @@ class AlertForm extends React.Component {
               {
                 required: true,
                 message: 'Please input Alert Event!',
+              },
+            ],
+          })(<Input style={{ width: 250 }} />)}
+        </FormItem>
+        <FormItem {...formItemLayout} label="Headline">
+          {getFieldDecorator('headline', {
+            rules: [
+              {},
+              {
+                required: true,
+                message: 'Please input Alert Headline!',
               },
             ],
           })(<Input style={{ width: 250 }} />)}
@@ -152,6 +172,28 @@ class AlertForm extends React.Component {
               <Option value="Unknown">Unknown</Option>
             </Select>
           )}
+        </FormItem>
+        <FormItem {...formItemLayout} label="OnSet">
+          {getFieldDecorator('expectedAt', {
+            rules: [
+              {},
+              {
+                required: true,
+                message: 'Please input Alert OnSet!',
+              },
+            ],
+          })(<DatePicker />)}
+        </FormItem>
+        <FormItem {...formItemLayout} label="Expires">
+          {getFieldDecorator('expiredAt', {
+            rules: [
+              {},
+              {
+                required: true,
+                message: 'Please input Alert OnSet!',
+              },
+            ],
+          })(<DatePicker />)}
         </FormItem>
 
         <FormItem {...formItemLayout} label="Instructions">

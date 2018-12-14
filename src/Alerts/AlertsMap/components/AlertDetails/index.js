@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames/bind';
 import { Link } from 'react-router-dom';
-import { Icon, Tooltip } from 'antd';
+import { Icon, Tooltip, Button } from 'antd';
 import { get } from 'lodash';
 import { getAlertOperation, getAlertsOperation } from '../../../epics';
 import styles from './styles.css';
@@ -28,23 +28,12 @@ function AlertDetails(props) {
   const { selected, unSelectAlert, setActiveItem, refreshAlerts } = props;
   const { _id: id } = selected;
   const detailsKeys = [
-    'source',
-    'status',
-    'type',
-    'scope',
-    'category',
-    'event',
-    'response',
-    'urgency',
-    'severity',
-    'certainty',
     'headline',
     'reportedAt',
     'expectedAt',
     'expiredAt',
-    'description',
-    'area.description',
     'instruction',
+    'source'
   ];
 
   const renderDetailItems = keys =>
@@ -60,8 +49,11 @@ function AlertDetails(props) {
     <div className={cx('AlertDetails')}>
       <div className={cx('AlertDetailsContent')}>
         {renderDetailItems(detailsKeys)}
+        
         <Link to={`/${id}/alert`} target="_blank">
-          more details
+        <Button type="primary">
+        more details<Icon type="right" style={{fontSize: 14 }} />
+        </Button>
         </Link>
       </div>
       <div

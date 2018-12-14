@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { isoDateToHumanReadableDate } from '../../../../../../common/lib/util';
 
 function AlertDetailItem({ property, value }) {
   const formatTitle = title => {
@@ -34,17 +35,17 @@ function AlertDetailItem({ property, value }) {
   const formatValue = (title, data) => {
     switch (title) {
       case 'reportedAt': {
-        const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()}`;
+        const m = isoDateToHumanReadableDate(data);
+        return m;
       }
       case 'expectedAt': {
-        const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()}`;
+        const m = isoDateToHumanReadableDate(data);
+        return m;
       }
 
       case 'expiredAt': {
-        const m = moment(data, 'YYYY-MM-DD');
-        return `${m.calendar()}`;
+        const m = isoDateToHumanReadableDate(data);
+        return m;
       }
 
       default:

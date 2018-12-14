@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
+import moment from 'moment';
 import { Row, Col, Button, Icon } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from '../epics';
-import { setAlertNavActive } from '../actions';
+import { setAlertNavActive, setDateRageFilter } from '../actions';
 import WrappedAlertForm from './components/form';
 import AlertsNav from './components/AlertsNav';
 import Display from './components/Display';
@@ -51,8 +52,6 @@ class AlertsMap extends React.Component {
   }
 
   componentDidMount() {
-    const { startGetAlerts } = this.props;
-    startGetAlerts();
     this.initializeMap();
   }
 
@@ -88,6 +87,7 @@ class AlertsMap extends React.Component {
 
   initializeMap = () => {
     this.map = this.mapRef.current.leafletElement;
+    this.showActiveAlerts();
     this.createLayerControls();
     this.alertsLayer = this.createAlertsLayer();
     this.map.on('draw:created', e => {
@@ -165,7 +165,7 @@ class AlertsMap extends React.Component {
     // Zoom controls
     L.control
       .zoom({
-        position: 'topleft',
+        position: 'bottomleft',
       })
       .addTo(this.map);
   };
@@ -195,11 +195,11 @@ class AlertsMap extends React.Component {
               Back
             </Button>
           ) : (
-            <Button type="primary" onClick={this.onclickNewAlertButton}>
-              <Icon type="plus" />
-              New Alert
+              <Button type="primary" onClick={this.onclickNewAlertButton}>
+                <Icon type="plus" />
+                New Alert
             </Button>
-          )}
+            )}
         </Col>
       </Row>
     </div>
@@ -247,6 +247,17 @@ class AlertsMap extends React.Component {
     this.map.addLayer(this.alertsLayer);
     this.setState({ hideAlerts: false, isPopupOPen: false });
     this.map.closePopup();
+  };
+
+  showActiveAlerts = () => {
+    const { startGetAlerts, setCurrentDate } = this.props;
+    const today = moment().toISOString();
+    const future = moment()
+      .add(1, 'year')
+      .toISOString();
+    const dateRange = [today, future];
+    setCurrentDate(dateRange);
+    startGetAlerts();
   };
 
   onClickBackButton = () => {
@@ -316,21 +327,24 @@ export default connect(
     startGetAlerts: getAlertsOperation,
     startGetAlert: getAlertOperation,
     showAlertDetailsOnNav: setAlertNavActive,
+    setCurrentDate: setDateRageFilter,
   }
 )(AlertsMap);
 
 AlertsMap.propTypes = {
   startGetAlerts: PropTypes.func,
   startGetAlert: PropTypes.func,
+  setCurrentDate: PropTypes.func,
   showAlertDetailsOnNav: PropTypes.func,
   selected: PropTypes.shape(alertPropTypes),
   alerts: PropTypes.arrayOf(PropTypes.shape(alertPropTypes)),
 };
 
 AlertsMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
-  showAlertDetailsOnNav: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
+  setCurrentDate: () => { },
+  showAlertDetailsOnNav: () => { },
   alerts: [],
   selected: null,
 };

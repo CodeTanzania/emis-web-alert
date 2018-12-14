@@ -1,7 +1,7 @@
 .AlertDetails {
     background-color: white;
     display: flex;  
-    height: 80vh;
+    height: 51vh;
     overflow-y: auto;
 }
 
