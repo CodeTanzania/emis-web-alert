@@ -31,9 +31,15 @@ class AlertForm extends React.Component {
           severity,
           certainty,
           instructions,
+          headline,
+          expectedAt,
+          expiredAt
         } = values;
         const payload = {
           category,
+          headline,
+          expectedAt: expectedAt.toISOString(),
+          expiredAt: expiredAt.toISOString(),
           event,
           urgency,
           severity,
@@ -176,30 +182,29 @@ class AlertForm extends React.Component {
         <FormItem {...formItemLayout} label="OnSet">
           {getFieldDecorator('expectedAt', {
             rules: [
-              {},
               {
                 required: true,
-                message: 'Please input Alert OnSet!',
+                type: 'object',
+                message: 'Please input when Alert Onsets!',
               },
             ],
-          })(<DatePicker />)}
+          })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Expires">
           {getFieldDecorator('expiredAt', {
             rules: [
-              {},
               {
                 required: true,
-                message: 'Please input Alert OnSet!',
+                type: 'object',
+                message: 'Please input when Alert Expires!',
               },
             ],
-          })(<DatePicker />)}
+          })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
         </FormItem>
 
         <FormItem {...formItemLayout} label="Instructions">
           {getFieldDecorator('instructions', {
             rules: [
-              {},
               {
                 required: true,
                 message: 'Please Write instructions for an Alert!',

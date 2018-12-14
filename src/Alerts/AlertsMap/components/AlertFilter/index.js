@@ -21,7 +21,6 @@ class WrappedAlertFilter extends React.Component {
 
   onDateChangeChange = dateString => {
     const { updateDateRengeFilter, refreshMap } = this.props;
-    // updateDateRengeFilter(['2018-07-19T14:00:00.000Z', '2018-08-12T14:00:00.000Z']);
     const formatedDate = dateString.map(date => date.toISOString());
     updateDateRengeFilter(formatedDate);
     refreshMap();
