@@ -10,7 +10,7 @@ function Alert({
 }) {
   return (
     <div>
-      <AlertMap />
+      <AlertMap id={id} />
       <AlertNav id={id} />
     </div>
   );

@@ -195,11 +195,11 @@ class AlertsMap extends React.Component {
               Back
             </Button>
           ) : (
-              <Button type="primary" onClick={this.onclickNewAlertButton}>
-                <Icon type="plus" />
-                New Alert
+            <Button type="primary" onClick={this.onclickNewAlertButton}>
+              <Icon type="plus" />
+              New Alert
             </Button>
-            )}
+          )}
         </Col>
       </Row>
     </div>
@@ -341,10 +341,10 @@ AlertsMap.propTypes = {
 };
 
 AlertsMap.defaultProps = {
-  startGetAlerts: () => { },
-  startGetAlert: () => { },
-  setCurrentDate: () => { },
-  showAlertDetailsOnNav: () => { },
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  setCurrentDate: () => {},
+  showAlertDetailsOnNav: () => {},
   alerts: [],
   selected: null,
 };
