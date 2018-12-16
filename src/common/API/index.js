@@ -28,8 +28,8 @@ const generateFiter = (severityData, dates) => {
   }
 
   if (dates.length > 0) {
-    const reportedAt = { $gte: dates[0], $lt: dates[1] };
-    filter = { ...filter, reportedAt };
+    const expectedAt = { $gte: dates[0], $lt: dates[1] };
+    filter = { ...filter, expectedAt };
   }
 
   return filter;

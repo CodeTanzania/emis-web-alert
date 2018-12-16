@@ -32,7 +32,7 @@ class WrappedAlertFilter extends React.Component {
     return (
       <div className={cx('AlertFilter')}>
         <div className={cx('AlertFilterDates')}>
-          <div>Dates:</div>
+          <div>Filter Based on Onset Date:</div>
           <RangePicker
             style={{ width: 'auto' }}
             showTime={{ format: 'HH:mm' }}

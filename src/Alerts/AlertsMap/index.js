@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 import moment from 'moment';
-import { Row, Col, Button, Icon } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { get } from 'lodash';
@@ -12,7 +11,7 @@ import { setAlertNavActive, setDateRageFilter } from '../actions';
 import WrappedAlertForm from './components/form';
 import AlertsNav from './components/AlertsNav';
 import AlertLegend from './components/AlertLegend';
-import Display from './components/Display';
+import AlertNavBar from './components/AlertNavBar';
 import { alertPropTypes } from '../../common/lib/propTypesUtil';
 import {
   baseMaps,
@@ -50,6 +49,8 @@ class AlertsMap extends React.Component {
     this.mapRef = React.createRef();
     this.closePopup = this.closePopup.bind(this);
     this.removeDrawnAlert = this.removeDrawnAlert.bind(this);
+    this.onClickBackButton = this.onClickBackButton.bind(this);
+    this.onclickNewAlertButton = this.onclickNewAlertButton.bind(this);
   }
 
   componentDidMount() {
@@ -186,26 +187,6 @@ class AlertsMap extends React.Component {
     showAlertDetailsOnNav('details');
   };
 
-  renderAlertActions = hideAlerts => (
-    <div id="sidebar">
-      <Row style={{ padding: '5px' }}>
-        <Col span={24}>
-          {hideAlerts ? (
-            <Button type="primary" onClick={this.onClickBackButton}>
-              <Icon type="arrow-left" />
-              Back
-            </Button>
-          ) : (
-            <Button type="primary" onClick={this.onclickNewAlertButton}>
-              <Icon type="plus" />
-              New Alert
-            </Button>
-          )}
-        </Col>
-      </Row>
-    </div>
-  );
-
   storeEditableLayers = () => {
     // FeatureGroup is to store editable layers
     this.drawnItems = new L.FeatureGroup();
@@ -294,10 +275,13 @@ class AlertsMap extends React.Component {
     const position = [-6.179, 35.754];
     return (
       <div className="AlertsMap">
-        {this.renderAlertActions(hideAlerts)}
         <AlertsNav hideNav={hideAlerts} />
         <AlertLegend />
-        <Display />
+        <AlertNavBar
+          hideAlerts={hideAlerts}
+          onClickBack={this.onClickBackButton}
+          onClickNew={this.onclickNewAlertButton}
+        />
         <LeafletMap
           center={position}
           zoom={7}

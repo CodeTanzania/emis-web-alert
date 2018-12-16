@@ -5,7 +5,6 @@ import classnames from 'classnames/bind';
 import { Menu } from 'antd';
 import { setAlertNavActive } from '../../../actions';
 import AlertDetails from '../AlertDetails';
-import AlertLegend from '../AlertLegend';
 import AlertFilter from '../AlertFilter';
 import { alertPropTypes } from '../../../../common/lib/propTypesUtil';
 

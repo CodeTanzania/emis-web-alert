@@ -25,23 +25,22 @@ const cx = classnames.bind(styles);
  * @since 0.1.0
  */
 class AlertDetails extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      isDrwaerOpen: false
-    }
+      isDrwaerOpen: false,
+    };
   }
 
-
-   renderDetailItems = keys => {
-     const { selected } = this.props;
-     return keys.map(key => (
+  renderDetailItems = keys => {
+    const { selected } = this.props;
+    return keys.map(key => (
       <AlertDetailItem property={key} value={get(selected, key)} />
     ));
-   }
-   closeAlertDetails = () => {
-     const  { setActiveItem, refreshAlerts, unSelectAlert }= this.props;
+  };
+
+  closeAlertDetails = () => {
+    const { setActiveItem, refreshAlerts, unSelectAlert } = this.props;
     setActiveItem('filter');
     refreshAlerts();
     unSelectAlert();
@@ -49,18 +48,14 @@ class AlertDetails extends React.Component {
 
   openDrawer = () => {
     this.setState({ isDrwaerOpen: true });
-  }
+  };
 
   closeDrawer = () => {
     this.closeAlertDetails();
     this.setState({ isDrwaerOpen: false });
-  }
+  };
 
-
-
-
-  render () {
-
+  render() {
     const { isDrwaerOpen } = this.state;
     const { selected } = this.props;
     const detailsKeys = [
@@ -76,14 +71,14 @@ class AlertDetails extends React.Component {
       <div className={cx('AlertDetails')}>
         <div className={cx('AlertDetailsContent')}>
           {this.renderDetailItems(detailsKeys)}
-          <Button
-           type="primary"
-           onClick={this.openDrawer}
-           >
-              more details
-              <Icon type="right" style={{ fontSize: 14 }} />
-            </Button>
-          <AlertDetailsDrawer visible={isDrwaerOpen} onCloseDrawer={this.closeDrawer} />
+          <Button type="primary" onClick={this.openDrawer}>
+            more details
+            <Icon type="right" style={{ fontSize: 14 }} />
+          </Button>
+          <AlertDetailsDrawer
+            visible={isDrwaerOpen}
+            onCloseDrawer={this.closeDrawer}
+          />
         </div>
         <div
           className={cx('AlertDetailsBack')}
@@ -98,7 +93,6 @@ class AlertDetails extends React.Component {
         </div>
       </div>
     ) : null;
-
   }
 }
 

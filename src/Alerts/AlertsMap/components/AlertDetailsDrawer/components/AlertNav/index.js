@@ -1,6 +1,5 @@
 import React from 'react';
 import { Menu } from 'antd';
-import PropTypes from 'prop-types';
 import MoreDetails from '../MoreDetails';
 import AlertResources from '../AlertResources';
 import AlertActions from '../AlertActions';
@@ -64,7 +63,6 @@ class AlertNav extends React.Component {
           <Menu.Item key="actions">Actions</Menu.Item>
           {/* <Menu.Item key="references">Referenced Alerts</Menu.Item>
           <Menu.Item key="incidents">Associated Incidents</Menu.Item> */}
-          
         </Menu>
         <div className="MenuContents">
           <div className="Container">{this.renderNavContent(current)}</div>
@@ -75,11 +73,3 @@ class AlertNav extends React.Component {
 }
 
 export default AlertNav;
-
-AlertNav.propTypes = {
-  id: PropTypes.string,
-};
-
-AlertNav.defaultProps = {
-  id: '',
-};
