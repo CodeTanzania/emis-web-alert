@@ -65,7 +65,7 @@ export function filter(state = initialFilter, action) {
   }
 }
 
-export function alertNav(state = { activeItem: 'legend' }, action) {
+export function alertNav(state = { activeItem: 'filter' }, action) {
   const { type, payload } = action;
   switch (type) {
     case ALERT_NAV_SET_ACTIVE: {

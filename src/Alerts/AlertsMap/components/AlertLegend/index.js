@@ -14,9 +14,11 @@ export default function AlertLegend() {
   return (
     <div className={cx('AlertLegend')}>
       <div className={cx('AlertLegendHeader')}>
-        <strong>Severity Level: </strong>
+        CAP Severity:
       </div>
+      <div className={cx('AlertLegendContents')}>
       {renderLegendItems(severityColors)}
+      </div>
     </div>
   );
 }

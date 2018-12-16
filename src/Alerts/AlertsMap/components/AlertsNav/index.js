@@ -22,9 +22,6 @@ class AlertsNav extends React.Component {
 
   renderNavContent = current => {
     switch (current) {
-      case 'legend': {
-        return <AlertLegend />;
-      }
       case 'filter': {
         return <AlertFilter />;
       }
@@ -45,7 +42,6 @@ class AlertsNav extends React.Component {
           selectedKeys={[current]}
           mode="horizontal"
         >
-          <Menu.Item key="legend">Legend</Menu.Item>
           <Menu.Item key="filter">Filters</Menu.Item>
           {selected ? <Menu.Item key="details">Details</Menu.Item> : null}
         </Menu>

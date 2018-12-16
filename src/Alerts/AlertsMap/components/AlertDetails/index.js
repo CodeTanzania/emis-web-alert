@@ -42,7 +42,7 @@ class AlertDetails extends React.Component {
    }
    closeAlertDetails = () => {
      const  { setActiveItem, refreshAlerts, unSelectAlert }= this.props;
-    setActiveItem('legend');
+    setActiveItem('filter');
     refreshAlerts();
     unSelectAlert();
   };

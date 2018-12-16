@@ -10,10 +10,6 @@ import './styles.css';
 const { Panel } = Collapse;
 
 class MoreDetails extends React.Component {
-  // componentDidMount() {
-  //   const { getAlert, id } = this.props;
-  //   getAlert(id);
-  // }
 
   render() {
     const { alert } = this.props;
@@ -37,11 +33,6 @@ class MoreDetails extends React.Component {
             className="Panel"
           >
             <MoreDetailsArea alert={alert} />
-          </Panel>
-        </Collapse>
-        <Collapse bordered={false} defaultActiveKey={['1']}>
-          <Panel header={<h3>Attached Resources</h3>} key="1" className="Panel">
-            <p>Currently there are no resources attached to this Alert!</p>
           </Panel>
         </Collapse>
       </div>
