@@ -47,9 +47,13 @@ class AlertDetails extends React.Component {
     unSelectAlert();
   };
 
-  toggleDrawer = () => {
-    const { isDrwaerOpen } = this.state;
-    this.setState({ isDrwaerOpen: !isDrwaerOpen });
+  openDrawer = () => {
+    this.setState({ isDrwaerOpen: true });
+  }
+
+  closeDrawer = () => {
+    this.closeAlertDetails();
+    this.setState({ isDrwaerOpen: false });
   }
 
 
@@ -74,12 +78,12 @@ class AlertDetails extends React.Component {
           {this.renderDetailItems(detailsKeys)}
           <Button
            type="primary"
-           onClick={this.toggleDrawer}
+           onClick={this.openDrawer}
            >
               more details
               <Icon type="right" style={{ fontSize: 14 }} />
             </Button>
-          <AlertDetailsDrawer visible={isDrwaerOpen} onCloseDrawer={this.toggleDrawer} />
+          <AlertDetailsDrawer visible={isDrwaerOpen} onCloseDrawer={this.closeDrawer} />
         </div>
         <div
           className={cx('AlertDetailsBack')}

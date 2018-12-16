@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu } from 'antd';
 import PropTypes from 'prop-types';
 import MoreDetails from '../MoreDetails';
+import AlertResources from '../AlertResources';
 import './styles.css';
 
 /**
@@ -32,7 +33,7 @@ class AlertNav extends React.Component {
         return <MoreDetails />;
       }
       case 'resources': {
-        return <div>resources will be placed here</div>;
+        return <div><AlertResources /></div>;
       }
       case 'actions': {
         return <div>actions will be placed here</div>;
@@ -59,9 +60,9 @@ class AlertNav extends React.Component {
         >
           <Menu.Item key="details">Alert Details</Menu.Item>
           <Menu.Item key="resources">Alert Resources</Menu.Item>
-          <Menu.Item key="references">Referenced Alerts</Menu.Item>
+          {/* <Menu.Item key="references">Referenced Alerts</Menu.Item>
           <Menu.Item key="incidents">Associated Incidents</Menu.Item>
-          <Menu.Item key="actions">Actions</Menu.Item>
+          <Menu.Item key="actions">Actions</Menu.Item> */}
         </Menu>
         <div className="MenuContents">
           <div className="Container">{this.renderNavContent(current)}</div>
