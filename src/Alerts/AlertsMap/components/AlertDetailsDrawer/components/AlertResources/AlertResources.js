@@ -8,9 +8,8 @@ const { Panel } = Collapse;
 class AlertResources extends React.Component {
 
   render() {
-    const { alert } = this.props;
     return (
-      <div className="MoreDetails">
+      <div className="AlertResources">
         <Collapse bordered={false} defaultActiveKey={['1']}>
           <Panel header={<h3>Documents</h3>} key="1" className="Panel">
             <p>Currently there are no documents attached to this Alert!</p>
