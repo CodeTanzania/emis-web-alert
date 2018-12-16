@@ -10,7 +10,6 @@ class AlertDetailsDrawer extends React.Component {
       const { visible, onCloseDrawer } = this.props;
     return (
       <div className={AlertDetailsDrawer}>
-      contenrnrnrnrnrnrnrnrn
         <Drawer
           placement="right"
           closable={false}

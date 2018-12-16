@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu } from 'antd';
 import PropTypes from 'prop-types';
+import MoreDetails from '../MoreDetails';
 import './styles.css';
 
 /**
@@ -28,7 +29,7 @@ class AlertNav extends React.Component {
   renderNavContent = current => {
     switch (current) {
       case 'details': {
-        return <h1>the details</h1>;
+        return <MoreDetails />;
       }
       case 'resources': {
         return <div>resources will be placed here</div>;
