@@ -1,24 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Drawer } from 'antd';
+import AlertNav from './components/AlertNav';
+import './styles.css';
 
 class AlertDetailsDrawer extends React.Component {
 
   render() {
       const { visible, onCloseDrawer } = this.props;
     return (
-      <div>
+      <div className={AlertDetailsDrawer}>
+      contenrnrnrnrnrnrnrnrn
         <Drawer
-          title="Basic Drawer"
           placement="right"
           closable={false}
           onClose={onCloseDrawer}
           visible={visible}
           width={'98vw'}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+        <AlertNav />
         </Drawer>
       </div>
     );
