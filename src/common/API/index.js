@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_END_POINT = `https://emis-plan.herokuapp.com/v1`;
+const API_END_POINT = `https://emis-alert.herokuapp.com/v1`;
 
 /**
  * Initialize axios library

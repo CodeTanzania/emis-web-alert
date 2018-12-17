@@ -13,6 +13,7 @@ function AlertDetailsDrawer({ visible, onCloseDrawer }) {
         onClose={onCloseDrawer}
         visible={visible}
         width="98vw"
+        className="AlertDetailsDrawer"
       >
         <AlertNav />
       </Drawer>

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { PropTypes } from 'prop-types';
 import moment from 'moment';
+import { Spin } from 'antd';
 import L from 'leaflet';
 import 'leaflet-draw';
 import { get } from 'lodash';
@@ -249,6 +250,20 @@ class AlertsMap extends React.Component {
     this.setState({ hideAlerts: false });
   };
 
+  getSpinValue = () => {
+    const { isLoadingAlerts, isLoadingAlert } = this.props;
+    let spin = false;
+    if( isLoadingAlert) {
+      spin = isLoadingAlert;
+    }
+
+    else if ( isLoadingAlerts ) {
+      spin = isLoadingAlerts;
+    }
+
+    return spin;
+  }
+
   // this shows popup on map
   showPopup() {
     const { position, area, isPopupOPen } = this.state;
@@ -272,37 +287,46 @@ class AlertsMap extends React.Component {
 
   render() {
     const { hideAlerts } = this.state;
+    const spin = this.getSpinValue();
     const position = [-6.179, 35.754];
     return (
-      <div className="AlertsMap">
-        <AlertsNav hideNav={hideAlerts} />
-        <AlertLegend />
-        <AlertNavBar
-          hideAlerts={hideAlerts}
-          onClickBack={this.onClickBackButton}
-          onClickNew={this.onclickNewAlertButton}
-        />
-        <LeafletMap
-          center={position}
-          zoom={7}
-          zoomControl={false}
-          ref={this.mapRef}
-        >
-          <TileLayer
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-            id="mapbox.light"
-            url="https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0"
+      <Spin
+        spinning={spin}
+        tip="Loading..."
+        size="large"
+      >
+        <div className="AlertsMap">
+          <AlertsNav hideNav={hideAlerts} />
+          <AlertLegend />
+          <AlertNavBar
+            hideAlerts={hideAlerts}
+            onClickBack={this.onClickBackButton}
+            onClickNew={this.onclickNewAlertButton}
           />
+          <LeafletMap
+            center={position}
+            zoom={7}
+            zoomControl={false}
+            ref={this.mapRef}
+          >
+            <TileLayer
+              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+              id="mapbox.light"
+              url="https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0"
+            />
 
-          {this.showPopup()}
-        </LeafletMap>
-      </div>
+            {this.showPopup()}
+          </LeafletMap>
+        </div>
+      </Spin>
     );
   }
 }
 
 const mapStateToProps = state => ({
   alerts: state.alerts && state.alerts ? state.alerts.data : [],
+  isLoadingAlerts: state.alerts.isGettingAlerts,
+  isLoadingAlert: state.alert.isGettingAlert,
   selected: state.alert && state.alert ? state.alert.data : null,
   filter: state.filter,
 });
@@ -319,6 +343,8 @@ export default connect(
 
 AlertsMap.propTypes = {
   startGetAlerts: PropTypes.func,
+  isLoadingAlerts: PropTypes.bool.isRequired,
+  isLoadingAlert: PropTypes.bool.isRequired,
   startGetAlert: PropTypes.func,
   setCurrentDate: PropTypes.func,
   showAlertDetailsOnNav: PropTypes.func,
@@ -327,10 +353,10 @@ AlertsMap.propTypes = {
 };
 
 AlertsMap.defaultProps = {
-  startGetAlerts: () => {},
-  startGetAlert: () => {},
-  setCurrentDate: () => {},
-  showAlertDetailsOnNav: () => {},
+  startGetAlerts: () => { },
+  startGetAlert: () => { },
+  setCurrentDate: () => { },
+  showAlertDetailsOnNav: () => { },
   alerts: [],
   selected: null,
 };

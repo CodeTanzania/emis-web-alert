@@ -10,7 +10,10 @@ export const ALERT_CREATE_START = 'ALERT_CREATE_START';
 export const ALERT_CREATE_SUCCESS = 'ALRERT_CREATE_SUCCESS';
 export const ALERT_CREATE_ERROR = 'ALERT_CREATE_ERROR';
 
-export const alertsGetStart = () => ({ type: ALERTS_GET_START });
+export const alertsGetStart = (isGettingAlerts=true) => ({
+   type: ALERTS_GET_START,
+   payload: { isGettingAlerts}
+   });
 
 export const alertsStore = alerts => ({
   type: ALERTS_STORE,
@@ -26,11 +29,9 @@ export const alertStore = alert => ({
   },
 });
 
-export const alertGetStart = (id = null) => ({
+export const alertGetStart = (isGettingAlert = true) => ({
   type: ALERT_GET_START,
-  payload: {
-    data: id,
-  },
+  payload: { isGettingAlert },
 });
 
 export const setSeverityFilter = severity => ({
