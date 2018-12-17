@@ -33,7 +33,6 @@ function Display(props) {
   return (
     <div className="Display">
       <Select
-        title="Display"
         labelInValue
         defaultValue={{ key: 'current' }}
         onChange={handleChange}

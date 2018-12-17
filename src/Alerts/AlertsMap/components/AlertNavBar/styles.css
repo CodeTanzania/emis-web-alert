@@ -1,0 +1,13 @@
+.AlertNavBar {
+    display: flex;
+    z-index: 1000;
+    position: absolute;
+    top: 0px;
+    min-width: 30vw;
+    justify-content: flex-start;
+    margin: 10px;
+}
+
+.AlertNavBar .ActionButtons {
+    margin: 0 10px 0 0;
+}

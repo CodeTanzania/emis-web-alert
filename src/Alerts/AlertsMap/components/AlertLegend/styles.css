@@ -1,16 +1,29 @@
 
 .AlertLegend {
     display: flex;
-    flex-direction: column;
-    z-index: 1000; 
-    line-height: 18px;
-    color: #555;
+    position: absolute;
+    bottom: 0;
+    margin: 0 4px 24px 0;
+    justify-content: space-around;
+    right: 0;
     z-index: 1000;
-    padding: 15px 8px;
-    background: white;
-    cursor: auto;
+    height: auto;
+    overflow: hidden;
+    padding: 5px;
+    background-color: white;
+    opacity: 0.9;
+    float: left;
+    min-width: 30vw;
 }
 
 .AlertLegendHeader {
-    margin: 0 0 10px 0;
+    width: 20%;
 }
+
+.AlertLegendContents {
+    display: flex;
+    width: 80%;
+    justify-content: space-around;
+}
+
+

@@ -1,5 +1,5 @@
 import React from 'react';
-import { alertPropTypes } from '../../../../../../common/lib/propTypesUtil';
+import { alertPropTypes } from '../../../../../../../../common/lib/propTypesUtil';
 
 function MoreDetailsArea({ alert }) {
   const { area } = alert || {};
