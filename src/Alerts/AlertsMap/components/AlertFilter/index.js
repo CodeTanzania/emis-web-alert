@@ -54,11 +54,21 @@ class WrappedAlertFilter extends React.Component {
               onChange={this.onChangeSeverity}
               defaultValue={severity}
             >
-              <Checkbox className="Extreme" value="Extreme">Extreme</Checkbox>
-              <Checkbox className="Severe" value="Severe">Severe</Checkbox>
-              <Checkbox className="Moderate" value="Moderate">Moderate</Checkbox>
-              <Checkbox className="Minor" value="Minor">Minor</Checkbox>
-              <Checkbox className="Unknown" value="Unknown">Unknown</Checkbox>
+              <Checkbox className="Extreme" value="Extreme">
+                Extreme
+              </Checkbox>
+              <Checkbox className="Severe" value="Severe">
+                Severe
+              </Checkbox>
+              <Checkbox className="Moderate" value="Moderate">
+                Moderate
+              </Checkbox>
+              <Checkbox className="Minor" value="Minor">
+                Minor
+              </Checkbox>
+              <Checkbox className="Unknown" value="Unknown">
+                Unknown
+              </Checkbox>
             </Checkbox.Group>
           </Panel>
         </Collapse>
@@ -90,8 +100,8 @@ WrappedAlertFilter.propTypes = {
 };
 
 WrappedAlertFilter.defaultProps = {
-  updateFilter: () => { },
-  refreshMap: () => { },
-  updateDateRengeFilter: () => { },
+  updateFilter: () => {},
+  refreshMap: () => {},
+  updateDateRengeFilter: () => {},
   filter: [],
 };
