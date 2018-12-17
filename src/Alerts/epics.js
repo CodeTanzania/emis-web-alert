@@ -20,9 +20,7 @@ export const getAlertsOperation = () => (dispatch, getState, { API }) => {
   API.getAlerts(filter).then(alerts => {
     dispatch(alertsStore(alerts.map(alert => alertToGeoJSON(alert))));
     dispatch(alertsGetStart(false));
-    
-  }
-  );
+  });
 };
 
 export const getAlertOperation = (id = null) => (

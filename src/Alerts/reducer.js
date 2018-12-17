@@ -9,7 +9,7 @@ import {
   ALERT_CREATE_SUCCESS,
   ALERT_CREATE_START,
   ALERTS_GET_START,
-  ALERT_GET_START
+  ALERT_GET_START,
 } from './actions';
 
 const initialFilter = {
@@ -30,7 +30,7 @@ export function alerts(state = {}, action) {
   }
 }
 
-export function alert(state = {isGettingAlert: false}, action) {
+export function alert(state = { isGettingAlert: false }, action) {
   const { type, payload } = action;
   switch (type) {
     case ALERT_STORE: {

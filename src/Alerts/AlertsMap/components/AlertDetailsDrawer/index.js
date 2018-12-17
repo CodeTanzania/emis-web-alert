@@ -9,10 +9,11 @@ function AlertDetailsDrawer({ visible, onCloseDrawer }) {
     <div>
       <Drawer
         placement="right"
-        closable={false}
+        closable
+        maskClosable={false}
         onClose={onCloseDrawer}
         visible={visible}
-        width="98vw"
+        width={820}
         className="AlertDetailsDrawer"
       >
         <AlertNav />

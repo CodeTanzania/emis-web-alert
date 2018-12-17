@@ -253,16 +253,14 @@ class AlertsMap extends React.Component {
   getSpinValue = () => {
     const { isLoadingAlerts, isLoadingAlert } = this.props;
     let spin = false;
-    if( isLoadingAlert) {
+    if (isLoadingAlert) {
       spin = isLoadingAlert;
-    }
-
-    else if ( isLoadingAlerts ) {
+    } else if (isLoadingAlerts) {
       spin = isLoadingAlerts;
     }
 
     return spin;
-  }
+  };
 
   // this shows popup on map
   showPopup() {
@@ -290,11 +288,7 @@ class AlertsMap extends React.Component {
     const spin = this.getSpinValue();
     const position = [-6.179, 35.754];
     return (
-      <Spin
-        spinning={spin}
-        tip="Loading..."
-        size="large"
-      >
+      <Spin spinning={spin} tip="Loading..." size="large">
         <div className="AlertsMap">
           <AlertsNav hideNav={hideAlerts} />
           <AlertLegend />
@@ -353,10 +347,10 @@ AlertsMap.propTypes = {
 };
 
 AlertsMap.defaultProps = {
-  startGetAlerts: () => { },
-  startGetAlert: () => { },
-  setCurrentDate: () => { },
-  showAlertDetailsOnNav: () => { },
+  startGetAlerts: () => {},
+  startGetAlert: () => {},
+  setCurrentDate: () => {},
+  showAlertDetailsOnNav: () => {},
   alerts: [],
   selected: null,
 };

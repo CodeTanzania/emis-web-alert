@@ -10,10 +10,10 @@ export const ALERT_CREATE_START = 'ALERT_CREATE_START';
 export const ALERT_CREATE_SUCCESS = 'ALRERT_CREATE_SUCCESS';
 export const ALERT_CREATE_ERROR = 'ALERT_CREATE_ERROR';
 
-export const alertsGetStart = (isGettingAlerts=true) => ({
-   type: ALERTS_GET_START,
-   payload: { isGettingAlerts}
-   });
+export const alertsGetStart = (isGettingAlerts = true) => ({
+  type: ALERTS_GET_START,
+  payload: { isGettingAlerts },
+});
 
 export const alertsStore = alerts => ({
   type: ALERTS_STORE,
