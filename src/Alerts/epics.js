@@ -17,9 +17,10 @@ export const getAlertsOperation = () => (dispatch, getState, { API }) => {
   const filter = get(state, 'filter');
 
   dispatch(alertsGetStart());
-  API.getAlerts(filter).then(alerts =>
-    dispatch(alertsStore(alerts.map(alert => alertToGeoJSON(alert))))
-  );
+  API.getAlerts(filter).then(alerts => {
+    dispatch(alertsStore(alerts.map(alert => alertToGeoJSON(alert))));
+    dispatch(alertsGetStart(false));
+  });
 };
 
 export const getAlertOperation = (id = null) => (
@@ -27,14 +28,16 @@ export const getAlertOperation = (id = null) => (
   getState,
   { API }
 ) => {
-  dispatch(alertGetStart(id));
+  dispatch(alertGetStart());
   if (id) {
     API.getAlert(id).then(alert => {
       const area = alertToGeoJSON(alert);
       dispatch(alertStore({ ...alert, area }));
+      dispatch(alertGetStart(false));
     });
   } else {
     dispatch(alertStore(alert.data));
+    dispatch(alertGetStart(false));
   }
 };
 

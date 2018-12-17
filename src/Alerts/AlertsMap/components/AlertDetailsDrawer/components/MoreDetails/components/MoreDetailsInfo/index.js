@@ -1,6 +1,6 @@
 import React from 'react';
-import { isoDateToHumanReadableDate } from '../../../../../../common/lib/util';
-import { alertPropTypes } from '../../../../../../common/lib/propTypesUtil';
+import { isoDateToHumanReadableDate } from '../../../../../../../../common/lib/util';
+import { alertPropTypes } from '../../../../../../../../common/lib/propTypesUtil';
 
 function MoreDetailsInfo({
   alert: {

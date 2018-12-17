@@ -1,6 +1,8 @@
 .LegendItem {
     display: flex;
-    padding: 0 10px 10px 0;
+}
+.LegendItem span {
+    font-size: 14px;;
 }
 
 .LegendItem i {

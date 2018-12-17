@@ -1,9 +1,9 @@
 import React from 'react';
-import { isoDateToHumanReadableDate } from '../../../../../../common/lib/util';
-import { alertPropTypes } from '../../../../../../common/lib/propTypesUtil';
+import { isoDateToHumanReadableDate } from '../../../../../../../../common/lib/util';
+import { alertPropTypes } from '../../../../../../../../common/lib/propTypesUtil';
 
 function MoreDetailsAlert({
-  alert: { source, status, type, scope, reportedAt },
+  alert: { source, status, type, scope, reportedAt, number },
 }) {
   return (
     <div>
@@ -21,6 +21,9 @@ function MoreDetailsAlert({
       </p>
       <p>
         <b>This Alert was sent on:</b> {isoDateToHumanReadableDate(reportedAt)}
+      </p>
+      <p>
+        <b>Number:</b> {number}
       </p>
     </div>
   );

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Menu } from 'antd';
-import PropTypes from 'prop-types';
 import MoreDetails from '../MoreDetails';
+import AlertResources from '../AlertResources';
+import AlertActions from '../AlertActions';
 import './styles.css';
 
 /**
@@ -17,7 +18,7 @@ import './styles.css';
 
 class AlertNav extends React.Component {
   state = {
-    current: 'alert-details',
+    current: 'details',
   };
 
   handleClick = e => {
@@ -28,15 +29,20 @@ class AlertNav extends React.Component {
 
   renderNavContent = current => {
     switch (current) {
-      case 'alert-details': {
-        const { id } = this.props;
-        return <MoreDetails id={id} />;
+      case 'details': {
+        return <MoreDetails />;
+      }
+      case 'resources': {
+        return <AlertResources />;
       }
       case 'actions': {
-        return <div>work on progress</div>;
+        return <AlertActions />;
       }
-      case 'feed': {
-        return <div>work on progress</div>;
+      case 'references': {
+        return <div>Referenced Alerts will be placed here</div>;
+      }
+      case 'incidents': {
+        return <div>Associated Incidents will be placed here</div>;
       }
       default:
         return false;
@@ -52,9 +58,11 @@ class AlertNav extends React.Component {
           selectedKeys={[current]}
           mode="horizontal"
         >
-          <Menu.Item key="alert-details">Alert Details</Menu.Item>
+          <Menu.Item key="details">Alert Details</Menu.Item>
+          <Menu.Item key="resources">Alert Resources</Menu.Item>
           <Menu.Item key="actions">Actions</Menu.Item>
-          <Menu.Item key="feed">Feed</Menu.Item>
+          {/* <Menu.Item key="references">Referenced Alerts</Menu.Item>
+          <Menu.Item key="incidents">Associated Incidents</Menu.Item> */}
         </Menu>
         <div className="MenuContents">
           <div className="Container">{this.renderNavContent(current)}</div>
@@ -65,11 +73,3 @@ class AlertNav extends React.Component {
 }
 
 export default AlertNav;
-
-AlertNav.propTypes = {
-  id: PropTypes.string,
-};
-
-AlertNav.defaultProps = {
-  id: '',
-};

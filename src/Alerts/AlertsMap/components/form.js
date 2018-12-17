@@ -33,7 +33,7 @@ class AlertForm extends React.Component {
           instructions,
           headline,
           expectedAt,
-          expiredAt
+          expiredAt,
         } = values;
         const payload = {
           category,
@@ -60,9 +60,40 @@ class AlertForm extends React.Component {
     removeDrawnAlert();
   };
 
+  renderSelectOptions = options =>
+    options.map(option => <Option value={option}>{option}</Option>);
+
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
+    const messageTypes = ['Alert', 'Update', 'Cancel', 'Error', 'Ask'];
+
+    const categoryOptions = [
+      'Geo',
+      'Met',
+      'Safety',
+      'Security',
+      'Rescue',
+      'Fire',
+      'Health',
+      'Env',
+      'Transport',
+      'Infra',
+      'CBRNE',
+      'Other',
+    ];
+
+    const responseTypes = [
+      'Shelter',
+      'Evacuate',
+      'Prepare',
+      'Execute',
+      'Avoid',
+      'Monitor',
+      'Assess',
+      'AllClear',
+      'None',
+    ];
 
     const formItemLayout = {
       labelCol: {
@@ -115,7 +146,7 @@ class AlertForm extends React.Component {
             ],
           })(
             <Select showSearch style={{ width: 250 }}>
-              <Option value="Geo">Geo</Option>
+              {this.renderSelectOptions(categoryOptions)}
             </Select>
           )}
         </FormItem>
@@ -176,6 +207,36 @@ class AlertForm extends React.Component {
               <Option value="Possible">Possible</Option>
               <Option value="Unlikely">Unlikely</Option>
               <Option value="Unknown">Unknown</Option>
+            </Select>
+          )}
+        </FormItem>
+        <FormItem {...formItemLayout} label="Message Type">
+          {getFieldDecorator('type', {
+            rules: [
+              {},
+              {
+                required: true,
+                message: 'Please Message Type of an Alert!',
+              },
+            ],
+          })(
+            <Select showSearch style={{ width: 250 }}>
+              {this.renderSelectOptions(messageTypes)}
+            </Select>
+          )}
+        </FormItem>
+        <FormItem {...formItemLayout} label="Response Type">
+          {getFieldDecorator('response', {
+            rules: [
+              {},
+              {
+                required: true,
+                message: 'Please Response Type of an Alert!',
+              },
+            ],
+          })(
+            <Select showSearch style={{ width: 250 }}>
+              {this.renderSelectOptions(responseTypes)}
             </Select>
           )}
         </FormItem>

@@ -8,6 +8,8 @@ import {
   ALERT_CREATE_ERROR,
   ALERT_CREATE_SUCCESS,
   ALERT_CREATE_START,
+  ALERTS_GET_START,
+  ALERT_GET_START,
 } from './actions';
 
 const initialFilter = {
@@ -20,15 +22,22 @@ export function alerts(state = {}, action) {
     case ALERTS_STORE: {
       return { ...state, ...payload };
     }
+    case ALERTS_GET_START: {
+      return { ...state, ...payload };
+    }
     default:
       return state;
   }
 }
 
-export function alert(state = {}, action) {
+export function alert(state = { isGettingAlert: false }, action) {
   const { type, payload } = action;
   switch (type) {
     case ALERT_STORE: {
+      return { ...state, ...payload };
+    }
+
+    case ALERT_GET_START: {
       return { ...state, ...payload };
     }
 
@@ -65,7 +74,7 @@ export function filter(state = initialFilter, action) {
   }
 }
 
-export function alertNav(state = { activeItem: 'legend' }, action) {
+export function alertNav(state = { activeItem: 'filter' }, action) {
   const { type, payload } = action;
   switch (type) {
     case ALERT_NAV_SET_ACTIVE: {
