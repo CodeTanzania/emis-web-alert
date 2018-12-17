@@ -288,7 +288,11 @@ class AlertsMap extends React.Component {
     const spin = this.getSpinValue();
     const position = [-6.179, 35.754];
     return (
-      <Spin spinning={spin} tip="Loading..." size="large">
+      <Spin spinning={spin}
+       tip="Loading..."
+        size="large"
+        style={{position: 'absolute', top: '25%', right: '5%' }}
+        >
         <div className="AlertsMap">
           <AlertsNav hideNav={hideAlerts} />
           <AlertLegend />
