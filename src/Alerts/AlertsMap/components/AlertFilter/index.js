@@ -32,7 +32,7 @@ class WrappedAlertFilter extends React.Component {
     return (
       <div className={cx('AlertFilter')}>
         <div className={cx('AlertFilterDates')}>
-          <div>Filter Based on Onset Date:</div>
+          <div>View Alerts Expected Within:</div>
           <RangePicker
             style={{ width: 'auto' }}
             showTime={{ format: 'HH:mm' }}
@@ -54,11 +54,11 @@ class WrappedAlertFilter extends React.Component {
               onChange={this.onChangeSeverity}
               defaultValue={severity}
             >
-              <Checkbox value="Extreme">Extreme</Checkbox>
-              <Checkbox value="Severe">Severe</Checkbox>
-              <Checkbox value="Moderate">Moderate</Checkbox>
-              <Checkbox value="Minor">Minor</Checkbox>
-              <Checkbox value="Unknown">Unknown</Checkbox>
+              <Checkbox className="Extreme" value="Extreme">Extreme</Checkbox>
+              <Checkbox className="Severe" value="Severe">Severe</Checkbox>
+              <Checkbox className="Moderate" value="Moderate">Moderate</Checkbox>
+              <Checkbox className="Minor" value="Minor">Minor</Checkbox>
+              <Checkbox className="Unknown" value="Unknown">Unknown</Checkbox>
             </Checkbox.Group>
           </Panel>
         </Collapse>
@@ -90,8 +90,8 @@ WrappedAlertFilter.propTypes = {
 };
 
 WrappedAlertFilter.defaultProps = {
-  updateFilter: () => {},
-  refreshMap: () => {},
-  updateDateRengeFilter: () => {},
+  updateFilter: () => { },
+  refreshMap: () => { },
+  updateDateRengeFilter: () => { },
   filter: [],
 };
