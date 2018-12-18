@@ -38,7 +38,7 @@ function Display(props) {
         onChange={handleChange}
       >
         <Option value="all">Display: All Alerts</Option>
-        <Option value="current">{`Display: From ${humanTimeToday()} to on wards`}</Option>
+        <Option value="current">{`Display: Today (${humanTimeToday()}) and on wards`}</Option>
       </Select>
     </div>
   );

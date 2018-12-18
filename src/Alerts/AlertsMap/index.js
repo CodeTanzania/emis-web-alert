@@ -9,11 +9,11 @@ import { get } from 'lodash';
 import * as ReactLeaflet from 'react-leaflet';
 import { getAlertsOperation, getAlertOperation } from '../epics';
 import { setAlertNavActive, setDateRageFilter } from '../actions';
-import WrappedAlertForm from './components/form';
 import AlertsNav from './components/AlertsNav';
 import AlertLegend from './components/AlertLegend';
 import AlertNavBar from './components/AlertNavBar';
 import { alertPropTypes } from '../../common/lib/propTypesUtil';
+import NewAlert from './components/NewAlert';
 import {
   baseMaps,
   showMarkers,
@@ -25,7 +25,7 @@ import {
 
 import './styles.css';
 
-const { Map: LeafletMap, TileLayer, Popup } = ReactLeaflet;
+const { Map: LeafletMap, TileLayer } = ReactLeaflet;
 
 /**
  * Alerts Map  component
@@ -41,10 +41,9 @@ class AlertsMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      area: {},
       hideAlerts: false,
-      isPopupOPen: false,
-      position: {},
+      area: {},
+      isNewAlertDrawerOpen: false,
     };
 
     this.mapRef = React.createRef();
@@ -52,6 +51,8 @@ class AlertsMap extends React.Component {
     this.removeDrawnAlert = this.removeDrawnAlert.bind(this);
     this.onClickBackButton = this.onClickBackButton.bind(this);
     this.onclickNewAlertButton = this.onclickNewAlertButton.bind(this);
+    this.openNewAlertDrawer = this.openNewAlertDrawer.bind(this);
+    this.closeNewAlertDrawer = this.closeNewAlertDrawer.bind(this);
   }
 
   componentDidMount() {
@@ -70,6 +71,14 @@ class AlertsMap extends React.Component {
       this.map.removeLayer(this.selectedAlertLayer);
     }
   }
+
+  openNewAlertDrawer = () => {
+    this.setState({ isNewAlertDrawerOpen: true });
+  };
+
+  closeNewAlertDrawer = () => {
+    this.setState({ isNewAlertDrawerOpen: false });
+  };
 
   onEachFeature = (feature, layer) => {
     const { geometry, properties } = feature;
@@ -140,16 +149,12 @@ class AlertsMap extends React.Component {
   showDrawnAlert = ({ layer }) => {
     this.drawnItems.addLayer(layer);
     const area = layer.toGeoJSON().geometry;
-    this.setState({
-      position: layer.getBounds().getCenter(),
-      isPopupOPen: true,
-      area,
-    });
+    this.setState({ area });
+    this.openNewAlertDrawer();
   };
 
   removeDrawnAlert = () => {
     this.drawnItems.clearLayers();
-    this.setState({ isPopupOPen: false });
     this.map.closePopup();
   };
 
@@ -228,8 +233,8 @@ class AlertsMap extends React.Component {
     this.map.removeControl(this.drawControl);
     this.map.removeLayer(this.drawnItems);
     this.map.addLayer(this.alertsLayer);
-    this.setState({ hideAlerts: false, isPopupOPen: false });
-    this.map.closePopup();
+    this.setState({ hideAlerts: false });
+    this.closeNewAlertDrawer();
   };
 
   showActiveAlerts = () => {
@@ -262,33 +267,17 @@ class AlertsMap extends React.Component {
     return spin;
   };
 
-  // this shows popup on map
-  showPopup() {
-    const { position, area, isPopupOPen } = this.state;
-    if (isPopupOPen) {
-      return (
-        <Popup
-          position={position}
-          minWidth={400}
-          onClose={this.removeDrawnAlert}
-        >
-          <WrappedAlertForm
-            area={area}
-            closePopup={this.closePopup}
-            removeDrawnAlert={this.removeDrawnAlert}
-          />
-        </Popup>
-      );
-    }
-    return null;
-  }
-
   render() {
-    const { hideAlerts } = this.state;
+    const { hideAlerts, isNewAlertDrawerOpen, area } = this.state;
     const spin = this.getSpinValue();
     const position = [-6.179, 35.754];
     return (
-      <Spin spinning={spin} tip="Loading..." size="large">
+      <Spin
+        spinning={spin}
+        tip="Loading..."
+        size="large"
+        style={{ position: 'absolute', top: '25%', right: '5%' }}
+      >
         <div className="AlertsMap">
           <AlertsNav hideNav={hideAlerts} />
           <AlertLegend />
@@ -296,6 +285,12 @@ class AlertsMap extends React.Component {
             hideAlerts={hideAlerts}
             onClickBack={this.onClickBackButton}
             onClickNew={this.onclickNewAlertButton}
+          />
+          <NewAlert
+            visible={isNewAlertDrawerOpen}
+            onClose={this.closeNewAlertDrawer}
+            onClickSave={this.closePopup}
+            area={area}
           />
           <LeafletMap
             center={position}
@@ -308,8 +303,6 @@ class AlertsMap extends React.Component {
               id="mapbox.light"
               url="https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoid29ybGRiYW5rLWVkdWNhdGlvbiIsImEiOiJIZ2VvODFjIn0.TDw5VdwGavwEsch53sAVxA#1.6/23.725906/-39.714135/0"
             />
-
-            {this.showPopup()}
           </LeafletMap>
         </div>
       </Spin>
